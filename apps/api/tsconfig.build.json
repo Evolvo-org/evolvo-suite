@@ -5,6 +5,7 @@
     "test",
     "dist",
     "**/*spec.ts",
+    "jest.config.ts",
     "vitest.config.ts",
     "vitest.e2e.config.ts"
   ],

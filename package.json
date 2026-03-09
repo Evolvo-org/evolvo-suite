@@ -10,6 +10,8 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",
+    "test:e2e:web": "pnpm --filter web test:e2e",
+    "test:e2e:web:open": "pnpm --filter web test:e2e:open",
     "lint": "turbo run lint",
     "format": "biome format --config-path ./packages/biome-config/monorepo.json --write .",
     "format:check": "biome format --config-path ./packages/biome-config/monorepo.json ."

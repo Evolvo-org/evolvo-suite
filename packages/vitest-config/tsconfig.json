@@ -6,8 +6,8 @@
     "allowJs": true,
     "esModuleInterop": true,
     "incremental": false,
-    "module": "commonjs",
-    "moduleResolution": "Node10",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "outDir": "dist",
     "baseUrl": "src",
     "strictNullChecks": true

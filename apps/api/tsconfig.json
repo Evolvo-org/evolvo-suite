@@ -6,5 +6,12 @@
     "moduleResolution": "Node16",
     "outDir": "./dist",
     "strictNullChecks": true
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "jest.config.ts",
+    "vitest.config.ts",
+    "vitest.e2e.config.ts"
+  ]
 }

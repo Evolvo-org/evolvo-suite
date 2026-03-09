@@ -11,7 +11,8 @@
       "coverage/**",
       "**/coverage/**",
       ".turbo/**",
-      "**/.turbo/**"
+      "**/.turbo/**",
+      "**/next-env.d.ts"
     ]
   },
   "formatter": {
