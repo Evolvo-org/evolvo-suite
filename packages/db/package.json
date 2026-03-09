@@ -6,13 +6,18 @@
   "type": "module",
   "scripts": {
     "build": "tsc -b",
+    "dev": "tsc -b --watch",
     "generate": "prisma generate",
     "migrate:dev": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
     "lint": "biome lint --config-path ../biome-config/library.json ./src"
   },
   "exports": {
-    "./client": "./src/client.ts"
+    "./client": {
+      "types": "./src/client.ts",
+      "import": "./dist/client.js",
+      "default": "./dist/client.js"
+    }
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.4.2",

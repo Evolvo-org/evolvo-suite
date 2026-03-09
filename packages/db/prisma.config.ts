@@ -1,10 +1,12 @@
 import { existsSync } from "node:fs";
-import { resolve } from "node:path";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { config } from "dotenv";
 import { defineConfig, env } from "prisma/config";
 
-const rootEnvironmentFilePath = resolve(process.cwd(), "../../.env");
-const localEnvironmentFilePath = resolve(process.cwd(), ".env");
+const currentDirectoryPath = dirname(fileURLToPath(import.meta.url));
+const rootEnvironmentFilePath = resolve(currentDirectoryPath, "../../.env");
+const localEnvironmentFilePath = resolve(currentDirectoryPath, ".env");
 
 config({
   path: existsSync(rootEnvironmentFilePath)

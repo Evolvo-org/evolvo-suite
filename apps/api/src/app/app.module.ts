@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
@@ -21,8 +22,9 @@ import { UsageModule } from '../usage/usage.module.js';
 import { WorkflowModule } from '../workflow/workflow.module.js';
 import { WorktreesModule } from '../worktrees/worktrees.module.js';
 
-const rootEnvironmentFilePath = resolve(process.cwd(), '../../.env');
-const localEnvironmentFilePath = resolve(process.cwd(), '.env');
+const currentDirectoryPath = dirname(fileURLToPath(import.meta.url));
+const rootEnvironmentFilePath = resolve(currentDirectoryPath, '../../../../.env');
+const localEnvironmentFilePath = resolve(currentDirectoryPath, '../../.env');
 const environmentFilePath = existsSync(rootEnvironmentFilePath)
   ? rootEnvironmentFilePath
   : localEnvironmentFilePath;

@@ -40,6 +40,4 @@ async function bootstrap() {
   logger.log(`API listening on http://localhost:${port}/${apiPrefix}`);
 }
 
-if (require.main === module) {
-  void bootstrap();
-}
+void bootstrap();
