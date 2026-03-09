@@ -1,0 +1,18 @@
+enum RuntimeStatus {
+  IDLE
+  BUSY
+  DEGRADED
+}
+
+model RuntimeInstance {
+  id               String        @id
+  displayName      String
+  status           RuntimeStatus @default(IDLE)
+  capabilities     String[]      @default([])
+  activeJobSummary String?       @db.Text
+  lastAction       String?       @db.Text
+  lastError        String?       @db.Text
+  lastSeenAt       DateTime      @default(now())
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+}

@@ -172,26 +172,26 @@ Tasks:
 - [x] Add effective settings calculation
 
 ## API-015 - Build scheduler lease system
-**Status:** todo  
+**Status:** done  
 **Outcome:** Work can be leased safely and durably.
 
 Tasks:
-- [ ] Create lease model
-- [ ] Add lease acquisition service
-- [ ] Add lease expiration handling
-- [ ] Add lease renewal endpoint
-- [ ] Add lease recovery process
+- [x] Create lease model
+- [x] Add lease acquisition service
+- [x] Add lease expiration handling
+- [x] Add lease renewal endpoint
+- [x] Add lease recovery process
 
 ## API-016 - Build runtime registration and heartbeat
-**Status:** todo  
+**Status:** done  
 **Outcome:** Runtimes can register and report health.
 
 Tasks:
-- [ ] Add runtime register endpoint
-- [ ] Add runtime heartbeat endpoint
-- [ ] Add runtime detail query
-- [ ] Add last-seen tracking
-- [ ] Add offline detection
+- [x] Add runtime register endpoint
+- [x] Add runtime heartbeat endpoint
+- [x] Add runtime detail query
+- [x] Add last-seen tracking
+- [x] Add offline detection
 
 ## API-017 - Add runtime work dispatch
 **Status:** todo  

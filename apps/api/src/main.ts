@@ -2,11 +2,12 @@ import { Logger } from '@nestjs/common';
 import type { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { pathToFileURL } from 'node:url';
 
-import { AppModule } from '../app/app.module.js';
-import { HttpExceptionFilter } from '../common/filters/http-exception.filter.js';
-import { RequestLoggingInterceptor } from '../common/interceptors/request-logging.interceptor.js';
-import type { ApplicationEnvironment } from '../config/environment.js';
+import { AppModule } from './app/app.module.js';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
+import { RequestLoggingInterceptor } from './common/interceptors/request-logging.interceptor.js';
+import type { ApplicationEnvironment } from './config/environment.js';
 
 export const configureApiApp = (
   app: INestApplication,
@@ -24,7 +25,7 @@ export const configureApiApp = (
   app.useGlobalInterceptors(new RequestLoggingInterceptor());
 };
 
-async function bootstrap() {
+export async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   });
@@ -40,4 +41,11 @@ async function bootstrap() {
   logger.log(`API listening on http://localhost:${port}/${apiPrefix}`);
 }
 
-void bootstrap();
+const entrypointPath = process.argv[1];
+const isDirectExecution =
+  entrypointPath !== undefined &&
+  import.meta.url === pathToFileURL(entrypointPath).href;
+
+if (isDirectExecution) {
+  void bootstrap();
+}

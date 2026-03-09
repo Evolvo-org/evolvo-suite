@@ -65,3 +65,31 @@ export const ProjectRepositoryProvider = {
 } as const
 
 export type ProjectRepositoryProvider = (typeof ProjectRepositoryProvider)[keyof typeof ProjectRepositoryProvider]
+
+
+export const RuntimeStatus = {
+  IDLE: 'IDLE',
+  BUSY: 'BUSY',
+  DEGRADED: 'DEGRADED'
+} as const
+
+export type RuntimeStatus = (typeof RuntimeStatus)[keyof typeof RuntimeStatus]
+
+
+export const SchedulerLeaseLane = {
+  DEV: 'DEV',
+  REVIEW: 'REVIEW',
+  RELEASE: 'RELEASE'
+} as const
+
+export type SchedulerLeaseLane = (typeof SchedulerLeaseLane)[keyof typeof SchedulerLeaseLane]
+
+
+export const SchedulerLeaseStatus = {
+  ACTIVE: 'ACTIVE',
+  EXPIRED: 'EXPIRED',
+  RELEASED: 'RELEASED',
+  RECOVERED: 'RECOVERED'
+} as const
+
+export type SchedulerLeaseStatus = (typeof SchedulerLeaseStatus)[keyof typeof SchedulerLeaseStatus]

@@ -12,7 +12,7 @@
     "start": "nest start",
     "prestart:debug": "pnpm --filter @repo/db build",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/bootstrap/main",
+    "start:prod": "node dist/main",
     "pretest": "pnpm --filter @repo/db build",
     "test": "vitest run --config ./vitest.config.ts",
     "test:watch": "vitest --config ./vitest.config.ts",

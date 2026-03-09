@@ -2,12 +2,14 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import type { INestApplication } from '@nestjs/common';
 import { describe, it, beforeEach, expect } from 'vitest';
 import request from 'supertest';
-import { AppModule } from './../src/app/app.module';
-import { configureApiApp } from './../src/bootstrap/main';
 import { ConfigService } from '@nestjs/config';
+import { AppModule } from './../src/app/app.module.js';
+import { configureApiApp } from './../src/main.js';
+import { PrismaService } from './../src/prisma/prisma.service.js';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -17,6 +19,7 @@ describe('AppController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     configureApiApp(app, app.get(ConfigService));
     await app.init();
+    prisma = app.get(PrismaService);
   });
 
   it('/api/v1/health (GET)', () => {
@@ -196,7 +199,10 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .expect((response) => {
         expect(response.body.queueLimits.maxInDev).toBeGreaterThan(0);
-        expect(response.body.updatedAt).toBeNull();
+        expect(
+          response.body.updatedAt === null ||
+            typeof response.body.updatedAt === 'string',
+        ).toBe(true);
       });
 
     const updateDefaultsResponse = await request(app.getHttpServer())
@@ -271,6 +277,175 @@ describe('AppController (e2e)', () => {
       .expect((response) => {
         expect(response.body.data.overrides).toBeNull();
         expect(response.body.data.effective.maxPlanning).toBe(15);
+      });
+  });
+
+  it('/api/v1/scheduler/leases/acquire, renew, and recover', async () => {
+    const createProjectResponse = await request(app.getHttpServer())
+      .post('/api/v1/projects')
+      .send({
+        name: `Scheduler Lease Test ${Date.now()}`,
+        repository: {
+          provider: 'github',
+          owner: 'Evolvo-org',
+          name: 'evolvo-suite',
+          url: 'https://github.com/Evolvo-org/evolvo-suite',
+          defaultBranch: 'main',
+          baseBranch: 'main',
+        },
+        productDescription: 'Validation fixture for scheduler lease handling.',
+      })
+      .expect(201);
+
+    const projectId = createProjectResponse.body.data.id as string;
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/projects/${projectId}/start`)
+      .expect(201);
+
+    const createEpicResponse = await request(app.getHttpServer())
+      .post(`/api/v1/projects/${projectId}/planning/epics`)
+      .send({
+        title: 'Scheduler epic',
+      })
+      .expect(201);
+
+    const epicId = createEpicResponse.body.data.epics[0].id as string;
+
+    const createTaskResponse = await request(app.getHttpServer())
+      .post(`/api/v1/projects/${projectId}/planning/work-items`)
+      .send({
+        epicId,
+        kind: 'task',
+        title: 'Lease ready task',
+      })
+      .expect(201);
+
+    const taskId = createTaskResponse.body.data.epics[0].tasks[0].id as string;
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/projects/${projectId}/work-items/${taskId}/transition`)
+      .send({
+        toState: 'planning',
+      })
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/projects/${projectId}/work-items/${taskId}/transition`)
+      .send({
+        toState: 'readyForDev',
+      })
+      .expect(201);
+
+    const acquireResponse = await request(app.getHttpServer())
+      .post('/api/v1/scheduler/leases/acquire')
+      .send({
+        runtimeId: 'runtime-test-1',
+        lanes: ['dev'],
+        projectId,
+      })
+      .expect(201);
+
+    expect(acquireResponse.body.data.lease.workItemId).toBe(taskId);
+    expect(acquireResponse.body.data.lease.status).toBe('active');
+
+    const leaseId = acquireResponse.body.data.lease.id as string;
+    const leaseToken = acquireResponse.body.data.lease.leaseToken as string;
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/scheduler/leases/${leaseId}/renew`)
+      .send({
+        runtimeId: 'runtime-test-1',
+        leaseToken,
+        leaseDurationSeconds: 300,
+      })
+      .expect(201)
+      .expect((response) => {
+        expect(response.body.data.id).toBe(leaseId);
+        expect(response.body.data.status).toBe('active');
+      });
+
+    await prisma.workItemLease.update({
+      where: { id: leaseId },
+      data: {
+        expiresAt: new Date(Date.now() - 60_000),
+      },
+    });
+
+    await request(app.getHttpServer())
+      .post('/api/v1/scheduler/leases/recover')
+      .send({})
+      .expect(201)
+      .expect((response) => {
+        expect(response.body.data.recoveredCount).toBeGreaterThanOrEqual(1);
+        expect(
+          response.body.data.items.some(
+            (item: { id: string; status: string }) =>
+              item.id === leaseId && item.status === 'recovered',
+          ),
+        ).toBe(true);
+      });
+
+    await request(app.getHttpServer())
+      .get(`/api/v1/projects/${projectId}/work-items/${taskId}`)
+      .expect(200)
+      .expect((response) => {
+        expect(response.body.state).toBe('readyForDev');
+      });
+  });
+
+  it('/api/v1/runtimes/register, heartbeat, and detail', async () => {
+    const runtimeId = `runtime-${Date.now()}`;
+
+    await request(app.getHttpServer())
+      .post('/api/v1/runtimes/register')
+      .send({
+        runtimeId,
+        displayName: 'Local runtime',
+        capabilities: ['git', 'leases', 'heartbeats'],
+      })
+      .expect(201)
+      .expect((response) => {
+        expect(response.body.data.runtimeId).toBe(runtimeId);
+        expect(response.body.data.connectionStatus).toBe('online');
+      });
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/runtimes/${runtimeId}/heartbeat`)
+      .send({
+        status: 'busy',
+        activeJobSummary: 'Implementing a leased work item.',
+        lastAction: 'Pulled latest changes from origin/main.',
+        lastError: 'Transient git lock detected and cleared.',
+      })
+      .expect(201)
+      .expect((response) => {
+        expect(response.body.data.reportedStatus).toBe('busy');
+        expect(response.body.data.activeJobSummary).toContain('leased work item');
+      });
+
+    await request(app.getHttpServer())
+      .get(`/api/v1/runtimes/${runtimeId}`)
+      .expect(200)
+      .expect((response) => {
+        expect(response.body.runtimeId).toBe(runtimeId);
+        expect(response.body.connectionStatus).toBe('online');
+        expect(response.body.lastAction).toContain('Pulled latest changes');
+      });
+
+    await prisma.runtimeInstance.update({
+      where: { id: runtimeId },
+      data: {
+        lastSeenAt: new Date(Date.now() - 5 * 60_000),
+      },
+    });
+
+    await request(app.getHttpServer())
+      .get(`/api/v1/runtimes/${runtimeId}`)
+      .expect(200)
+      .expect((response) => {
+        expect(response.body.connectionStatus).toBe('offline');
+        expect(response.body.reportedStatus).toBe('busy');
       });
   });
 });

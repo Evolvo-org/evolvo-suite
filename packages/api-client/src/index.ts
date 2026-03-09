@@ -1,5 +1,7 @@
 import type {
   ActivateDevelopmentPlanVersionRequest,
+  AcquireSchedulerLeaseRequest,
+  AcquireSchedulerLeaseResponse,
   CreateDevelopmentPlanRequest,
   CreateAcceptanceCriterionRequest,
   CreateEpicRequest,
@@ -23,6 +25,13 @@ import type {
   ProjectRepositoryInput,
   ProjectRepositoryValidationResponse,
   ProjectStatusResponse,
+  RegisterRuntimeRequest,
+  RecoverSchedulerLeasesRequest,
+  RecoverSchedulerLeasesResponse,
+  RuntimeDetailResponse,
+  RuntimeHeartbeatRequest,
+  RenewSchedulerLeaseRequest,
+  SchedulerLease,
   SystemQueueLimitsResponse,
   TransitionWorkItemRequest,
   UpdateAcceptanceCriterionRequest,
@@ -147,6 +156,10 @@ export const settingsQueryKeys = {
   systemQueueLimits: () => ['settings', 'queue-limits', 'defaults'] as const,
 };
 
+export const schedulerQueryKeys = {
+  all: ['scheduler'] as const,
+};
+
 export const listProjects = async (
   filters?: ProjectListFilters,
 ): Promise<PaginatedResponse<ProjectListItem>> => {
@@ -247,6 +260,76 @@ export const updateSystemQueueLimits = async (
       body: JSON.stringify(payload),
     },
   );
+};
+
+export const acquireSchedulerLease = async (
+  payload: AcquireSchedulerLeaseRequest,
+): Promise<MutationResponse<AcquireSchedulerLeaseResponse>> => {
+  return fetchJson<MutationResponse<AcquireSchedulerLeaseResponse>>(
+    '/scheduler/leases/acquire',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const renewSchedulerLease = async (
+  leaseId: string,
+  payload: RenewSchedulerLeaseRequest,
+): Promise<MutationResponse<SchedulerLease>> => {
+  return fetchJson<MutationResponse<SchedulerLease>>(
+    `/scheduler/leases/${leaseId}/renew`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const recoverSchedulerLeases = async (
+  payload: RecoverSchedulerLeasesRequest = {},
+): Promise<MutationResponse<RecoverSchedulerLeasesResponse>> => {
+  return fetchJson<MutationResponse<RecoverSchedulerLeasesResponse>>(
+    '/scheduler/leases/recover',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const registerRuntime = async (
+  payload: RegisterRuntimeRequest,
+): Promise<MutationResponse<RuntimeDetailResponse>> => {
+  return fetchJson<MutationResponse<RuntimeDetailResponse>>(
+    '/runtimes/register',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const sendRuntimeHeartbeat = async (
+  runtimeId: string,
+  payload: RuntimeHeartbeatRequest,
+): Promise<MutationResponse<RuntimeDetailResponse>> => {
+  return fetchJson<MutationResponse<RuntimeDetailResponse>>(
+    `/runtimes/${runtimeId}/heartbeat`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const getRuntimeDetail = async (
+  runtimeId: string,
+): Promise<RuntimeDetailResponse> => {
+  return fetchJson<RuntimeDetailResponse>(`/runtimes/${runtimeId}`, {
+    method: 'GET',
+  });
 };
 
 export const updateProjectRepository = async (

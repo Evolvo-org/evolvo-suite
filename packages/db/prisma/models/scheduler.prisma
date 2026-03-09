@@ -1,0 +1,35 @@
+enum SchedulerLeaseLane {
+  DEV
+  REVIEW
+  RELEASE
+}
+
+enum SchedulerLeaseStatus {
+  ACTIVE
+  EXPIRED
+  RELEASED
+  RECOVERED
+}
+
+model WorkItemLease {
+  id             String               @id @default(cuid())
+  projectId      String
+  workItemId     String
+  runtimeId      String
+  lane           SchedulerLeaseLane
+  status         SchedulerLeaseStatus @default(ACTIVE)
+  leaseToken     String               @unique
+  leasedAt       DateTime             @default(now())
+  expiresAt      DateTime
+  renewedAt      DateTime?
+  releasedAt     DateTime?
+  recoveredAt    DateTime?
+  recoveryReason String?              @db.Text
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  workItem       WorkItem             @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, status, expiresAt])
+  @@index([runtimeId, status, expiresAt])
+  @@index([workItemId, status, expiresAt])
+}

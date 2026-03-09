@@ -82,3 +82,13 @@ export type DevelopmentPlan = Prisma.DevelopmentPlanModel
  * 
  */
 export type PlanVersion = Prisma.PlanVersionModel
+/**
+ * Model RuntimeInstance
+ * 
+ */
+export type RuntimeInstance = Prisma.RuntimeInstanceModel
+/**
+ * Model WorkItemLease
+ * 
+ */
+export type WorkItemLease = Prisma.WorkItemLeaseModel

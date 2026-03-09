@@ -66,6 +66,7 @@ model WorkItem {
   comments             WorkItemComment[]
   dependencies         WorkItemDependency[] @relation("WorkItemDependencies")
   dependentWorkItems   WorkItemDependency[] @relation("WorkItemDependents")
+  leases               WorkItemLease[]
   transitions          WorkItemStateTransition[]
 
   @@index([projectId, state, sortOrder])

@@ -252,6 +252,82 @@ export type EnumProjectRepositoryProviderWithAggregatesFilter<$PrismaModel = nev
   _max?: Prisma.NestedEnumProjectRepositoryProviderFilter<$PrismaModel>
 }
 
+export type EnumRuntimeStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.RuntimeStatus | Prisma.EnumRuntimeStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RuntimeStatus[] | Prisma.ListEnumRuntimeStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RuntimeStatus[] | Prisma.ListEnumRuntimeStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRuntimeStatusFilter<$PrismaModel> | $Enums.RuntimeStatus
+}
+
+export type EnumRuntimeStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RuntimeStatus | Prisma.EnumRuntimeStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RuntimeStatus[] | Prisma.ListEnumRuntimeStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RuntimeStatus[] | Prisma.ListEnumRuntimeStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRuntimeStatusWithAggregatesFilter<$PrismaModel> | $Enums.RuntimeStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRuntimeStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRuntimeStatusFilter<$PrismaModel>
+}
+
+export type EnumSchedulerLeaseLaneFilter<$PrismaModel = never> = {
+  equals?: $Enums.SchedulerLeaseLane | Prisma.EnumSchedulerLeaseLaneFieldRefInput<$PrismaModel>
+  in?: $Enums.SchedulerLeaseLane[] | Prisma.ListEnumSchedulerLeaseLaneFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SchedulerLeaseLane[] | Prisma.ListEnumSchedulerLeaseLaneFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSchedulerLeaseLaneFilter<$PrismaModel> | $Enums.SchedulerLeaseLane
+}
+
+export type EnumSchedulerLeaseStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.SchedulerLeaseStatus | Prisma.EnumSchedulerLeaseStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SchedulerLeaseStatus[] | Prisma.ListEnumSchedulerLeaseStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SchedulerLeaseStatus[] | Prisma.ListEnumSchedulerLeaseStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSchedulerLeaseStatusFilter<$PrismaModel> | $Enums.SchedulerLeaseStatus
+}
+
+export type DateTimeNullableFilter<$PrismaModel = never> = {
+  equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null
+  in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null
+  notIn?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null
+  lt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  lte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  gt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  gte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+}
+
+export type EnumSchedulerLeaseLaneWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SchedulerLeaseLane | Prisma.EnumSchedulerLeaseLaneFieldRefInput<$PrismaModel>
+  in?: $Enums.SchedulerLeaseLane[] | Prisma.ListEnumSchedulerLeaseLaneFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SchedulerLeaseLane[] | Prisma.ListEnumSchedulerLeaseLaneFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSchedulerLeaseLaneWithAggregatesFilter<$PrismaModel> | $Enums.SchedulerLeaseLane
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSchedulerLeaseLaneFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSchedulerLeaseLaneFilter<$PrismaModel>
+}
+
+export type EnumSchedulerLeaseStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SchedulerLeaseStatus | Prisma.EnumSchedulerLeaseStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SchedulerLeaseStatus[] | Prisma.ListEnumSchedulerLeaseStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SchedulerLeaseStatus[] | Prisma.ListEnumSchedulerLeaseStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSchedulerLeaseStatusWithAggregatesFilter<$PrismaModel> | $Enums.SchedulerLeaseStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSchedulerLeaseStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSchedulerLeaseStatusFilter<$PrismaModel>
+}
+
+export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null
+  in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null
+  notIn?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null
+  lt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  lte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  gt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  gte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -501,6 +577,82 @@ export type NestedEnumProjectRepositoryProviderWithAggregatesFilter<$PrismaModel
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumProjectRepositoryProviderFilter<$PrismaModel>
   _max?: Prisma.NestedEnumProjectRepositoryProviderFilter<$PrismaModel>
+}
+
+export type NestedEnumRuntimeStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.RuntimeStatus | Prisma.EnumRuntimeStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RuntimeStatus[] | Prisma.ListEnumRuntimeStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RuntimeStatus[] | Prisma.ListEnumRuntimeStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRuntimeStatusFilter<$PrismaModel> | $Enums.RuntimeStatus
+}
+
+export type NestedEnumRuntimeStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RuntimeStatus | Prisma.EnumRuntimeStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RuntimeStatus[] | Prisma.ListEnumRuntimeStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RuntimeStatus[] | Prisma.ListEnumRuntimeStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRuntimeStatusWithAggregatesFilter<$PrismaModel> | $Enums.RuntimeStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRuntimeStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRuntimeStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumSchedulerLeaseLaneFilter<$PrismaModel = never> = {
+  equals?: $Enums.SchedulerLeaseLane | Prisma.EnumSchedulerLeaseLaneFieldRefInput<$PrismaModel>
+  in?: $Enums.SchedulerLeaseLane[] | Prisma.ListEnumSchedulerLeaseLaneFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SchedulerLeaseLane[] | Prisma.ListEnumSchedulerLeaseLaneFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSchedulerLeaseLaneFilter<$PrismaModel> | $Enums.SchedulerLeaseLane
+}
+
+export type NestedEnumSchedulerLeaseStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.SchedulerLeaseStatus | Prisma.EnumSchedulerLeaseStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SchedulerLeaseStatus[] | Prisma.ListEnumSchedulerLeaseStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SchedulerLeaseStatus[] | Prisma.ListEnumSchedulerLeaseStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSchedulerLeaseStatusFilter<$PrismaModel> | $Enums.SchedulerLeaseStatus
+}
+
+export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+  equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null
+  in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null
+  notIn?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null
+  lt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  lte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  gt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  gte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+}
+
+export type NestedEnumSchedulerLeaseLaneWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SchedulerLeaseLane | Prisma.EnumSchedulerLeaseLaneFieldRefInput<$PrismaModel>
+  in?: $Enums.SchedulerLeaseLane[] | Prisma.ListEnumSchedulerLeaseLaneFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SchedulerLeaseLane[] | Prisma.ListEnumSchedulerLeaseLaneFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSchedulerLeaseLaneWithAggregatesFilter<$PrismaModel> | $Enums.SchedulerLeaseLane
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSchedulerLeaseLaneFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSchedulerLeaseLaneFilter<$PrismaModel>
+}
+
+export type NestedEnumSchedulerLeaseStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SchedulerLeaseStatus | Prisma.EnumSchedulerLeaseStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SchedulerLeaseStatus[] | Prisma.ListEnumSchedulerLeaseStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SchedulerLeaseStatus[] | Prisma.ListEnumSchedulerLeaseStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSchedulerLeaseStatusWithAggregatesFilter<$PrismaModel> | $Enums.SchedulerLeaseStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSchedulerLeaseStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSchedulerLeaseStatusFilter<$PrismaModel>
+}
+
+export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null
+  in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null
+  notIn?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null
+  lt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  lte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  gt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  gte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
 }
 
 

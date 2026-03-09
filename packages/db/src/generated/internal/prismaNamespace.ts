@@ -396,7 +396,9 @@ export const ModelName = {
   SystemQueueLimits: 'SystemQueueLimits',
   ProductSpec: 'ProductSpec',
   DevelopmentPlan: 'DevelopmentPlan',
-  PlanVersion: 'PlanVersion'
+  PlanVersion: 'PlanVersion',
+  RuntimeInstance: 'RuntimeInstance',
+  WorkItemLease: 'WorkItemLease'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -412,7 +414,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "epic" | "workItem" | "workItemComment" | "acceptanceCriterion" | "workItemDependency" | "workItemStateTransition" | "project" | "projectRepository" | "projectQueueLimits" | "systemQueueLimits" | "productSpec" | "developmentPlan" | "planVersion"
+    modelProps: "epic" | "workItem" | "workItemComment" | "acceptanceCriterion" | "workItemDependency" | "workItemStateTransition" | "project" | "projectRepository" | "projectQueueLimits" | "systemQueueLimits" | "productSpec" | "developmentPlan" | "planVersion" | "runtimeInstance" | "workItemLease"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1378,6 +1380,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    RuntimeInstance: {
+      payload: Prisma.$RuntimeInstancePayload<ExtArgs>
+      fields: Prisma.RuntimeInstanceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RuntimeInstanceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RuntimeInstancePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RuntimeInstanceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RuntimeInstancePayload>
+        }
+        findFirst: {
+          args: Prisma.RuntimeInstanceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RuntimeInstancePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RuntimeInstanceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RuntimeInstancePayload>
+        }
+        findMany: {
+          args: Prisma.RuntimeInstanceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RuntimeInstancePayload>[]
+        }
+        create: {
+          args: Prisma.RuntimeInstanceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RuntimeInstancePayload>
+        }
+        createMany: {
+          args: Prisma.RuntimeInstanceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RuntimeInstanceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RuntimeInstancePayload>[]
+        }
+        delete: {
+          args: Prisma.RuntimeInstanceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RuntimeInstancePayload>
+        }
+        update: {
+          args: Prisma.RuntimeInstanceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RuntimeInstancePayload>
+        }
+        deleteMany: {
+          args: Prisma.RuntimeInstanceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RuntimeInstanceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RuntimeInstanceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RuntimeInstancePayload>[]
+        }
+        upsert: {
+          args: Prisma.RuntimeInstanceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RuntimeInstancePayload>
+        }
+        aggregate: {
+          args: Prisma.RuntimeInstanceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRuntimeInstance>
+        }
+        groupBy: {
+          args: Prisma.RuntimeInstanceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RuntimeInstanceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RuntimeInstanceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RuntimeInstanceCountAggregateOutputType> | number
+        }
+      }
+    }
+    WorkItemLease: {
+      payload: Prisma.$WorkItemLeasePayload<ExtArgs>
+      fields: Prisma.WorkItemLeaseFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WorkItemLeaseFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemLeasePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WorkItemLeaseFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemLeasePayload>
+        }
+        findFirst: {
+          args: Prisma.WorkItemLeaseFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemLeasePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WorkItemLeaseFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemLeasePayload>
+        }
+        findMany: {
+          args: Prisma.WorkItemLeaseFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemLeasePayload>[]
+        }
+        create: {
+          args: Prisma.WorkItemLeaseCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemLeasePayload>
+        }
+        createMany: {
+          args: Prisma.WorkItemLeaseCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.WorkItemLeaseCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemLeasePayload>[]
+        }
+        delete: {
+          args: Prisma.WorkItemLeaseDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemLeasePayload>
+        }
+        update: {
+          args: Prisma.WorkItemLeaseUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemLeasePayload>
+        }
+        deleteMany: {
+          args: Prisma.WorkItemLeaseDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WorkItemLeaseUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.WorkItemLeaseUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemLeasePayload>[]
+        }
+        upsert: {
+          args: Prisma.WorkItemLeaseUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemLeasePayload>
+        }
+        aggregate: {
+          args: Prisma.WorkItemLeaseAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWorkItemLease>
+        }
+        groupBy: {
+          args: Prisma.WorkItemLeaseGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WorkItemLeaseGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WorkItemLeaseCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WorkItemLeaseCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1605,6 +1755,43 @@ export const PlanVersionScalarFieldEnum = {
 export type PlanVersionScalarFieldEnum = (typeof PlanVersionScalarFieldEnum)[keyof typeof PlanVersionScalarFieldEnum]
 
 
+export const RuntimeInstanceScalarFieldEnum = {
+  id: 'id',
+  displayName: 'displayName',
+  status: 'status',
+  capabilities: 'capabilities',
+  activeJobSummary: 'activeJobSummary',
+  lastAction: 'lastAction',
+  lastError: 'lastError',
+  lastSeenAt: 'lastSeenAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RuntimeInstanceScalarFieldEnum = (typeof RuntimeInstanceScalarFieldEnum)[keyof typeof RuntimeInstanceScalarFieldEnum]
+
+
+export const WorkItemLeaseScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  workItemId: 'workItemId',
+  runtimeId: 'runtimeId',
+  lane: 'lane',
+  status: 'status',
+  leaseToken: 'leaseToken',
+  leasedAt: 'leasedAt',
+  expiresAt: 'expiresAt',
+  renewedAt: 'renewedAt',
+  releasedAt: 'releasedAt',
+  recoveredAt: 'recoveredAt',
+  recoveryReason: 'recoveryReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WorkItemLeaseScalarFieldEnum = (typeof WorkItemLeaseScalarFieldEnum)[keyof typeof WorkItemLeaseScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1769,6 +1956,48 @@ export type ListEnumProjectRepositoryProviderFieldRefInput<$PrismaModel> = Field
 
 
 /**
+ * Reference to a field of type 'RuntimeStatus'
+ */
+export type EnumRuntimeStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RuntimeStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'RuntimeStatus[]'
+ */
+export type ListEnumRuntimeStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RuntimeStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SchedulerLeaseLane'
+ */
+export type EnumSchedulerLeaseLaneFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SchedulerLeaseLane'>
+    
+
+
+/**
+ * Reference to a field of type 'SchedulerLeaseLane[]'
+ */
+export type ListEnumSchedulerLeaseLaneFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SchedulerLeaseLane[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SchedulerLeaseStatus'
+ */
+export type EnumSchedulerLeaseStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SchedulerLeaseStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'SchedulerLeaseStatus[]'
+ */
+export type ListEnumSchedulerLeaseStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SchedulerLeaseStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -1889,6 +2118,8 @@ export type GlobalOmitConfig = {
   productSpec?: Prisma.ProductSpecOmit
   developmentPlan?: Prisma.DevelopmentPlanOmit
   planVersion?: Prisma.PlanVersionOmit
+  runtimeInstance?: Prisma.RuntimeInstanceOmit
+  workItemLease?: Prisma.WorkItemLeaseOmit
 }
 
 /* Types for Logging */

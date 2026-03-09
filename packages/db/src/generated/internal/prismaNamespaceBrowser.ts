@@ -63,7 +63,9 @@ export const ModelName = {
   SystemQueueLimits: 'SystemQueueLimits',
   ProductSpec: 'ProductSpec',
   DevelopmentPlan: 'DevelopmentPlan',
-  PlanVersion: 'PlanVersion'
+  PlanVersion: 'PlanVersion',
+  RuntimeInstance: 'RuntimeInstance',
+  WorkItemLease: 'WorkItemLease'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -268,6 +270,43 @@ export const PlanVersionScalarFieldEnum = {
 } as const
 
 export type PlanVersionScalarFieldEnum = (typeof PlanVersionScalarFieldEnum)[keyof typeof PlanVersionScalarFieldEnum]
+
+
+export const RuntimeInstanceScalarFieldEnum = {
+  id: 'id',
+  displayName: 'displayName',
+  status: 'status',
+  capabilities: 'capabilities',
+  activeJobSummary: 'activeJobSummary',
+  lastAction: 'lastAction',
+  lastError: 'lastError',
+  lastSeenAt: 'lastSeenAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RuntimeInstanceScalarFieldEnum = (typeof RuntimeInstanceScalarFieldEnum)[keyof typeof RuntimeInstanceScalarFieldEnum]
+
+
+export const WorkItemLeaseScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  workItemId: 'workItemId',
+  runtimeId: 'runtimeId',
+  lane: 'lane',
+  status: 'status',
+  leaseToken: 'leaseToken',
+  leasedAt: 'leasedAt',
+  expiresAt: 'expiresAt',
+  renewedAt: 'renewedAt',
+  releasedAt: 'releasedAt',
+  recoveredAt: 'recoveredAt',
+  recoveryReason: 'recoveryReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WorkItemLeaseScalarFieldEnum = (typeof WorkItemLeaseScalarFieldEnum)[keyof typeof WorkItemLeaseScalarFieldEnum]
 
 
 export const SortOrder = {

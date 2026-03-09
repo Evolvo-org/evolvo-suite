@@ -1,6 +1,8 @@
 import {
   defaultProjectQueueLimits,
   projectLifecycleStatuses,
+  runtimeHealthStatuses,
+  schedulerLeaseLanes,
   workflowStates,
 } from '@repo/shared';
 import { z } from 'zod';
@@ -182,6 +184,36 @@ export const createWorkItemCommentSchema = z.object({
 export const updateSystemQueueLimitsSchema = projectQueueLimitsSchema;
 
 export const updateProjectQueueLimitsSchema = projectQueueLimitsSchema;
+
+export const acquireSchedulerLeaseSchema = z.object({
+  runtimeId: z.string().trim().min(1).max(160),
+  lanes: z.array(z.enum(schedulerLeaseLanes)).min(1).max(3).optional(),
+  projectId: z.string().trim().min(1).optional(),
+  leaseDurationSeconds: z.number().int().min(30).max(3600).optional(),
+});
+
+export const renewSchedulerLeaseSchema = z.object({
+  runtimeId: z.string().trim().min(1).max(160),
+  leaseToken: z.string().trim().min(1).max(200),
+  leaseDurationSeconds: z.number().int().min(30).max(3600).optional(),
+});
+
+export const recoverSchedulerLeasesSchema = z.object({
+  limit: z.number().int().min(1).max(100).optional(),
+});
+
+export const registerRuntimeSchema = z.object({
+  runtimeId: z.string().trim().min(1).max(160),
+  displayName: z.string().trim().min(1).max(160),
+  capabilities: z.array(z.string().trim().min(1).max(160)).max(50).optional(),
+});
+
+export const runtimeHeartbeatSchema = z.object({
+  status: z.enum(runtimeHealthStatuses),
+  activeJobSummary: z.string().trim().min(1).max(5000).optional(),
+  lastAction: z.string().trim().min(1).max(5000).optional(),
+  lastError: z.string().trim().min(1).max(5000).optional(),
+});
 
 export const environmentSchema = z.object({
   NODE_ENV: z
