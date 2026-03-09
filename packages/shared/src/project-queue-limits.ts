@@ -11,6 +11,19 @@ export interface ProjectQueueLimits {
   maxAmbiguityRetries: number;
 }
 
+export interface SystemQueueLimitsResponse {
+  queueLimits: ProjectQueueLimits;
+  updatedAt: string | null;
+}
+
+export interface ProjectQueueLimitsSettingsResponse {
+  projectId: string;
+  defaults: ProjectQueueLimits;
+  overrides: ProjectQueueLimits | null;
+  effective: ProjectQueueLimits;
+  updatedAt: string | null;
+}
+
 export const defaultProjectQueueLimits: ProjectQueueLimits = {
   maxPlanning: 10,
   maxReadyForDev: 12,

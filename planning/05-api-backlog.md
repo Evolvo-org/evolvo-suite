@@ -152,24 +152,24 @@ Tasks:
 - [x] Add service-level tests
 
 ## API-013 - Add comments and audit trail endpoints
-**Status:** todo  
+**Status:** done  
 **Outcome:** Work items support comments and the system keeps audit trails.
 
 Tasks:
-- [ ] Add work item comment create endpoint
-- [ ] Add work item comment list endpoint
-- [ ] Add audit trail query endpoint
-- [ ] Add system actor support for agent comments
+- [x] Add work item comment create endpoint
+- [x] Add work item comment list endpoint
+- [x] Add audit trail query endpoint
+- [x] Add system actor support for agent comments
 
 ## API-014 - Add queue limits configuration
-**Status:** todo  
+**Status:** done  
 **Outcome:** System defaults and per-project overrides can be stored and read.
 
 Tasks:
-- [ ] Create queue limit schema
-- [ ] Add defaults endpoint
-- [ ] Add project override endpoint
-- [ ] Add effective settings calculation
+- [x] Create queue limit schema
+- [x] Add defaults endpoint
+- [x] Add project override endpoint
+- [x] Add effective settings calculation
 
 ## API-015 - Build scheduler lease system
 **Status:** todo  

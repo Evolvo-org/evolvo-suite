@@ -4,6 +4,7 @@ import type {
   CreateAcceptanceCriterionRequest,
   CreateEpicRequest,
   CreateProjectRequest,
+  CreateWorkItemCommentRequest,
   CreateWorkItemRequest,
   DevelopmentPlanResponse,
   DevelopmentPlanVersionsResponse,
@@ -16,10 +17,13 @@ import type {
   ProjectDetail,
   ProjectListFilters,
   ProjectListItem,
+  ProjectQueueLimits,
+  ProjectQueueLimitsSettingsResponse,
   ProjectRepositoryConfigResponse,
   ProjectRepositoryInput,
   ProjectRepositoryValidationResponse,
   ProjectStatusResponse,
+  SystemQueueLimitsResponse,
   TransitionWorkItemRequest,
   UpdateAcceptanceCriterionRequest,
   UpdateDevelopmentPlanRequest,
@@ -29,6 +33,9 @@ import type {
   UpdateWorkItemPriorityRequest,
   UpdateWorkItemRequest,
   UpsertProductSpecRequest,
+  WorkItemAuditTrailResponse,
+  WorkItemCommentsResponse,
+  WorkItemDetailResponse,
 } from '@repo/shared';
 
 export class ApiClientError extends Error {
@@ -111,6 +118,8 @@ export const projectQueryKeys = {
   list: (filters?: ProjectListFilters) =>
     ['projects', 'list', filters ?? {}] as const,
   detail: (projectId: string) => ['projects', 'detail', projectId] as const,
+  queueLimits: (projectId: string) =>
+    ['projects', projectId, 'queue-limits'] as const,
   repository: (projectId: string) =>
     ['projects', 'repository', projectId] as const,
   status: (projectId: string) => ['projects', 'status', projectId] as const,
@@ -125,6 +134,17 @@ export const projectQueryKeys = {
   board: (projectId: string) => ['projects', projectId, 'board'] as const,
   boardCounts: (projectId: string) =>
     ['projects', projectId, 'board-counts'] as const,
+  workItemDetail: (projectId: string, workItemId: string) =>
+    ['projects', projectId, 'work-item-detail', workItemId] as const,
+  workItemComments: (projectId: string, workItemId: string) =>
+    ['projects', projectId, 'work-item-comments', workItemId] as const,
+  workItemAudit: (projectId: string, workItemId: string) =>
+    ['projects', projectId, 'work-item-audit', workItemId] as const,
+};
+
+export const settingsQueryKeys = {
+  all: ['settings'] as const,
+  systemQueueLimits: () => ['settings', 'queue-limits', 'defaults'] as const,
 };
 
 export const listProjects = async (
@@ -172,6 +192,59 @@ export const getProjectRepository = async (
     `/projects/${projectId}/repository`,
     {
       method: 'GET',
+    },
+  );
+};
+
+export const getProjectQueueLimits = async (
+  projectId: string,
+): Promise<ProjectQueueLimitsSettingsResponse> => {
+  return fetchJson<ProjectQueueLimitsSettingsResponse>(
+    `/projects/${projectId}/queue-limits`,
+    {
+      method: 'GET',
+    },
+  );
+};
+
+export const updateProjectQueueLimits = async (
+  projectId: string,
+  payload: ProjectQueueLimits,
+): Promise<MutationResponse<ProjectQueueLimitsSettingsResponse>> => {
+  return fetchJson<MutationResponse<ProjectQueueLimitsSettingsResponse>>(
+    `/projects/${projectId}/queue-limits`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const clearProjectQueueLimits = async (
+  projectId: string,
+): Promise<MutationResponse<ProjectQueueLimitsSettingsResponse>> => {
+  return fetchJson<MutationResponse<ProjectQueueLimitsSettingsResponse>>(
+    `/projects/${projectId}/queue-limits`,
+    {
+      method: 'DELETE',
+    },
+  );
+};
+
+export const getSystemQueueLimits = async (): Promise<SystemQueueLimitsResponse> => {
+  return fetchJson<SystemQueueLimitsResponse>('/settings/queue-limits/defaults', {
+    method: 'GET',
+  });
+};
+
+export const updateSystemQueueLimits = async (
+  payload: ProjectQueueLimits,
+): Promise<MutationResponse<SystemQueueLimitsResponse>> => {
+  return fetchJson<MutationResponse<SystemQueueLimitsResponse>>(
+    '/settings/queue-limits/defaults',
+    {
+      method: 'PUT',
+      body: JSON.stringify(payload),
     },
   );
 };
@@ -507,6 +580,56 @@ export const transitionWorkItem = async (
     {
       method: 'POST',
       body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const getWorkItemDetail = async (
+  projectId: string,
+  workItemId: string,
+): Promise<WorkItemDetailResponse> => {
+  return fetchJson<WorkItemDetailResponse>(
+    `/projects/${projectId}/work-items/${workItemId}`,
+    {
+      method: 'GET',
+    },
+  );
+};
+
+export const getWorkItemComments = async (
+  projectId: string,
+  workItemId: string,
+): Promise<WorkItemCommentsResponse> => {
+  return fetchJson<WorkItemCommentsResponse>(
+    `/projects/${projectId}/work-items/${workItemId}/comments`,
+    {
+      method: 'GET',
+    },
+  );
+};
+
+export const createWorkItemComment = async (
+  projectId: string,
+  workItemId: string,
+  payload: CreateWorkItemCommentRequest,
+): Promise<MutationResponse<WorkItemCommentsResponse>> => {
+  return fetchJson<MutationResponse<WorkItemCommentsResponse>>(
+    `/projects/${projectId}/work-items/${workItemId}/comments`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const getWorkItemAuditTrail = async (
+  projectId: string,
+  workItemId: string,
+): Promise<WorkItemAuditTrailResponse> => {
+  return fetchJson<WorkItemAuditTrailResponse>(
+    `/projects/${projectId}/work-items/${workItemId}/audit`,
+    {
+      method: 'GET',
     },
   );
 };

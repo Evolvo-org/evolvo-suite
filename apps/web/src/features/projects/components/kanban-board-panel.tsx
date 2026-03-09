@@ -13,6 +13,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
+import { WorkItemDetailPanel } from './work-item-detail-panel';
+
 const stateDescriptions: Record<WorkItemState, string> = {
   inbox: 'Freshly created work waiting for planning.',
   planning: 'Work being structured and clarified.',
@@ -49,6 +51,7 @@ export const KanbanBoardPanel = ({ projectId }: { projectId: string }) => {
     queryFn: () => getBoard(projectId),
   });
   const [draggingCard, setDraggingCard] = useState<KanbanBoardCard | null>(null);
+  const [selectedWorkItemId, setSelectedWorkItemId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const transitionMutation = useMutation({
@@ -243,6 +246,12 @@ export const KanbanBoardPanel = ({ projectId }: { projectId: string }) => {
                       <span>Dependencies {card.dependencyIds.length}</span>
                       <span>{formatStateLabel(card.state)}</span>
                     </div>
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <Button onClick={() => setSelectedWorkItemId(card.id)}>
+                        Open details
+                      </Button>
+                    </div>
                   </article>
                 ))
               )}
@@ -255,6 +264,14 @@ export const KanbanBoardPanel = ({ projectId }: { projectId: string }) => {
         <span>Drag and drop enabled.</span>
         {transitionMutation.isPending ? <span>Applying workflow transition…</span> : null}
       </div>
+
+      {selectedWorkItemId ? (
+        <WorkItemDetailPanel
+          projectId={projectId}
+          workItemId={selectedWorkItemId}
+          onClose={() => setSelectedWorkItemId(null)}
+        />
+      ) : null}
     </div>
   );
 };

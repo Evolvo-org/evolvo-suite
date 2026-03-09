@@ -188,6 +188,23 @@ export type EnumWorkItemPriorityWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumWorkItemPriorityFilter<$PrismaModel>
 }
 
+export type EnumWorkItemCommentActorTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.WorkItemCommentActorType | Prisma.EnumWorkItemCommentActorTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.WorkItemCommentActorType[] | Prisma.ListEnumWorkItemCommentActorTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.WorkItemCommentActorType[] | Prisma.ListEnumWorkItemCommentActorTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumWorkItemCommentActorTypeFilter<$PrismaModel> | $Enums.WorkItemCommentActorType
+}
+
+export type EnumWorkItemCommentActorTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.WorkItemCommentActorType | Prisma.EnumWorkItemCommentActorTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.WorkItemCommentActorType[] | Prisma.ListEnumWorkItemCommentActorTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.WorkItemCommentActorType[] | Prisma.ListEnumWorkItemCommentActorTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumWorkItemCommentActorTypeWithAggregatesFilter<$PrismaModel> | $Enums.WorkItemCommentActorType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumWorkItemCommentActorTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumWorkItemCommentActorTypeFilter<$PrismaModel>
+}
+
 export type BoolFilter<$PrismaModel = never> = {
   equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
   not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean
@@ -420,6 +437,23 @@ export type NestedEnumWorkItemPriorityWithAggregatesFilter<$PrismaModel = never>
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumWorkItemPriorityFilter<$PrismaModel>
   _max?: Prisma.NestedEnumWorkItemPriorityFilter<$PrismaModel>
+}
+
+export type NestedEnumWorkItemCommentActorTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.WorkItemCommentActorType | Prisma.EnumWorkItemCommentActorTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.WorkItemCommentActorType[] | Prisma.ListEnumWorkItemCommentActorTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.WorkItemCommentActorType[] | Prisma.ListEnumWorkItemCommentActorTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumWorkItemCommentActorTypeFilter<$PrismaModel> | $Enums.WorkItemCommentActorType
+}
+
+export type NestedEnumWorkItemCommentActorTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.WorkItemCommentActorType | Prisma.EnumWorkItemCommentActorTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.WorkItemCommentActorType[] | Prisma.ListEnumWorkItemCommentActorTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.WorkItemCommentActorType[] | Prisma.ListEnumWorkItemCommentActorTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumWorkItemCommentActorTypeWithAggregatesFilter<$PrismaModel> | $Enums.WorkItemCommentActorType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumWorkItemCommentActorTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumWorkItemCommentActorTypeFilter<$PrismaModel>
 }
 
 export type NestedBoolFilter<$PrismaModel = never> = {

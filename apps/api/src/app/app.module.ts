@@ -17,6 +17,7 @@ import { RealtimeModule } from '../realtime/realtime.module.js';
 import { ReleasesModule } from '../releases/releases.module.js';
 import { RuntimeModule } from '../runtime/runtime.module.js';
 import { SchedulerModule } from '../scheduler/scheduler.module.js';
+import { SettingsModule } from '../settings/settings.module.js';
 import { UsersModule } from '../users/users.module.js';
 import { UsageModule } from '../usage/usage.module.js';
 import { WorkflowModule } from '../workflow/workflow.module.js';
@@ -43,6 +44,7 @@ const environmentFilePath = existsSync(rootEnvironmentFilePath)
     ProjectsModule,
     PlanningModule,
     WorkflowModule,
+    SettingsModule,
     SchedulerModule,
     RuntimeModule,
     WorktreesModule,

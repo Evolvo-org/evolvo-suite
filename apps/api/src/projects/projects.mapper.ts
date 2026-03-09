@@ -6,8 +6,9 @@ import type {
   DevelopmentPlan,
   PlanVersion,
 } from '@repo/db/client';
-import { defaultProjectQueueLimits } from '@repo/shared';
 import type {
+  ProjectQueueLimits as SharedProjectQueueLimits,
+  ProjectQueueLimitsSettingsResponse,
   KanbanBoardCounts,
   ProjectDetail,
   ProjectListItem,
@@ -36,31 +37,19 @@ export const mapRepository = (repository: ProjectRepository) => ({
   baseBranch: repository.baseBranch,
 });
 
-const mapQueueLimits = (queueLimits: ProjectQueueLimits | null) => ({
-  maxPlanning:
-    queueLimits?.maxPlanning ?? defaultProjectQueueLimits.maxPlanning,
-  maxReadyForDev:
-    queueLimits?.maxReadyForDev ?? defaultProjectQueueLimits.maxReadyForDev,
-  maxInDev: queueLimits?.maxInDev ?? defaultProjectQueueLimits.maxInDev,
-  maxReadyForReview:
-    queueLimits?.maxReadyForReview ??
-    defaultProjectQueueLimits.maxReadyForReview,
-  maxInReview:
-    queueLimits?.maxInReview ?? defaultProjectQueueLimits.maxInReview,
-  maxReadyForRelease:
-    queueLimits?.maxReadyForRelease ??
-    defaultProjectQueueLimits.maxReadyForRelease,
-  maxReviewRetries:
-    queueLimits?.maxReviewRetries ?? defaultProjectQueueLimits.maxReviewRetries,
-  maxMergeConflictRetries:
-    queueLimits?.maxMergeConflictRetries ??
-    defaultProjectQueueLimits.maxMergeConflictRetries,
-  maxRuntimeRetries:
-    queueLimits?.maxRuntimeRetries ??
-    defaultProjectQueueLimits.maxRuntimeRetries,
-  maxAmbiguityRetries:
-    queueLimits?.maxAmbiguityRetries ??
-    defaultProjectQueueLimits.maxAmbiguityRetries,
+const mapPersistedQueueLimits = (
+  queueLimits: ProjectQueueLimits,
+): SharedProjectQueueLimits => ({
+  maxPlanning: queueLimits.maxPlanning,
+  maxReadyForDev: queueLimits.maxReadyForDev,
+  maxInDev: queueLimits.maxInDev,
+  maxReadyForReview: queueLimits.maxReadyForReview,
+  maxInReview: queueLimits.maxInReview,
+  maxReadyForRelease: queueLimits.maxReadyForRelease,
+  maxReviewRetries: queueLimits.maxReviewRetries,
+  maxMergeConflictRetries: queueLimits.maxMergeConflictRetries,
+  maxRuntimeRetries: queueLimits.maxRuntimeRetries,
+  maxAmbiguityRetries: queueLimits.maxAmbiguityRetries,
 });
 
 const mapLifecycleStatus = (value: Project['lifecycleStatus']) => {
@@ -121,6 +110,7 @@ export const mapProjectDetail = (
       | (DevelopmentPlan & { activeVersion: PlanVersion | null })
       | null;
   },
+  effectiveQueueLimits: SharedProjectQueueLimits,
   kanbanCounts: KanbanBoardCounts = emptyKanbanCounts(),
 ): ProjectDetail => {
   if (!project.repository) {
@@ -133,7 +123,7 @@ export const mapProjectDetail = (
     slug: project.slug,
     lifecycleStatus: mapLifecycleStatus(project.lifecycleStatus),
     repository: mapRepository(project.repository),
-    queueLimits: mapQueueLimits(project.queueLimits),
+    queueLimits: effectiveQueueLimits,
     productSpecVersion: project.productSpec?.version ?? null,
     activePlanVersionNumber: mapActivePlanVersionNumber(
       project.developmentPlan,
@@ -162,4 +152,16 @@ export const mapProjectRepositoryConfig = (
   projectId,
   repository: mapRepository(repository),
   updatedAt: repository.updatedAt.toISOString(),
+});
+
+export const mapProjectQueueLimitsSettings = (
+  projectId: string,
+  defaults: SharedProjectQueueLimits,
+  overrides: ProjectQueueLimits | null,
+): ProjectQueueLimitsSettingsResponse => ({
+  projectId,
+  defaults,
+  overrides: overrides ? mapPersistedQueueLimits(overrides) : null,
+  effective: overrides ? mapPersistedQueueLimits(overrides) : defaults,
+  updatedAt: overrides?.updatedAt.toISOString() ?? null,
 });

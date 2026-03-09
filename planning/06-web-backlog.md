@@ -168,16 +168,16 @@ Tasks:
 - [x] Add invalid transition feedback
 
 ## WEB-015 - Build work item detail panel
-**Status:** todo  
+**Status:** done  
 **Outcome:** A work item can be inspected and edited in detail.
 
 Tasks:
-- [ ] Add work item detail panel
-- [ ] Add comments area
-- [ ] Add audit history area
-- [ ] Add acceptance criteria area
-- [ ] Add dependency summary
-- [ ] Add retry/intervention summary
+- [x] Add work item detail panel
+- [x] Add comments area
+- [x] Add audit history area
+- [x] Add acceptance criteria area
+- [x] Add dependency summary
+- [x] Add retry/intervention summary
 
 ## WEB-016 - Build runtime monitor UI
 **Status:** todo  
@@ -235,15 +235,15 @@ Tasks:
 - [ ] Add estimated cost widgets
 
 ## WEB-021 - Build settings pages
-**Status:** todo  
+**Status:** done  
 **Outcome:** Operators can manage defaults and system settings.
 
 Tasks:
-- [ ] Add project settings page
-- [ ] Add queue limits editor
-- [ ] Add retry policy editor
-- [ ] Add model routing settings UI
-- [ ] Add billing settings page
+- [x] Add project settings page
+- [x] Add queue limits editor
+- [x] Add retry policy editor
+- [x] Add model routing settings UI
+- [x] Add billing settings page
 
 ## WEB-022 - Add websocket-driven query invalidation
 **Status:** todo  

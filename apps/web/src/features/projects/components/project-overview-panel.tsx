@@ -85,6 +85,12 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
           >
             Open kanban board
           </Link>
+          <Link
+            className="inline-flex items-center text-sm font-medium text-zinc-950 underline-offset-4 hover:underline dark:text-zinc-50"
+            href={`/projects/${projectId}/settings`}
+          >
+            Open settings
+          </Link>
         </Card>
 
         <Card className="space-y-3 p-6" title="Queue counts">

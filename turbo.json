@@ -1,19 +1,28 @@
 {
-  "$schema": "https://turborepo.dev/schema.json",
-  "globalDependencies": ["**/.env.*local"],
-  "tasks": {
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
-    },
-    "lint": {},
-    "test": {},
-    "test:e2e": {
-      "cache": false
-    }
-  }
+	"$schema": "https://turborepo.dev/schema.json",
+	"globalDependencies": ["**/.env.*local"],
+	"globalEnv": [
+		"NODE_ENV",
+		"PORT",
+		"API_PREFIX",
+		"CORS_ORIGIN",
+		"DATABASE_URL",
+		"LOG_LEVEL",
+		"NEXT_PUBLIC_API_BASE_URL"
+	],
+	"tasks": {
+		"dev": {
+			"cache": false,
+			"persistent": true
+		},
+		"build": {
+			"dependsOn": ["^build"],
+			"outputs": [".next/**", "!.next/cache/**", "dist/**"]
+		},
+		"lint": {},
+		"test": {},
+		"test:e2e": {
+			"cache": false
+		}
+	}
 }

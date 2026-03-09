@@ -10,6 +10,12 @@ enum WorkItemState {
   RELEASED
 }
 
+enum WorkItemCommentActorType {
+  HUMAN
+  AGENT
+  SYSTEM
+}
+
 enum WorkItemKind {
   TASK
   SUBTASK
@@ -57,12 +63,28 @@ model WorkItem {
   parent               WorkItem?            @relation("WorkItemChildren", fields: [parentId], references: [id], onDelete: Cascade)
   children             WorkItem[]           @relation("WorkItemChildren")
   acceptanceCriteria   AcceptanceCriterion[]
+  comments             WorkItemComment[]
   dependencies         WorkItemDependency[] @relation("WorkItemDependencies")
   dependentWorkItems   WorkItemDependency[] @relation("WorkItemDependents")
   transitions          WorkItemStateTransition[]
 
   @@index([projectId, state, sortOrder])
   @@index([projectId, epicId, parentId, sortOrder])
+}
+
+model WorkItemComment {
+  id             String                   @id @default(cuid())
+  projectId      String
+  workItemId     String
+  actorType      WorkItemCommentActorType @default(HUMAN)
+  actorName      String
+  content        String                   @db.Text
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+  workItem       WorkItem                 @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
+  @@index([workItemId, createdAt])
 }
 
 model AcceptanceCriterion {

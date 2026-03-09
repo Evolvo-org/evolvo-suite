@@ -173,6 +173,16 @@ export const transitionWorkItemSchema = z.object({
   operatorOverride: z.boolean().optional(),
 });
 
+export const createWorkItemCommentSchema = z.object({
+  content: z.string().trim().min(1).max(5000),
+  actorType: z.enum(['human', 'agent', 'system']).optional(),
+  actorName: z.string().trim().min(1).max(160).optional(),
+});
+
+export const updateSystemQueueLimitsSchema = projectQueueLimitsSchema;
+
+export const updateProjectQueueLimitsSchema = projectQueueLimitsSchema;
+
 export const environmentSchema = z.object({
   NODE_ENV: z
     .enum(['development', 'test', 'production'])

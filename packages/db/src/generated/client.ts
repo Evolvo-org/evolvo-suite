@@ -52,6 +52,11 @@ export type Epic = Prisma.EpicModel
  */
 export type WorkItem = Prisma.WorkItemModel
 /**
+ * Model WorkItemComment
+ * 
+ */
+export type WorkItemComment = Prisma.WorkItemCommentModel
+/**
  * Model AcceptanceCriterion
  * 
  */
@@ -81,6 +86,11 @@ export type ProjectRepository = Prisma.ProjectRepositoryModel
  * 
  */
 export type ProjectQueueLimits = Prisma.ProjectQueueLimitsModel
+/**
+ * Model SystemQueueLimits
+ * 
+ */
+export type SystemQueueLimits = Prisma.SystemQueueLimitsModel
 /**
  * Model ProductSpec
  * 

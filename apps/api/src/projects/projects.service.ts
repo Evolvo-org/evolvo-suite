@@ -4,12 +4,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { defaultProjectQueueLimits } from '@repo/shared';
 import type {
   KanbanBoardCounts,
   CreateProjectRequest,
   ProjectDetail,
   ProjectListFilters,
+  ProjectQueueLimits,
+  ProjectQueueLimitsSettingsResponse,
   ProjectRepositoryConfigResponse,
   ProjectRepositoryInput,
   ProjectRepositoryValidationResponse,
@@ -18,10 +19,12 @@ import type {
 } from '@repo/shared';
 
 import { PrismaService } from '../prisma/prisma.service.js';
+import { SettingsService } from '../settings/settings.service.js';
 
 import {
   mapProjectDetail,
   mapProjectListItem,
+  mapProjectQueueLimitsSettings,
   mapProjectRepositoryConfig,
   mapProjectStatus,
 } from './projects.mapper.js';
@@ -107,12 +110,16 @@ export class ProjectsService {
   public constructor(
     @Inject(PrismaService)
     private readonly prisma: PrismaService,
+    @Inject(SettingsService)
+    private readonly settingsService: SettingsService,
   ) {}
 
   public async createProject(
     payload: CreateProjectRequest,
   ): Promise<ProjectDetail> {
     const slug = await this.createUniqueSlug(payload.name);
+    const systemQueueLimits =
+      await this.settingsService.getResolvedSystemQueueLimits();
 
     const project = await this.prisma.$transaction(async (transaction) => {
       const createdProject = await transaction.project.create({
@@ -124,11 +131,11 @@ export class ProjectsService {
               ...createRepositoryWriteData(payload.repository),
             },
           },
-          queueLimits: {
-            create: {
-              ...(payload.queueLimits ?? defaultProjectQueueLimits),
-            },
-          },
+          queueLimits: payload.queueLimits
+            ? {
+                create: payload.queueLimits,
+              }
+            : undefined,
           productSpec: {
             create: {
               content: payload.productDescription.trim(),
@@ -197,7 +204,11 @@ export class ProjectsService {
       });
     });
 
-    return mapProjectDetail(project, createEmptyKanbanCounts());
+    return mapProjectDetail(
+      project,
+      payload.queueLimits ?? systemQueueLimits,
+      createEmptyKanbanCounts(),
+    );
   }
 
   public async listProjects(filters: ProjectListFilters) {
@@ -232,7 +243,7 @@ export class ProjectsService {
   }
 
   public async getProjectDetail(projectId: string): Promise<ProjectDetail> {
-    const [project, kanbanCounts] = await Promise.all([
+    const [project, kanbanCounts, systemQueueLimits] = await Promise.all([
       this.prisma.project.findUnique({
         where: { id: projectId },
         include: {
@@ -247,13 +258,18 @@ export class ProjectsService {
         },
       }),
       this.getKanbanCounts(projectId),
+      this.settingsService.getResolvedSystemQueueLimits(),
     ]);
 
     if (!project) {
       throw new NotFoundException('Project not found.');
     }
 
-    return mapProjectDetail(project, kanbanCounts);
+    return mapProjectDetail(
+      project,
+      project.queueLimits ?? systemQueueLimits,
+      kanbanCounts,
+    );
   }
 
   public async updateProject(
@@ -261,6 +277,8 @@ export class ProjectsService {
     payload: UpdateProjectRequest,
   ): Promise<ProjectDetail> {
     await this.ensureProjectExists(projectId);
+    const systemQueueLimits =
+      await this.settingsService.getResolvedSystemQueueLimits();
 
     const project = await this.prisma.project.update({
       where: { id: projectId },
@@ -295,7 +313,56 @@ export class ProjectsService {
       },
     });
 
-    return mapProjectDetail(project, await this.getKanbanCounts(projectId));
+    return mapProjectDetail(
+      project,
+      project.queueLimits ?? systemQueueLimits,
+      await this.getKanbanCounts(projectId),
+    );
+  }
+
+  public async getProjectQueueLimits(
+    projectId: string,
+  ): Promise<ProjectQueueLimitsSettingsResponse> {
+    await this.ensureProjectExists(projectId);
+
+    const [defaults, overrides] = await Promise.all([
+      this.settingsService.getResolvedSystemQueueLimits(),
+      this.prisma.projectQueueLimits.findUnique({
+        where: { projectId },
+      }),
+    ]);
+
+    return mapProjectQueueLimitsSettings(projectId, defaults, overrides);
+  }
+
+  public async upsertProjectQueueLimits(
+    projectId: string,
+    payload: ProjectQueueLimits,
+  ): Promise<ProjectQueueLimitsSettingsResponse> {
+    await this.ensureProjectExists(projectId);
+
+    await this.prisma.projectQueueLimits.upsert({
+      where: { projectId },
+      create: {
+        projectId,
+        ...payload,
+      },
+      update: payload,
+    });
+
+    return this.getProjectQueueLimits(projectId);
+  }
+
+  public async clearProjectQueueLimits(
+    projectId: string,
+  ): Promise<ProjectQueueLimitsSettingsResponse> {
+    await this.ensureProjectExists(projectId);
+
+    await this.prisma.projectQueueLimits.deleteMany({
+      where: { projectId },
+    });
+
+    return this.getProjectQueueLimits(projectId);
   }
 
   public async startProject(projectId: string): Promise<ProjectStatusResponse> {
@@ -490,7 +557,6 @@ export class ProjectsService {
         case 'RELEASED':
           counts.released += 1;
           break;
-        case 'INBOX':
         default:
           counts.inbox += 1;
           break;

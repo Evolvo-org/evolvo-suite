@@ -1,8 +1,16 @@
-import type { WorkItem } from '@repo/db/client';
+import type {
+  WorkItem,
+  WorkItemComment,
+  WorkItemStateTransition,
+} from '@repo/db/client';
 import type {
   KanbanBoardCard,
   KanbanBoardCounts,
   KanbanBoardResponse,
+  WorkItemAuditEvent,
+  WorkItemAuditTrailResponse,
+  WorkItemCommentsResponse,
+  WorkItemDetailResponse,
   WorkItemState,
 } from '@repo/shared';
 
@@ -18,7 +26,7 @@ const workflowLabelMap: Record<WorkItemState, string> = {
   released: 'Released',
 };
 
-const mapState = (value: WorkItem['state']): WorkItemState => {
+export const mapWorkflowState = (value: WorkItem['state']): WorkItemState => {
   switch (value) {
     case 'PLANNING':
       return 'planning';
@@ -36,13 +44,14 @@ const mapState = (value: WorkItem['state']): WorkItemState => {
       return 'requiresHumanIntervention';
     case 'RELEASED':
       return 'released';
-    case 'INBOX':
     default:
       return 'inbox';
   }
 };
 
-const mapPriority = (value: WorkItem['priority']): KanbanBoardCard['priority'] => {
+export const mapWorkflowPriority = (
+  value: WorkItem['priority'],
+): KanbanBoardCard['priority'] => {
   switch (value) {
     case 'LOW':
       return 'low';
@@ -50,7 +59,6 @@ const mapPriority = (value: WorkItem['priority']): KanbanBoardCard['priority'] =
       return 'high';
     case 'URGENT':
       return 'urgent';
-    case 'MEDIUM':
     default:
       return 'medium';
   }
@@ -82,9 +90,11 @@ export const mapBoardCard = (
   kind: item.kind === 'SUBTASK' ? 'subtask' : 'task',
   title: item.title,
   description: item.description,
-  state: mapState(item.state),
-  priority: mapPriority(item.priority),
-  dependencyIds: item.dependencies.map((dependency) => dependency.dependsOnWorkItemId),
+  state: mapWorkflowState(item.state),
+  priority: mapWorkflowPriority(item.priority),
+  dependencyIds: item.dependencies.map(
+    (dependency) => dependency.dependsOnWorkItemId,
+  ),
   acceptanceCriteriaCount: item.acceptanceCriteria.length,
   completedAcceptanceCriteriaCount: item.acceptanceCriteria.filter(
     (criterion) => criterion.isComplete,
@@ -112,3 +122,121 @@ export const mapBoardResponse = (
     counts,
   };
 };
+
+const mapCommentActorType = (
+  value: WorkItemComment['actorType'],
+): 'human' | 'agent' | 'system' => {
+  switch (value) {
+    case 'AGENT':
+      return 'agent';
+    case 'SYSTEM':
+      return 'system';
+    default:
+      return 'human';
+  }
+};
+
+export const mapWorkItemCommentsResponse = (
+  projectId: string,
+  workItemId: string,
+  comments: WorkItemComment[],
+): WorkItemCommentsResponse => ({
+  projectId,
+  workItemId,
+  items: comments.map((comment) => ({
+    id: comment.id,
+    workItemId: comment.workItemId,
+    actorType: mapCommentActorType(comment.actorType),
+    actorName: comment.actorName,
+    content: comment.content,
+    createdAt: comment.createdAt.toISOString(),
+    updatedAt: comment.updatedAt.toISOString(),
+  })),
+});
+
+export const mapWorkItemDetail = (
+  projectId: string,
+  item: WorkItem & {
+    epic: { title: string };
+    parent: { title: string } | null;
+    dependencies: Array<{
+      dependsOnWorkItemId: string;
+      dependsOnWorkItem: { title: string };
+    }>;
+    acceptanceCriteria: Array<{
+      id: string;
+      text: string;
+      isComplete: boolean;
+      sortOrder: number;
+    }>;
+  },
+): WorkItemDetailResponse => ({
+  projectId,
+  workItemId: item.id,
+  epicId: item.epicId,
+  epicTitle: item.epic.title,
+  parentId: item.parentId,
+  parentTitle: item.parent?.title ?? null,
+  kind: item.kind === 'SUBTASK' ? 'subtask' : 'task',
+  title: item.title,
+  description: item.description,
+  state: mapWorkflowState(item.state),
+  priority: mapWorkflowPriority(item.priority),
+  dependencyIds: item.dependencies.map((dependency) => dependency.dependsOnWorkItemId),
+  dependencyTitles: item.dependencies.map(
+    (dependency) => dependency.dependsOnWorkItem.title,
+  ),
+  acceptanceCriteria: item.acceptanceCriteria.map((criterion) => ({
+    id: criterion.id,
+    text: criterion.text,
+    isComplete: criterion.isComplete,
+    sortOrder: criterion.sortOrder,
+  })),
+  createdAt: item.createdAt.toISOString(),
+  updatedAt: item.updatedAt.toISOString(),
+});
+
+const mapTransitionAuditEvent = (
+  transition: WorkItemStateTransition,
+): WorkItemAuditEvent => ({
+  id: transition.id,
+  type: 'transition',
+  createdAt: transition.createdAt.toISOString(),
+  summary: `Moved from ${mapWorkflowState(transition.fromState)} to ${mapWorkflowState(
+    transition.toState,
+  )}`,
+  actorName: transition.isOperatorOverride ? 'Operator override' : 'Workflow engine',
+  actorType: transition.isOperatorOverride ? 'human' : 'workflow',
+  metadata: {
+    fromState: mapWorkflowState(transition.fromState),
+    toState: mapWorkflowState(transition.toState),
+    reason: transition.reason,
+    isOperatorOverride: transition.isOperatorOverride,
+  },
+});
+
+const mapCommentAuditEvent = (comment: WorkItemComment): WorkItemAuditEvent => ({
+  id: comment.id,
+  type: 'comment',
+  createdAt: comment.createdAt.toISOString(),
+  summary: comment.content,
+  actorName: comment.actorName,
+  actorType: mapCommentActorType(comment.actorType),
+  metadata: {
+    commentId: comment.id,
+  },
+});
+
+export const mapWorkItemAuditTrail = (
+  projectId: string,
+  workItemId: string,
+  comments: WorkItemComment[],
+  transitions: WorkItemStateTransition[],
+): WorkItemAuditTrailResponse => ({
+  projectId,
+  workItemId,
+  items: [...comments.map(mapCommentAuditEvent), ...transitions.map(mapTransitionAuditEvent)].sort(
+    (left, right) =>
+      new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime(),
+  ),
+});

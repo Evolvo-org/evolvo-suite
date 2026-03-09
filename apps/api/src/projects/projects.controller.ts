@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Param,
@@ -13,12 +14,14 @@ import {
 import type {
   CreateProjectRequest,
   ProjectListFilters,
+  ProjectQueueLimits,
   ProjectRepositoryInput,
   UpdateProjectRequest,
 } from '@repo/shared';
 import {
   createProjectSchema,
   projectListFiltersSchema,
+  updateProjectQueueLimitsSchema,
   updateProjectRepositorySchema,
   updateProjectSchema,
   validateProjectRepositorySchema,
@@ -86,6 +89,42 @@ export class ProjectsController {
       success: true as const,
       message: 'Project repository configuration saved successfully.',
       data: repository,
+    };
+  }
+
+  @Get(':projectId/queue-limits')
+  public async getProjectQueueLimits(@Param('projectId') projectId: string) {
+    return this.projectsService.getProjectQueueLimits(projectId);
+  }
+
+  @Put(':projectId/queue-limits')
+  public async updateProjectQueueLimits(
+    @Param('projectId') projectId: string,
+    @Body(new ZodValidationPipe(updateProjectQueueLimitsSchema))
+    body: ProjectQueueLimits,
+  ) {
+    const queueLimits = await this.projectsService.upsertProjectQueueLimits(
+      projectId,
+      body,
+    );
+
+    return {
+      success: true as const,
+      message: 'Project queue limits updated successfully.',
+      data: queueLimits,
+    };
+  }
+
+  @Delete(':projectId/queue-limits')
+  public async clearProjectQueueLimits(@Param('projectId') projectId: string) {
+    const queueLimits = await this.projectsService.clearProjectQueueLimits(
+      projectId,
+    );
+
+    return {
+      success: true as const,
+      message: 'Project queue limits reset to system defaults.',
+      data: queueLimits,
     };
   }
 

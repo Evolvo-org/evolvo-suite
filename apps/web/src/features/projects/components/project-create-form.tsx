@@ -1,12 +1,21 @@
 'use client';
 
-import { createProject, projectQueryKeys } from '@repo/api-client';
+import {
+  createProject,
+  getSystemQueueLimits,
+  projectQueryKeys,
+  settingsQueryKeys,
+} from '@repo/api-client';
 import { defaultProjectQueueLimits } from '@repo/shared';
 import type { ProjectQueueLimits } from '@repo/shared';
 import { Card } from '@repo/ui/components/card/card';
 import { Input } from '@repo/ui/components/input/input';
 import { Textarea } from '@repo/ui/components/textarea/textarea';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
@@ -38,16 +47,30 @@ const readQueueLimits = (
   );
 };
 
+const areQueueLimitsEqual = (
+  left: ProjectQueueLimits,
+  right: ProjectQueueLimits,
+): boolean => {
+  return queueLimitFields.every(
+    ([fieldName]) => left[fieldName] === right[fieldName],
+  );
+};
+
 export const ProjectCreateForm = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const systemQueueLimitsQuery = useQuery({
+    queryKey: settingsQueryKeys.systemQueueLimits(),
+    queryFn: () => getSystemQueueLimits(),
+  });
+
   const defaultQueueState = useMemo(
     () => ({
-      ...defaultProjectQueueLimits,
+      ...(systemQueueLimitsQuery.data?.queueLimits ?? defaultProjectQueueLimits),
     }),
-    [],
+    [systemQueueLimitsQuery.data?.queueLimits],
   );
 
   const createProjectMutation = useMutation({
@@ -77,6 +100,7 @@ export const ProjectCreateForm = () => {
           const repositoryUrlValue = String(
             formData.get('repositoryUrl') ?? '',
           ).trim();
+          const queueLimits = readQueueLimits(formData, defaultQueueState);
 
           createProjectMutation.mutate({
             name: String(formData.get('name') ?? '').trim(),
@@ -96,7 +120,9 @@ export const ProjectCreateForm = () => {
               ).trim(),
               baseBranch: String(formData.get('baseBranch') ?? 'main').trim(),
             },
-            queueLimits: readQueueLimits(formData, defaultQueueState),
+            queueLimits: areQueueLimitsEqual(queueLimits, defaultQueueState)
+              ? undefined
+              : queueLimits,
           });
         }}
       >
@@ -203,11 +229,14 @@ export const ProjectCreateForm = () => {
           <div>
             <h2 className="text-lg font-semibold">Queue limits</h2>
             <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              Stored with the project now so queue-governed orchestration can be
-              added without schema churn later.
+              Defaults load from the shared system settings. Change them here
+              only when this project needs an override from day one.
             </p>
           </div>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div
+            key={JSON.stringify(defaultQueueState)}
+            className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+          >
             {queueLimitFields.map(([fieldName, label]) => (
               <label
                 key={fieldName}
@@ -231,6 +260,12 @@ export const ProjectCreateForm = () => {
         {errorMessage ? (
           <p className="text-sm text-red-600 dark:text-red-400">
             {errorMessage}
+          </p>
+        ) : null}
+
+        {systemQueueLimitsQuery.isLoading ? (
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            Loading system queue defaults…
           </p>
         ) : null}
 

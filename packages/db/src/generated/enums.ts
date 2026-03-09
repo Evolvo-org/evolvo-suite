@@ -24,6 +24,15 @@ export const WorkItemState = {
 export type WorkItemState = (typeof WorkItemState)[keyof typeof WorkItemState]
 
 
+export const WorkItemCommentActorType = {
+  HUMAN: 'HUMAN',
+  AGENT: 'AGENT',
+  SYSTEM: 'SYSTEM'
+} as const
+
+export type WorkItemCommentActorType = (typeof WorkItemCommentActorType)[keyof typeof WorkItemCommentActorType]
+
+
 export const WorkItemKind = {
   TASK: 'TASK',
   SUBTASK: 'SUBTASK'

@@ -386,12 +386,14 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   Epic: 'Epic',
   WorkItem: 'WorkItem',
+  WorkItemComment: 'WorkItemComment',
   AcceptanceCriterion: 'AcceptanceCriterion',
   WorkItemDependency: 'WorkItemDependency',
   WorkItemStateTransition: 'WorkItemStateTransition',
   Project: 'Project',
   ProjectRepository: 'ProjectRepository',
   ProjectQueueLimits: 'ProjectQueueLimits',
+  SystemQueueLimits: 'SystemQueueLimits',
   ProductSpec: 'ProductSpec',
   DevelopmentPlan: 'DevelopmentPlan',
   PlanVersion: 'PlanVersion'
@@ -410,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "epic" | "workItem" | "acceptanceCriterion" | "workItemDependency" | "workItemStateTransition" | "project" | "projectRepository" | "projectQueueLimits" | "productSpec" | "developmentPlan" | "planVersion"
+    modelProps: "epic" | "workItem" | "workItemComment" | "acceptanceCriterion" | "workItemDependency" | "workItemStateTransition" | "project" | "projectRepository" | "projectQueueLimits" | "systemQueueLimits" | "productSpec" | "developmentPlan" | "planVersion"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -559,6 +561,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.WorkItemCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.WorkItemCountAggregateOutputType> | number
+        }
+      }
+    }
+    WorkItemComment: {
+      payload: Prisma.$WorkItemCommentPayload<ExtArgs>
+      fields: Prisma.WorkItemCommentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WorkItemCommentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemCommentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WorkItemCommentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemCommentPayload>
+        }
+        findFirst: {
+          args: Prisma.WorkItemCommentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemCommentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WorkItemCommentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemCommentPayload>
+        }
+        findMany: {
+          args: Prisma.WorkItemCommentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemCommentPayload>[]
+        }
+        create: {
+          args: Prisma.WorkItemCommentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemCommentPayload>
+        }
+        createMany: {
+          args: Prisma.WorkItemCommentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.WorkItemCommentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemCommentPayload>[]
+        }
+        delete: {
+          args: Prisma.WorkItemCommentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemCommentPayload>
+        }
+        update: {
+          args: Prisma.WorkItemCommentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemCommentPayload>
+        }
+        deleteMany: {
+          args: Prisma.WorkItemCommentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WorkItemCommentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.WorkItemCommentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemCommentPayload>[]
+        }
+        upsert: {
+          args: Prisma.WorkItemCommentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkItemCommentPayload>
+        }
+        aggregate: {
+          args: Prisma.WorkItemCommentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWorkItemComment>
+        }
+        groupBy: {
+          args: Prisma.WorkItemCommentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WorkItemCommentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WorkItemCommentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WorkItemCommentCountAggregateOutputType> | number
         }
       }
     }
@@ -1006,6 +1082,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SystemQueueLimits: {
+      payload: Prisma.$SystemQueueLimitsPayload<ExtArgs>
+      fields: Prisma.SystemQueueLimitsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SystemQueueLimitsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemQueueLimitsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SystemQueueLimitsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemQueueLimitsPayload>
+        }
+        findFirst: {
+          args: Prisma.SystemQueueLimitsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemQueueLimitsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SystemQueueLimitsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemQueueLimitsPayload>
+        }
+        findMany: {
+          args: Prisma.SystemQueueLimitsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemQueueLimitsPayload>[]
+        }
+        create: {
+          args: Prisma.SystemQueueLimitsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemQueueLimitsPayload>
+        }
+        createMany: {
+          args: Prisma.SystemQueueLimitsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SystemQueueLimitsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemQueueLimitsPayload>[]
+        }
+        delete: {
+          args: Prisma.SystemQueueLimitsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemQueueLimitsPayload>
+        }
+        update: {
+          args: Prisma.SystemQueueLimitsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemQueueLimitsPayload>
+        }
+        deleteMany: {
+          args: Prisma.SystemQueueLimitsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SystemQueueLimitsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SystemQueueLimitsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemQueueLimitsPayload>[]
+        }
+        upsert: {
+          args: Prisma.SystemQueueLimitsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemQueueLimitsPayload>
+        }
+        aggregate: {
+          args: Prisma.SystemQueueLimitsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSystemQueueLimits>
+        }
+        groupBy: {
+          args: Prisma.SystemQueueLimitsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SystemQueueLimitsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SystemQueueLimitsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SystemQueueLimitsCountAggregateOutputType> | number
+        }
+      }
+    }
     ProductSpec: {
       payload: Prisma.$ProductSpecPayload<ExtArgs>
       fields: Prisma.ProductSpecFieldRefs
@@ -1300,6 +1450,20 @@ export const WorkItemScalarFieldEnum = {
 export type WorkItemScalarFieldEnum = (typeof WorkItemScalarFieldEnum)[keyof typeof WorkItemScalarFieldEnum]
 
 
+export const WorkItemCommentScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  workItemId: 'workItemId',
+  actorType: 'actorType',
+  actorName: 'actorName',
+  content: 'content',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WorkItemCommentScalarFieldEnum = (typeof WorkItemCommentScalarFieldEnum)[keyof typeof WorkItemCommentScalarFieldEnum]
+
+
 export const AcceptanceCriterionScalarFieldEnum = {
   id: 'id',
   workItemId: 'workItemId',
@@ -1383,6 +1547,25 @@ export const ProjectQueueLimitsScalarFieldEnum = {
 } as const
 
 export type ProjectQueueLimitsScalarFieldEnum = (typeof ProjectQueueLimitsScalarFieldEnum)[keyof typeof ProjectQueueLimitsScalarFieldEnum]
+
+
+export const SystemQueueLimitsScalarFieldEnum = {
+  id: 'id',
+  maxPlanning: 'maxPlanning',
+  maxReadyForDev: 'maxReadyForDev',
+  maxInDev: 'maxInDev',
+  maxReadyForReview: 'maxReadyForReview',
+  maxInReview: 'maxInReview',
+  maxReadyForRelease: 'maxReadyForRelease',
+  maxReviewRetries: 'maxReviewRetries',
+  maxMergeConflictRetries: 'maxMergeConflictRetries',
+  maxRuntimeRetries: 'maxRuntimeRetries',
+  maxAmbiguityRetries: 'maxAmbiguityRetries',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SystemQueueLimitsScalarFieldEnum = (typeof SystemQueueLimitsScalarFieldEnum)[keyof typeof SystemQueueLimitsScalarFieldEnum]
 
 
 export const ProductSpecScalarFieldEnum = {
@@ -1537,6 +1720,20 @@ export type ListEnumWorkItemPriorityFieldRefInput<$PrismaModel> = FieldRefInputT
 
 
 /**
+ * Reference to a field of type 'WorkItemCommentActorType'
+ */
+export type EnumWorkItemCommentActorTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'WorkItemCommentActorType'>
+    
+
+
+/**
+ * Reference to a field of type 'WorkItemCommentActorType[]'
+ */
+export type ListEnumWorkItemCommentActorTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'WorkItemCommentActorType[]'>
+    
+
+
+/**
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
@@ -1681,12 +1878,14 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   epic?: Prisma.EpicOmit
   workItem?: Prisma.WorkItemOmit
+  workItemComment?: Prisma.WorkItemCommentOmit
   acceptanceCriterion?: Prisma.AcceptanceCriterionOmit
   workItemDependency?: Prisma.WorkItemDependencyOmit
   workItemStateTransition?: Prisma.WorkItemStateTransitionOmit
   project?: Prisma.ProjectOmit
   projectRepository?: Prisma.ProjectRepositoryOmit
   projectQueueLimits?: Prisma.ProjectQueueLimitsOmit
+  systemQueueLimits?: Prisma.SystemQueueLimitsOmit
   productSpec?: Prisma.ProductSpecOmit
   developmentPlan?: Prisma.DevelopmentPlanOmit
   planVersion?: Prisma.PlanVersionOmit

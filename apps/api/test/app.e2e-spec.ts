@@ -160,5 +160,117 @@ describe('AppController (e2e)', () => {
       .expect((response) => {
         expect(response.body.message).toBe('Invalid workflow transition.');
       });
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/projects/${projectId}/work-items/${taskId}/comments`)
+      .send({
+        content: 'Agent review noted one remaining edge case.',
+        actorType: 'agent',
+        actorName: 'Review agent',
+      })
+      .expect(201)
+      .expect((response) => {
+        expect(response.body.data.items).toHaveLength(1);
+        expect(response.body.data.items[0].actorType).toBe('agent');
+      });
+
+    await request(app.getHttpServer())
+      .get(`/api/v1/projects/${projectId}/work-items/${taskId}/audit`)
+      .expect(200)
+      .expect((response) => {
+        expect(response.body.items.length).toBeGreaterThanOrEqual(2);
+        expect(
+          response.body.items.some((item: { type: string }) => item.type === 'comment'),
+        ).toBe(true);
+        expect(
+          response.body.items.some(
+            (item: { type: string }) => item.type === 'transition',
+          ),
+        ).toBe(true);
+      });
+  });
+
+  it('/api/v1/settings/queue-limits/defaults and /projects/:projectId/queue-limits', async () => {
+    await request(app.getHttpServer())
+      .get('/api/v1/settings/queue-limits/defaults')
+      .expect(200)
+      .expect((response) => {
+        expect(response.body.queueLimits.maxInDev).toBeGreaterThan(0);
+        expect(response.body.updatedAt).toBeNull();
+      });
+
+    const updateDefaultsResponse = await request(app.getHttpServer())
+      .put('/api/v1/settings/queue-limits/defaults')
+      .send({
+        maxPlanning: 15,
+        maxReadyForDev: 10,
+        maxInDev: 4,
+        maxReadyForReview: 4,
+        maxInReview: 2,
+        maxReadyForRelease: 2,
+        maxReviewRetries: 4,
+        maxMergeConflictRetries: 2,
+        maxRuntimeRetries: 5,
+        maxAmbiguityRetries: 3,
+      })
+      .expect(200);
+
+    expect(updateDefaultsResponse.body.data.queueLimits.maxPlanning).toBe(15);
+
+    const createProjectResponse = await request(app.getHttpServer())
+      .post('/api/v1/projects')
+      .send({
+        name: `Queue Limits Test ${Date.now()}`,
+        repository: {
+          provider: 'github',
+          owner: 'Evolvo-org',
+          name: 'evolvo-suite',
+          url: 'https://github.com/Evolvo-org/evolvo-suite',
+          defaultBranch: 'main',
+          baseBranch: 'main',
+        },
+        productDescription:
+          'Validation fixture for queue limit defaults and project overrides.',
+      })
+      .expect(201);
+
+    const projectId = createProjectResponse.body.data.id as string;
+
+    await request(app.getHttpServer())
+      .get(`/api/v1/projects/${projectId}/queue-limits`)
+      .expect(200)
+      .expect((response) => {
+        expect(response.body.projectId).toBe(projectId);
+        expect(response.body.overrides).toBeNull();
+        expect(response.body.effective.maxPlanning).toBe(15);
+      });
+
+    await request(app.getHttpServer())
+      .put(`/api/v1/projects/${projectId}/queue-limits`)
+      .send({
+        maxPlanning: 8,
+        maxReadyForDev: 9,
+        maxInDev: 2,
+        maxReadyForReview: 2,
+        maxInReview: 1,
+        maxReadyForRelease: 1,
+        maxReviewRetries: 2,
+        maxMergeConflictRetries: 1,
+        maxRuntimeRetries: 2,
+        maxAmbiguityRetries: 1,
+      })
+      .expect(200)
+      .expect((response) => {
+        expect(response.body.data.overrides.maxPlanning).toBe(8);
+        expect(response.body.data.effective.maxPlanning).toBe(8);
+      });
+
+    await request(app.getHttpServer())
+      .delete(`/api/v1/projects/${projectId}/queue-limits`)
+      .expect(200)
+      .expect((response) => {
+        expect(response.body.data.overrides).toBeNull();
+        expect(response.body.data.effective.maxPlanning).toBe(15);
+      });
   });
 });

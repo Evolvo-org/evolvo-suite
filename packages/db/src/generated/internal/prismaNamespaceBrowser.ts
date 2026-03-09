@@ -53,12 +53,14 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Epic: 'Epic',
   WorkItem: 'WorkItem',
+  WorkItemComment: 'WorkItemComment',
   AcceptanceCriterion: 'AcceptanceCriterion',
   WorkItemDependency: 'WorkItemDependency',
   WorkItemStateTransition: 'WorkItemStateTransition',
   Project: 'Project',
   ProjectRepository: 'ProjectRepository',
   ProjectQueueLimits: 'ProjectQueueLimits',
+  SystemQueueLimits: 'SystemQueueLimits',
   ProductSpec: 'ProductSpec',
   DevelopmentPlan: 'DevelopmentPlan',
   PlanVersion: 'PlanVersion'
@@ -111,6 +113,20 @@ export const WorkItemScalarFieldEnum = {
 } as const
 
 export type WorkItemScalarFieldEnum = (typeof WorkItemScalarFieldEnum)[keyof typeof WorkItemScalarFieldEnum]
+
+
+export const WorkItemCommentScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  workItemId: 'workItemId',
+  actorType: 'actorType',
+  actorName: 'actorName',
+  content: 'content',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WorkItemCommentScalarFieldEnum = (typeof WorkItemCommentScalarFieldEnum)[keyof typeof WorkItemCommentScalarFieldEnum]
 
 
 export const AcceptanceCriterionScalarFieldEnum = {
@@ -196,6 +212,25 @@ export const ProjectQueueLimitsScalarFieldEnum = {
 } as const
 
 export type ProjectQueueLimitsScalarFieldEnum = (typeof ProjectQueueLimitsScalarFieldEnum)[keyof typeof ProjectQueueLimitsScalarFieldEnum]
+
+
+export const SystemQueueLimitsScalarFieldEnum = {
+  id: 'id',
+  maxPlanning: 'maxPlanning',
+  maxReadyForDev: 'maxReadyForDev',
+  maxInDev: 'maxInDev',
+  maxReadyForReview: 'maxReadyForReview',
+  maxInReview: 'maxInReview',
+  maxReadyForRelease: 'maxReadyForRelease',
+  maxReviewRetries: 'maxReviewRetries',
+  maxMergeConflictRetries: 'maxMergeConflictRetries',
+  maxRuntimeRetries: 'maxRuntimeRetries',
+  maxAmbiguityRetries: 'maxAmbiguityRetries',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SystemQueueLimitsScalarFieldEnum = (typeof SystemQueueLimitsScalarFieldEnum)[keyof typeof SystemQueueLimitsScalarFieldEnum]
 
 
 export const ProductSpecScalarFieldEnum = {
