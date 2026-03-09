@@ -3,9 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
+    "./components/badge/badge": "./src/components/badge/badge.tsx",
     "./components/button/button": "./src/components/button/button.tsx",
     "./components/card/card": "./src/components/card/card.tsx",
-    "./components/code/code": "./src/components/code/code.tsx"
+    "./components/code/code": "./src/components/code/code.tsx",
+    "./components/input/input": "./src/components/input/input.tsx",
+    "./components/textarea/textarea": "./src/components/textarea/textarea.tsx"
   },
   "scripts": {
     "lint": "biome lint --config-path ../biome-config/library.json ./src",

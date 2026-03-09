@@ -1,15 +1,14 @@
-# Getting Started
+# Evolvo web
 
 First, run the development server:
 
 ```bash
-pnpm dev
-# Also works with NPM, YARN, BUN, ...
+pnpm --filter web dev
 ```
 
-Browse [localhost:3001](http://localhost:3001) to see the result.
+Browse [localhost:3001](http://localhost:3001) to see the operator UI.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The web app uses TanStack Query for all reads and writes. Pages preload API data and client components consume it with `useQuery`.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load Inter, a custom Google Font.
 

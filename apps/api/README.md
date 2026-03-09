@@ -1,21 +1,39 @@
-# With-NestJs | API
+# Evolvo API
 
 ## Getting Started
 
-First, run the development server:
+First, generate Prisma and run the development server:
 
 ```bash
-pnpm run dev
-# Also works with NPM, YARN, BUN, ...
+pnpm --filter @repo/db generate
+pnpm --filter @repo/db migrate:dev
+pnpm --filter api dev
 ```
 
-By default, your server will run at [localhost:3000](http://localhost:3000). You can use your favorite API platform like [Insomnia](https://insomnia.rest/) or [Postman](https://www.postman.com/) to test your APIs
+By default, the server runs at [localhost:3000/api/v1](http://localhost:3000/api/v1).
 
-You can start editing the demo **APIs** by modifying [linksService](./src/links/links.service.ts) provider.
+The API is the only service allowed to access Prisma and the database.
 
-### Important Note 🚧
+## Environment
 
-If you plan to `build` or `test` the app. Please make sure to build the `packages/*` first.
+- `PORT`
+- `API_PREFIX`
+- `DATABASE_URL`
+- `CORS_ORIGIN`
+
+## Current endpoints
+
+- `GET /api/v1/health`
+- `GET|POST|PATCH /api/v1/projects`
+- `POST /api/v1/projects/:projectId/start`
+- `POST /api/v1/projects/:projectId/stop`
+- `GET /api/v1/projects/:projectId/status`
+- `GET|PUT /api/v1/projects/:projectId/product-spec`
+- `GET|POST|PATCH /api/v1/projects/:projectId/development-plan`
+- `GET /api/v1/projects/:projectId/development-plan/versions`
+- `POST /api/v1/projects/:projectId/development-plan/versions/activate`
+
+If you plan to `build` or `test` the app, build shared packages first.
 
 ## Learn More
 

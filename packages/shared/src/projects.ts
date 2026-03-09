@@ -1,0 +1,83 @@
+import type { ProjectQueueLimits } from './project-queue-limits';
+import type {
+  ProjectLifecycleStatus,
+  RuntimeConnectionStatus,
+} from './project-status';
+
+export interface ProjectRepositoryInput {
+  provider: 'github';
+  owner: string;
+  name: string;
+  url: string;
+  defaultBranch: string;
+  baseBranch: string;
+}
+
+export interface CreateProjectRequest {
+  name: string;
+  repository: ProjectRepositoryInput;
+  productDescription: string;
+  developmentPlan?: string;
+  queueLimits?: ProjectQueueLimits;
+}
+
+export interface UpdateProjectRequest {
+  name?: string;
+  repository?: ProjectRepositoryInput;
+  queueLimits?: ProjectQueueLimits;
+}
+
+export interface ProjectListFilters {
+  query?: string;
+  lifecycleStatus?: ProjectLifecycleStatus;
+}
+
+export interface ProjectListItem {
+  id: string;
+  name: string;
+  slug: string;
+  lifecycleStatus: ProjectLifecycleStatus;
+  repository: ProjectRepositoryInput;
+  productSpecVersion: number | null;
+  activePlanVersionNumber: number | null;
+  runtimeStatus: RuntimeConnectionStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectOverviewMetrics {
+  kanbanCounts: {
+    inbox: number;
+    planning: number;
+    readyForDev: number;
+    inDev: number;
+    readyForReview: number;
+    inReview: number;
+    readyForRelease: number;
+    requiresHumanIntervention: number;
+    released: number;
+  };
+  runtimeStatus: RuntimeConnectionStatus;
+  latestActivity: string[];
+}
+
+export interface ProjectDetail {
+  id: string;
+  name: string;
+  slug: string;
+  lifecycleStatus: ProjectLifecycleStatus;
+  repository: ProjectRepositoryInput;
+  queueLimits: ProjectQueueLimits;
+  productSpecVersion: number | null;
+  activePlanVersionNumber: number | null;
+  metrics: ProjectOverviewMetrics;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectStatusResponse {
+  projectId: string;
+  lifecycleStatus: ProjectLifecycleStatus;
+  runtimeStatus: RuntimeConnectionStatus;
+  updatedAt: string;
+}

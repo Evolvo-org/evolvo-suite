@@ -2,7 +2,6 @@
   "name": "@repo/vitest-config",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
   "license": "MIT",
   "publishConfig": {
     "access": "public"

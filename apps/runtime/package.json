@@ -1,0 +1,20 @@
+{
+  "name": "runtime",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/main.js",
+    "lint": "biome lint --config-path ../../packages/biome-config/base.json ./src"
+  },
+  "dependencies": {
+    "@repo/validation": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.19.3",
+    "tsx": "^4.20.5",
+    "typescript": "5.9.3"
+  }
+}
