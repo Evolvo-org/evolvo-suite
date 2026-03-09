@@ -118,38 +118,38 @@ Tasks:
 - [x] Create active plan selection endpoint
 
 ## API-010 - Add hierarchy endpoints
-**Status:** todo  
+**Status:** done  
 **Outcome:** Epics, tasks, and subtasks are queryable and mutable.
 
 Tasks:
-- [ ] Create epic CRUD endpoints
-- [ ] Create work item CRUD endpoints
-- [ ] Add parent-child relationship validation
-- [ ] Add acceptance criteria CRUD
-- [ ] Add dependency update endpoint
-- [ ] Add priority update endpoint
+- [x] Create epic CRUD endpoints
+- [x] Create work item CRUD endpoints
+- [x] Add parent-child relationship validation
+- [x] Add acceptance criteria CRUD
+- [x] Add dependency update endpoint
+- [x] Add priority update endpoint
 
 ## API-011 - Add kanban board endpoints
-**Status:** todo  
+**Status:** done  
 **Outcome:** Board data can be queried and mutated through workflow rules.
 
 Tasks:
-- [ ] Create board query endpoint
-- [ ] Create work item transition endpoint
-- [ ] Create board counts endpoint
-- [ ] Add drag/drop mutation contract
-- [ ] Add invalid transition error responses
+- [x] Create board query endpoint
+- [x] Create work item transition endpoint
+- [x] Create board counts endpoint
+- [x] Add drag/drop mutation contract
+- [x] Add invalid transition error responses
 
 ## API-012 - Implement workflow state machine service
-**Status:** todo  
+**Status:** done  
 **Outcome:** The API centrally validates all state transitions.
 
 Tasks:
-- [ ] Define allowed transitions
-- [ ] Add operator-only transitions
-- [ ] Add transition audit logging
-- [ ] Add transition reason requirements where needed
-- [ ] Add service-level tests
+- [x] Define allowed transitions
+- [x] Add operator-only transitions
+- [x] Add transition audit logging
+- [x] Add transition reason requirements where needed
+- [x] Add service-level tests
 
 ## API-013 - Add comments and audit trail endpoints
 **Status:** todo  

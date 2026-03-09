@@ -18,6 +18,31 @@ export { Prisma }
 export * as $Enums from './enums.js'
 export * from './enums.js';
 /**
+ * Model Epic
+ * 
+ */
+export type Epic = Prisma.EpicModel
+/**
+ * Model WorkItem
+ * 
+ */
+export type WorkItem = Prisma.WorkItemModel
+/**
+ * Model AcceptanceCriterion
+ * 
+ */
+export type AcceptanceCriterion = Prisma.AcceptanceCriterionModel
+/**
+ * Model WorkItemDependency
+ * 
+ */
+export type WorkItemDependency = Prisma.WorkItemDependencyModel
+/**
+ * Model WorkItemStateTransition
+ * 
+ */
+export type WorkItemStateTransition = Prisma.WorkItemStateTransitionModel
+/**
  * Model Project
  * 
  */

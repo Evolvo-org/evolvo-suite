@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { defaultProjectQueueLimits } from '@repo/shared';
 import type {
+  KanbanBoardCounts,
   CreateProjectRequest,
   ProjectDetail,
   ProjectListFilters,
@@ -88,6 +89,18 @@ const createSlugBase = (value: string): string => {
     .replace(/(^-|-$)/g, '')
     .slice(0, 60);
 };
+
+const createEmptyKanbanCounts = (): KanbanBoardCounts => ({
+  inbox: 0,
+  planning: 0,
+  readyForDev: 0,
+  inDev: 0,
+  readyForReview: 0,
+  inReview: 0,
+  readyForRelease: 0,
+  requiresHumanIntervention: 0,
+  released: 0,
+});
 
 @Injectable()
 export class ProjectsService {
@@ -184,7 +197,7 @@ export class ProjectsService {
       });
     });
 
-    return mapProjectDetail(project);
+    return mapProjectDetail(project, createEmptyKanbanCounts());
   }
 
   public async listProjects(filters: ProjectListFilters) {
@@ -219,25 +232,28 @@ export class ProjectsService {
   }
 
   public async getProjectDetail(projectId: string): Promise<ProjectDetail> {
-    const project = await this.prisma.project.findUnique({
-      where: { id: projectId },
-      include: {
-        repository: true,
-        queueLimits: true,
-        productSpec: true,
-        developmentPlan: {
-          include: {
-            activeVersion: true,
+    const [project, kanbanCounts] = await Promise.all([
+      this.prisma.project.findUnique({
+        where: { id: projectId },
+        include: {
+          repository: true,
+          queueLimits: true,
+          productSpec: true,
+          developmentPlan: {
+            include: {
+              activeVersion: true,
+            },
           },
         },
-      },
-    });
+      }),
+      this.getKanbanCounts(projectId),
+    ]);
 
     if (!project) {
       throw new NotFoundException('Project not found.');
     }
 
-    return mapProjectDetail(project);
+    return mapProjectDetail(project, kanbanCounts);
   }
 
   public async updateProject(
@@ -279,7 +295,7 @@ export class ProjectsService {
       },
     });
 
-    return mapProjectDetail(project);
+    return mapProjectDetail(project, await this.getKanbanCounts(projectId));
   }
 
   public async startProject(projectId: string): Promise<ProjectStatusResponse> {
@@ -439,5 +455,48 @@ export class ProjectsService {
     }
 
     throw new ConflictException('Unable to create a unique project slug.');
+  }
+
+  private async getKanbanCounts(projectId: string): Promise<KanbanBoardCounts> {
+    const counts = createEmptyKanbanCounts();
+    const workItems = await this.prisma.workItem.findMany({
+      where: { projectId },
+      select: { state: true },
+    });
+
+    for (const workItem of workItems) {
+      switch (workItem.state) {
+        case 'PLANNING':
+          counts.planning += 1;
+          break;
+        case 'READY_FOR_DEV':
+          counts.readyForDev += 1;
+          break;
+        case 'IN_DEV':
+          counts.inDev += 1;
+          break;
+        case 'READY_FOR_REVIEW':
+          counts.readyForReview += 1;
+          break;
+        case 'IN_REVIEW':
+          counts.inReview += 1;
+          break;
+        case 'READY_FOR_RELEASE':
+          counts.readyForRelease += 1;
+          break;
+        case 'REQUIRES_HUMAN_INTERVENTION':
+          counts.requiresHumanIntervention += 1;
+          break;
+        case 'RELEASED':
+          counts.released += 1;
+          break;
+        case 'INBOX':
+        default:
+          counts.inbox += 1;
+          break;
+      }
+    }
+
+    return counts;
   }
 }

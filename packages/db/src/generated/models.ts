@@ -8,6 +8,11 @@
  *
  * 🟢 You can import this file directly.
  */
+export type * from './models/Epic.js'
+export type * from './models/WorkItem.js'
+export type * from './models/AcceptanceCriterion.js'
+export type * from './models/WorkItemDependency.js'
+export type * from './models/WorkItemStateTransition.js'
 export type * from './models/Project.js'
 export type * from './models/ProjectRepository.js'
 export type * from './models/ProjectQueueLimits.js'

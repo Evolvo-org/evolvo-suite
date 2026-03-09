@@ -20,6 +20,8 @@ model Project {
   productSpec         ProductSpec?
   developmentPlan     DevelopmentPlan?
   queueLimits         ProjectQueueLimits?
+  epics               Epic[]
+  workItems           WorkItem[]
 }
 
 model ProjectRepository {
@@ -74,6 +76,7 @@ model DevelopmentPlan {
   project         Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
   activeVersion   PlanVersion? @relation("ActivePlanVersion", fields: [activeVersionId], references: [id], onDelete: SetNull)
   versions        PlanVersion[] @relation("PlanVersions")
+  epics           Epic[]
 }
 
 model PlanVersion {

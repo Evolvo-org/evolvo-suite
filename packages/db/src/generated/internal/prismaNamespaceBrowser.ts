@@ -51,6 +51,11 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  Epic: 'Epic',
+  WorkItem: 'WorkItem',
+  AcceptanceCriterion: 'AcceptanceCriterion',
+  WorkItemDependency: 'WorkItemDependency',
+  WorkItemStateTransition: 'WorkItemStateTransition',
   Project: 'Project',
   ProjectRepository: 'ProjectRepository',
   ProjectQueueLimits: 'ProjectQueueLimits',
@@ -73,6 +78,76 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const EpicScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  developmentPlanId: 'developmentPlanId',
+  title: 'title',
+  summary: 'summary',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EpicScalarFieldEnum = (typeof EpicScalarFieldEnum)[keyof typeof EpicScalarFieldEnum]
+
+
+export const WorkItemScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  epicId: 'epicId',
+  parentId: 'parentId',
+  kind: 'kind',
+  state: 'state',
+  title: 'title',
+  description: 'description',
+  priority: 'priority',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  stateUpdatedAt: 'stateUpdatedAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WorkItemScalarFieldEnum = (typeof WorkItemScalarFieldEnum)[keyof typeof WorkItemScalarFieldEnum]
+
+
+export const AcceptanceCriterionScalarFieldEnum = {
+  id: 'id',
+  workItemId: 'workItemId',
+  text: 'text',
+  isComplete: 'isComplete',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AcceptanceCriterionScalarFieldEnum = (typeof AcceptanceCriterionScalarFieldEnum)[keyof typeof AcceptanceCriterionScalarFieldEnum]
+
+
+export const WorkItemDependencyScalarFieldEnum = {
+  id: 'id',
+  workItemId: 'workItemId',
+  dependsOnWorkItemId: 'dependsOnWorkItemId',
+  createdAt: 'createdAt'
+} as const
+
+export type WorkItemDependencyScalarFieldEnum = (typeof WorkItemDependencyScalarFieldEnum)[keyof typeof WorkItemDependencyScalarFieldEnum]
+
+
+export const WorkItemStateTransitionScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  workItemId: 'workItemId',
+  fromState: 'fromState',
+  toState: 'toState',
+  reason: 'reason',
+  isOperatorOverride: 'isOperatorOverride',
+  createdAt: 'createdAt'
+} as const
+
+export type WorkItemStateTransitionScalarFieldEnum = (typeof WorkItemStateTransitionScalarFieldEnum)[keyof typeof WorkItemStateTransitionScalarFieldEnum]
 
 
 export const ProjectScalarFieldEnum = {

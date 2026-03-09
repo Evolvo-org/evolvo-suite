@@ -8,11 +8,24 @@ import type {
 } from '@repo/db/client';
 import { defaultProjectQueueLimits } from '@repo/shared';
 import type {
+  KanbanBoardCounts,
   ProjectDetail,
   ProjectListItem,
   ProjectRepositoryConfigResponse,
   ProjectStatusResponse,
 } from '@repo/shared';
+
+const emptyKanbanCounts = (): KanbanBoardCounts => ({
+  inbox: 0,
+  planning: 0,
+  readyForDev: 0,
+  inDev: 0,
+  readyForReview: 0,
+  inReview: 0,
+  readyForRelease: 0,
+  requiresHumanIntervention: 0,
+  released: 0,
+});
 
 export const mapRepository = (repository: ProjectRepository) => ({
   provider: 'github' as const,
@@ -108,6 +121,7 @@ export const mapProjectDetail = (
       | (DevelopmentPlan & { activeVersion: PlanVersion | null })
       | null;
   },
+  kanbanCounts: KanbanBoardCounts = emptyKanbanCounts(),
 ): ProjectDetail => {
   if (!project.repository) {
     throw new Error(`Project ${project.id} is missing a repository record.`);
@@ -125,17 +139,7 @@ export const mapProjectDetail = (
       project.developmentPlan,
     ),
     metrics: {
-      kanbanCounts: {
-        inbox: 0,
-        planning: 0,
-        readyForDev: 0,
-        inDev: 0,
-        readyForReview: 0,
-        inReview: 0,
-        readyForRelease: 0,
-        requiresHumanIntervention: 0,
-        released: 0,
-      },
+      kanbanCounts,
       runtimeStatus: 'offline',
       latestActivity: [],
     },

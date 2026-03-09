@@ -79,6 +79,12 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
             Active plan version:{' '}
             {project.activePlanVersionNumber ?? 'not stored yet'}
           </p>
+          <Link
+            className="inline-flex items-center text-sm font-medium text-zinc-950 underline-offset-4 hover:underline dark:text-zinc-50"
+            href={`/projects/${projectId}/board`}
+          >
+            Open kanban board
+          </Link>
         </Card>
 
         <Card className="space-y-3 p-6" title="Queue counts">
@@ -150,6 +156,12 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
             href={`/projects/${projectId}/development-plan`}
           >
             Open development plan editor
+          </Link>
+          <Link
+            className="inline-flex items-center text-sm font-medium text-zinc-950 underline-offset-4 hover:underline dark:text-zinc-50"
+            href={`/projects/${projectId}/planning`}
+          >
+            Open planning hierarchy
           </Link>
         </Card>
       </div>

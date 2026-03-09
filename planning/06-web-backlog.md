@@ -142,30 +142,30 @@ Tasks:
 - [x] Add plan generation trigger
 
 ## WEB-013 - Build planning hierarchy view
-**Status:** todo  
+**Status:** done  
 **Outcome:** Epics, tasks, and subtasks are visible and editable in tree form.
 
 Tasks:
-- [ ] Add hierarchy query
-- [ ] Add tree components
-- [ ] Add expand/collapse
-- [ ] Add create epic/task/subtask actions
-- [ ] Add acceptance criteria editor
-- [ ] Add dependency UI
-- [ ] Add priority controls
+- [x] Add hierarchy query
+- [x] Add tree components
+- [x] Add expand/collapse
+- [x] Add create epic/task/subtask actions
+- [x] Add acceptance criteria editor
+- [x] Add dependency UI
+- [x] Add priority controls
 
 ## WEB-014 - Build kanban board page
-**Status:** todo  
+**Status:** done  
 **Outcome:** Work items are visible in strict workflow columns.
 
 Tasks:
-- [ ] Add board query
-- [ ] Add board page
-- [ ] Add column components
-- [ ] Add card components
-- [ ] Add drag/drop integration
-- [ ] Add transition mutation handling
-- [ ] Add invalid transition feedback
+- [x] Add board query
+- [x] Add board page
+- [x] Add column components
+- [x] Add card components
+- [x] Add drag/drop integration
+- [x] Add transition mutation handling
+- [x] Add invalid transition feedback
 
 ## WEB-015 - Build work item detail panel
 **Status:** todo  

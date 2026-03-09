@@ -1,11 +1,17 @@
 import type {
   ActivateDevelopmentPlanVersionRequest,
   CreateDevelopmentPlanRequest,
+  CreateAcceptanceCriterionRequest,
+  CreateEpicRequest,
   CreateProjectRequest,
+  CreateWorkItemRequest,
   DevelopmentPlanResponse,
   DevelopmentPlanVersionsResponse,
+  KanbanBoardCounts,
+  KanbanBoardResponse,
   MutationResponse,
   PaginatedResponse,
+  PlanningHierarchyResponse,
   ProductSpecResponse,
   ProjectDetail,
   ProjectListFilters,
@@ -14,8 +20,14 @@ import type {
   ProjectRepositoryInput,
   ProjectRepositoryValidationResponse,
   ProjectStatusResponse,
+  TransitionWorkItemRequest,
+  UpdateAcceptanceCriterionRequest,
   UpdateDevelopmentPlanRequest,
+  UpdateEpicRequest,
   UpdateProjectRequest,
+  UpdateWorkItemDependenciesRequest,
+  UpdateWorkItemPriorityRequest,
+  UpdateWorkItemRequest,
   UpsertProductSpecRequest,
 } from '@repo/shared';
 
@@ -108,6 +120,11 @@ export const projectQueryKeys = {
     ['projects', projectId, 'development-plan'] as const,
   developmentPlanVersions: (projectId: string) =>
     ['projects', projectId, 'development-plan-versions'] as const,
+  planningHierarchy: (projectId: string) =>
+    ['projects', projectId, 'planning-hierarchy'] as const,
+  board: (projectId: string) => ['projects', projectId, 'board'] as const,
+  boardCounts: (projectId: string) =>
+    ['projects', projectId, 'board-counts'] as const,
 };
 
 export const listProjects = async (
@@ -300,6 +317,193 @@ export const activateDevelopmentPlanVersion = async (
 ): Promise<MutationResponse<DevelopmentPlanResponse>> => {
   return fetchJson<MutationResponse<DevelopmentPlanResponse>>(
     `/projects/${projectId}/development-plan/versions/activate`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const getPlanningHierarchy = async (
+  projectId: string,
+): Promise<PlanningHierarchyResponse> => {
+  return fetchJson<PlanningHierarchyResponse>(
+    `/projects/${projectId}/planning/hierarchy`,
+    {
+      method: 'GET',
+    },
+  );
+};
+
+export const createEpic = async (
+  projectId: string,
+  payload: CreateEpicRequest,
+): Promise<MutationResponse<PlanningHierarchyResponse>> => {
+  return fetchJson<MutationResponse<PlanningHierarchyResponse>>(
+    `/projects/${projectId}/planning/epics`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const updateEpic = async (
+  projectId: string,
+  epicId: string,
+  payload: UpdateEpicRequest,
+): Promise<MutationResponse<PlanningHierarchyResponse>> => {
+  return fetchJson<MutationResponse<PlanningHierarchyResponse>>(
+    `/projects/${projectId}/planning/epics/${epicId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const deleteEpic = async (
+  projectId: string,
+  epicId: string,
+): Promise<MutationResponse<PlanningHierarchyResponse>> => {
+  return fetchJson<MutationResponse<PlanningHierarchyResponse>>(
+    `/projects/${projectId}/planning/epics/${epicId}`,
+    {
+      method: 'DELETE',
+    },
+  );
+};
+
+export const createWorkItem = async (
+  projectId: string,
+  payload: CreateWorkItemRequest,
+): Promise<MutationResponse<PlanningHierarchyResponse>> => {
+  return fetchJson<MutationResponse<PlanningHierarchyResponse>>(
+    `/projects/${projectId}/planning/work-items`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const updateWorkItem = async (
+  projectId: string,
+  workItemId: string,
+  payload: UpdateWorkItemRequest,
+): Promise<MutationResponse<PlanningHierarchyResponse>> => {
+  return fetchJson<MutationResponse<PlanningHierarchyResponse>>(
+    `/projects/${projectId}/planning/work-items/${workItemId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const deleteWorkItem = async (
+  projectId: string,
+  workItemId: string,
+): Promise<MutationResponse<PlanningHierarchyResponse>> => {
+  return fetchJson<MutationResponse<PlanningHierarchyResponse>>(
+    `/projects/${projectId}/planning/work-items/${workItemId}`,
+    {
+      method: 'DELETE',
+    },
+  );
+};
+
+export const updateWorkItemPriority = async (
+  projectId: string,
+  workItemId: string,
+  payload: UpdateWorkItemPriorityRequest,
+): Promise<MutationResponse<PlanningHierarchyResponse>> => {
+  return fetchJson<MutationResponse<PlanningHierarchyResponse>>(
+    `/projects/${projectId}/planning/work-items/${workItemId}/priority`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const updateWorkItemDependencies = async (
+  projectId: string,
+  workItemId: string,
+  payload: UpdateWorkItemDependenciesRequest,
+): Promise<MutationResponse<PlanningHierarchyResponse>> => {
+  return fetchJson<MutationResponse<PlanningHierarchyResponse>>(
+    `/projects/${projectId}/planning/work-items/${workItemId}/dependencies`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const createAcceptanceCriterion = async (
+  projectId: string,
+  workItemId: string,
+  payload: CreateAcceptanceCriterionRequest,
+): Promise<MutationResponse<PlanningHierarchyResponse>> => {
+  return fetchJson<MutationResponse<PlanningHierarchyResponse>>(
+    `/projects/${projectId}/planning/work-items/${workItemId}/acceptance-criteria`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const updateAcceptanceCriterion = async (
+  projectId: string,
+  criterionId: string,
+  payload: UpdateAcceptanceCriterionRequest,
+): Promise<MutationResponse<PlanningHierarchyResponse>> => {
+  return fetchJson<MutationResponse<PlanningHierarchyResponse>>(
+    `/projects/${projectId}/planning/acceptance-criteria/${criterionId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const deleteAcceptanceCriterion = async (
+  projectId: string,
+  criterionId: string,
+): Promise<MutationResponse<PlanningHierarchyResponse>> => {
+  return fetchJson<MutationResponse<PlanningHierarchyResponse>>(
+    `/projects/${projectId}/planning/acceptance-criteria/${criterionId}`,
+    {
+      method: 'DELETE',
+    },
+  );
+};
+
+export const getBoard = async (
+  projectId: string,
+): Promise<KanbanBoardResponse> => {
+  return fetchJson<KanbanBoardResponse>(`/projects/${projectId}/board`, {
+    method: 'GET',
+  });
+};
+
+export const getBoardCounts = async (
+  projectId: string,
+): Promise<KanbanBoardCounts> => {
+  return fetchJson<KanbanBoardCounts>(`/projects/${projectId}/board/counts`, {
+    method: 'GET',
+  });
+};
+
+export const transitionWorkItem = async (
+  projectId: string,
+  workItemId: string,
+  payload: TransitionWorkItemRequest,
+): Promise<MutationResponse<KanbanBoardResponse>> => {
+  return fetchJson<MutationResponse<KanbanBoardResponse>>(
+    `/projects/${projectId}/work-items/${workItemId}/transition`,
     {
       method: 'POST',
       body: JSON.stringify(payload),

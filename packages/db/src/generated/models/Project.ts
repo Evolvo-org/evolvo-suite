@@ -194,6 +194,8 @@ export type ProjectWhereInput = {
   productSpec?: Prisma.XOR<Prisma.ProductSpecNullableScalarRelationFilter, Prisma.ProductSpecWhereInput> | null
   developmentPlan?: Prisma.XOR<Prisma.DevelopmentPlanNullableScalarRelationFilter, Prisma.DevelopmentPlanWhereInput> | null
   queueLimits?: Prisma.XOR<Prisma.ProjectQueueLimitsNullableScalarRelationFilter, Prisma.ProjectQueueLimitsWhereInput> | null
+  epics?: Prisma.EpicListRelationFilter
+  workItems?: Prisma.WorkItemListRelationFilter
 }
 
 export type ProjectOrderByWithRelationInput = {
@@ -207,6 +209,8 @@ export type ProjectOrderByWithRelationInput = {
   productSpec?: Prisma.ProductSpecOrderByWithRelationInput
   developmentPlan?: Prisma.DevelopmentPlanOrderByWithRelationInput
   queueLimits?: Prisma.ProjectQueueLimitsOrderByWithRelationInput
+  epics?: Prisma.EpicOrderByRelationAggregateInput
+  workItems?: Prisma.WorkItemOrderByRelationAggregateInput
 }
 
 export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -223,6 +227,8 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   productSpec?: Prisma.XOR<Prisma.ProductSpecNullableScalarRelationFilter, Prisma.ProductSpecWhereInput> | null
   developmentPlan?: Prisma.XOR<Prisma.DevelopmentPlanNullableScalarRelationFilter, Prisma.DevelopmentPlanWhereInput> | null
   queueLimits?: Prisma.XOR<Prisma.ProjectQueueLimitsNullableScalarRelationFilter, Prisma.ProjectQueueLimitsWhereInput> | null
+  epics?: Prisma.EpicListRelationFilter
+  workItems?: Prisma.WorkItemListRelationFilter
 }, "id" | "slug">
 
 export type ProjectOrderByWithAggregationInput = {
@@ -260,6 +266,8 @@ export type ProjectCreateInput = {
   productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
+  epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
+  workItems?: Prisma.WorkItemCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateInput = {
@@ -273,6 +281,8 @@ export type ProjectUncheckedCreateInput = {
   productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
+  epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput
+  workItems?: Prisma.WorkItemUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUpdateInput = {
@@ -286,6 +296,8 @@ export type ProjectUpdateInput = {
   productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
+  epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
+  workItems?: Prisma.WorkItemUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateInput = {
@@ -299,6 +311,8 @@ export type ProjectUncheckedUpdateInput = {
   productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
+  epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
+  workItems?: Prisma.WorkItemUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyInput = {
@@ -328,6 +342,11 @@ export type ProjectUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type ProjectScalarRelationFilter = {
+  is?: Prisma.ProjectWhereInput
+  isNot?: Prisma.ProjectWhereInput
+}
+
 export type ProjectCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -355,21 +374,36 @@ export type ProjectMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
-export type ProjectScalarRelationFilter = {
-  is?: Prisma.ProjectWhereInput
-  isNot?: Prisma.ProjectWhereInput
+export type ProjectCreateNestedOneWithoutEpicsInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutEpicsInput, Prisma.ProjectUncheckedCreateWithoutEpicsInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutEpicsInput
+  connect?: Prisma.ProjectWhereUniqueInput
 }
 
-export type StringFieldUpdateOperationsInput = {
-  set?: string
+export type ProjectUpdateOneRequiredWithoutEpicsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutEpicsInput, Prisma.ProjectUncheckedCreateWithoutEpicsInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutEpicsInput
+  upsert?: Prisma.ProjectUpsertWithoutEpicsInput
+  connect?: Prisma.ProjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutEpicsInput, Prisma.ProjectUpdateWithoutEpicsInput>, Prisma.ProjectUncheckedUpdateWithoutEpicsInput>
+}
+
+export type ProjectCreateNestedOneWithoutWorkItemsInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutWorkItemsInput, Prisma.ProjectUncheckedCreateWithoutWorkItemsInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutWorkItemsInput
+  connect?: Prisma.ProjectWhereUniqueInput
+}
+
+export type ProjectUpdateOneRequiredWithoutWorkItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutWorkItemsInput, Prisma.ProjectUncheckedCreateWithoutWorkItemsInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutWorkItemsInput
+  upsert?: Prisma.ProjectUpsertWithoutWorkItemsInput
+  connect?: Prisma.ProjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutWorkItemsInput, Prisma.ProjectUpdateWithoutWorkItemsInput>, Prisma.ProjectUncheckedUpdateWithoutWorkItemsInput>
 }
 
 export type EnumProjectLifecycleStatusFieldUpdateOperationsInput = {
   set?: $Enums.ProjectLifecycleStatus
-}
-
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
 }
 
 export type ProjectCreateNestedOneWithoutRepositoryInput = {
@@ -428,6 +462,150 @@ export type ProjectUpdateOneRequiredWithoutDevelopmentPlanNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutDevelopmentPlanInput, Prisma.ProjectUpdateWithoutDevelopmentPlanInput>, Prisma.ProjectUncheckedUpdateWithoutDevelopmentPlanInput>
 }
 
+export type ProjectCreateWithoutEpicsInput = {
+  id?: string
+  name: string
+  slug: string
+  lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
+  productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
+  developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
+  queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
+  workItems?: Prisma.WorkItemCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectUncheckedCreateWithoutEpicsInput = {
+  id?: string
+  name: string
+  slug: string
+  lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
+  productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
+  developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
+  queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
+  workItems?: Prisma.WorkItemUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectCreateOrConnectWithoutEpicsInput = {
+  where: Prisma.ProjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutEpicsInput, Prisma.ProjectUncheckedCreateWithoutEpicsInput>
+}
+
+export type ProjectUpsertWithoutEpicsInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutEpicsInput, Prisma.ProjectUncheckedUpdateWithoutEpicsInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutEpicsInput, Prisma.ProjectUncheckedCreateWithoutEpicsInput>
+  where?: Prisma.ProjectWhereInput
+}
+
+export type ProjectUpdateToOneWithWhereWithoutEpicsInput = {
+  where?: Prisma.ProjectWhereInput
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutEpicsInput, Prisma.ProjectUncheckedUpdateWithoutEpicsInput>
+}
+
+export type ProjectUpdateWithoutEpicsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
+  productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
+  developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
+  queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
+  workItems?: Prisma.WorkItemUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectUncheckedUpdateWithoutEpicsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
+  productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
+  developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
+  queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
+  workItems?: Prisma.WorkItemUncheckedUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectCreateWithoutWorkItemsInput = {
+  id?: string
+  name: string
+  slug: string
+  lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
+  productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
+  developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
+  queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
+  epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectUncheckedCreateWithoutWorkItemsInput = {
+  id?: string
+  name: string
+  slug: string
+  lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
+  productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
+  developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
+  queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
+  epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectCreateOrConnectWithoutWorkItemsInput = {
+  where: Prisma.ProjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutWorkItemsInput, Prisma.ProjectUncheckedCreateWithoutWorkItemsInput>
+}
+
+export type ProjectUpsertWithoutWorkItemsInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutWorkItemsInput, Prisma.ProjectUncheckedUpdateWithoutWorkItemsInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutWorkItemsInput, Prisma.ProjectUncheckedCreateWithoutWorkItemsInput>
+  where?: Prisma.ProjectWhereInput
+}
+
+export type ProjectUpdateToOneWithWhereWithoutWorkItemsInput = {
+  where?: Prisma.ProjectWhereInput
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutWorkItemsInput, Prisma.ProjectUncheckedUpdateWithoutWorkItemsInput>
+}
+
+export type ProjectUpdateWithoutWorkItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
+  productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
+  developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
+  queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
+  epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectUncheckedUpdateWithoutWorkItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
+  productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
+  developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
+  queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
+  epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
+}
+
 export type ProjectCreateWithoutRepositoryInput = {
   id?: string
   name: string
@@ -438,6 +616,8 @@ export type ProjectCreateWithoutRepositoryInput = {
   productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
+  epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
+  workItems?: Prisma.WorkItemCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutRepositoryInput = {
@@ -450,6 +630,8 @@ export type ProjectUncheckedCreateWithoutRepositoryInput = {
   productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
+  epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput
+  workItems?: Prisma.WorkItemUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutRepositoryInput = {
@@ -478,6 +660,8 @@ export type ProjectUpdateWithoutRepositoryInput = {
   productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
+  epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
+  workItems?: Prisma.WorkItemUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutRepositoryInput = {
@@ -490,6 +674,8 @@ export type ProjectUncheckedUpdateWithoutRepositoryInput = {
   productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
+  epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
+  workItems?: Prisma.WorkItemUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutQueueLimitsInput = {
@@ -502,6 +688,8 @@ export type ProjectCreateWithoutQueueLimitsInput = {
   repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
+  epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
+  workItems?: Prisma.WorkItemCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutQueueLimitsInput = {
@@ -514,6 +702,8 @@ export type ProjectUncheckedCreateWithoutQueueLimitsInput = {
   repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
+  epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput
+  workItems?: Prisma.WorkItemUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutQueueLimitsInput = {
@@ -542,6 +732,8 @@ export type ProjectUpdateWithoutQueueLimitsInput = {
   repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
+  epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
+  workItems?: Prisma.WorkItemUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutQueueLimitsInput = {
@@ -554,6 +746,8 @@ export type ProjectUncheckedUpdateWithoutQueueLimitsInput = {
   repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
+  epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
+  workItems?: Prisma.WorkItemUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutProductSpecInput = {
@@ -566,6 +760,8 @@ export type ProjectCreateWithoutProductSpecInput = {
   repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
+  epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
+  workItems?: Prisma.WorkItemCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutProductSpecInput = {
@@ -578,6 +774,8 @@ export type ProjectUncheckedCreateWithoutProductSpecInput = {
   repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
+  epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput
+  workItems?: Prisma.WorkItemUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutProductSpecInput = {
@@ -606,6 +804,8 @@ export type ProjectUpdateWithoutProductSpecInput = {
   repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
+  epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
+  workItems?: Prisma.WorkItemUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutProductSpecInput = {
@@ -618,6 +818,8 @@ export type ProjectUncheckedUpdateWithoutProductSpecInput = {
   repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
+  epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
+  workItems?: Prisma.WorkItemUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutDevelopmentPlanInput = {
@@ -630,6 +832,8 @@ export type ProjectCreateWithoutDevelopmentPlanInput = {
   repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
+  epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
+  workItems?: Prisma.WorkItemCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutDevelopmentPlanInput = {
@@ -642,6 +846,8 @@ export type ProjectUncheckedCreateWithoutDevelopmentPlanInput = {
   repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
+  epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput
+  workItems?: Prisma.WorkItemUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutDevelopmentPlanInput = {
@@ -670,6 +876,8 @@ export type ProjectUpdateWithoutDevelopmentPlanInput = {
   repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
+  epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
+  workItems?: Prisma.WorkItemUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutDevelopmentPlanInput = {
@@ -682,8 +890,48 @@ export type ProjectUncheckedUpdateWithoutDevelopmentPlanInput = {
   repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
+  epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
+  workItems?: Prisma.WorkItemUncheckedUpdateManyWithoutProjectNestedInput
 }
 
+
+/**
+ * Count Type ProjectCountOutputType
+ */
+
+export type ProjectCountOutputType = {
+  epics: number
+  workItems: number
+}
+
+export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  epics?: boolean | ProjectCountOutputTypeCountEpicsArgs
+  workItems?: boolean | ProjectCountOutputTypeCountWorkItemsArgs
+}
+
+/**
+ * ProjectCountOutputType without action
+ */
+export type ProjectCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProjectCountOutputType
+   */
+  select?: Prisma.ProjectCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ProjectCountOutputType without action
+ */
+export type ProjectCountOutputTypeCountEpicsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EpicWhereInput
+}
+
+/**
+ * ProjectCountOutputType without action
+ */
+export type ProjectCountOutputTypeCountWorkItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WorkItemWhereInput
+}
 
 
 export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -697,6 +945,9 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   productSpec?: boolean | Prisma.Project$productSpecArgs<ExtArgs>
   developmentPlan?: boolean | Prisma.Project$developmentPlanArgs<ExtArgs>
   queueLimits?: boolean | Prisma.Project$queueLimitsArgs<ExtArgs>
+  epics?: boolean | Prisma.Project$epicsArgs<ExtArgs>
+  workItems?: boolean | Prisma.Project$workItemsArgs<ExtArgs>
+  _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
 
 export type ProjectSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -732,6 +983,9 @@ export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   productSpec?: boolean | Prisma.Project$productSpecArgs<ExtArgs>
   developmentPlan?: boolean | Prisma.Project$developmentPlanArgs<ExtArgs>
   queueLimits?: boolean | Prisma.Project$queueLimitsArgs<ExtArgs>
+  epics?: boolean | Prisma.Project$epicsArgs<ExtArgs>
+  workItems?: boolean | Prisma.Project$workItemsArgs<ExtArgs>
+  _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProjectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 export type ProjectIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -743,6 +997,8 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     productSpec: Prisma.$ProductSpecPayload<ExtArgs> | null
     developmentPlan: Prisma.$DevelopmentPlanPayload<ExtArgs> | null
     queueLimits: Prisma.$ProjectQueueLimitsPayload<ExtArgs> | null
+    epics: Prisma.$EpicPayload<ExtArgs>[]
+    workItems: Prisma.$WorkItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1149,6 +1405,8 @@ export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.
   productSpec<T extends Prisma.Project$productSpecArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$productSpecArgs<ExtArgs>>): Prisma.Prisma__ProductSpecClient<runtime.Types.Result.GetResult<Prisma.$ProductSpecPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   developmentPlan<T extends Prisma.Project$developmentPlanArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$developmentPlanArgs<ExtArgs>>): Prisma.Prisma__DevelopmentPlanClient<runtime.Types.Result.GetResult<Prisma.$DevelopmentPlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   queueLimits<T extends Prisma.Project$queueLimitsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$queueLimitsArgs<ExtArgs>>): Prisma.Prisma__ProjectQueueLimitsClient<runtime.Types.Result.GetResult<Prisma.$ProjectQueueLimitsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  epics<T extends Prisma.Project$epicsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$epicsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EpicPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  workItems<T extends Prisma.Project$workItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$workItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1645,6 +1903,54 @@ export type Project$queueLimitsArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   include?: Prisma.ProjectQueueLimitsInclude<ExtArgs> | null
   where?: Prisma.ProjectQueueLimitsWhereInput
+}
+
+/**
+ * Project.epics
+ */
+export type Project$epicsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Epic
+   */
+  select?: Prisma.EpicSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Epic
+   */
+  omit?: Prisma.EpicOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EpicInclude<ExtArgs> | null
+  where?: Prisma.EpicWhereInput
+  orderBy?: Prisma.EpicOrderByWithRelationInput | Prisma.EpicOrderByWithRelationInput[]
+  cursor?: Prisma.EpicWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EpicScalarFieldEnum | Prisma.EpicScalarFieldEnum[]
+}
+
+/**
+ * Project.workItems
+ */
+export type Project$workItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WorkItem
+   */
+  select?: Prisma.WorkItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the WorkItem
+   */
+  omit?: Prisma.WorkItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WorkItemInclude<ExtArgs> | null
+  where?: Prisma.WorkItemWhereInput
+  orderBy?: Prisma.WorkItemOrderByWithRelationInput | Prisma.WorkItemOrderByWithRelationInput[]
+  cursor?: Prisma.WorkItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WorkItemScalarFieldEnum | Prisma.WorkItemScalarFieldEnum[]
 }
 
 /**

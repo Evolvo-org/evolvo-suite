@@ -1,8 +1,12 @@
 import {
   defaultProjectQueueLimits,
   projectLifecycleStatuses,
+  workflowStates,
 } from '@repo/shared';
 import { z } from 'zod';
+
+const workItemKinds = ['task', 'subtask'] as const;
+const workItemPriorities = ['low', 'medium', 'high', 'urgent'] as const;
 
 const projectQueueLimitsSchema = z.object({
   maxPlanning: z.number().int().positive(),
@@ -77,6 +81,96 @@ export const updateDevelopmentPlanSchema = z.object({
 
 export const activateDevelopmentPlanVersionSchema = z.object({
   versionId: z.string().trim().min(1),
+});
+
+export const createEpicSchema = z.object({
+  title: z.string().trim().min(1).max(160),
+  summary: z.string().trim().min(1).max(5000).optional(),
+  sortOrder: z.number().int().nonnegative().optional(),
+});
+
+export const updateEpicSchema = z
+  .object({
+    title: z.string().trim().min(1).max(160).optional(),
+    summary: z.string().trim().min(1).max(5000).nullable().optional(),
+    sortOrder: z.number().int().nonnegative().optional(),
+  })
+  .refine(
+    (value) =>
+      value.title !== undefined ||
+      value.summary !== undefined ||
+      value.sortOrder !== undefined,
+    {
+      message: 'At least one epic field must be provided.',
+    },
+  );
+
+export const createWorkItemSchema = z.object({
+  epicId: z.string().trim().min(1),
+  parentId: z.string().trim().min(1).optional(),
+  kind: z.enum(workItemKinds),
+  title: z.string().trim().min(1).max(200),
+  description: z.string().trim().min(1).max(10000).optional(),
+  priority: z.enum(workItemPriorities).optional(),
+  sortOrder: z.number().int().nonnegative().optional(),
+});
+
+export const updateWorkItemSchema = z
+  .object({
+    epicId: z.string().trim().min(1).optional(),
+    parentId: z.string().trim().min(1).nullable().optional(),
+    title: z.string().trim().min(1).max(200).optional(),
+    description: z.string().trim().min(1).max(10000).nullable().optional(),
+    priority: z.enum(workItemPriorities).optional(),
+    sortOrder: z.number().int().nonnegative().optional(),
+  })
+  .refine(
+    (value) =>
+      value.epicId !== undefined ||
+      value.parentId !== undefined ||
+      value.title !== undefined ||
+      value.description !== undefined ||
+      value.priority !== undefined ||
+      value.sortOrder !== undefined,
+    {
+      message: 'At least one work item field must be provided.',
+    },
+  );
+
+export const updateWorkItemPrioritySchema = z.object({
+  priority: z.enum(workItemPriorities),
+});
+
+export const updateWorkItemDependenciesSchema = z.object({
+  dependencyIds: z.array(z.string().trim().min(1)).max(50),
+});
+
+export const createAcceptanceCriterionSchema = z.object({
+  text: z.string().trim().min(1).max(2000),
+  isComplete: z.boolean().optional(),
+  sortOrder: z.number().int().nonnegative().optional(),
+});
+
+export const updateAcceptanceCriterionSchema = z
+  .object({
+    text: z.string().trim().min(1).max(2000).optional(),
+    isComplete: z.boolean().optional(),
+    sortOrder: z.number().int().nonnegative().optional(),
+  })
+  .refine(
+    (value) =>
+      value.text !== undefined ||
+      value.isComplete !== undefined ||
+      value.sortOrder !== undefined,
+    {
+      message: 'At least one acceptance criterion field must be provided.',
+    },
+  );
+
+export const transitionWorkItemSchema = z.object({
+  toState: z.enum(workflowStates),
+  reason: z.string().trim().min(1).max(2000).optional(),
+  operatorOverride: z.boolean().optional(),
 });
 
 export const environmentSchema = z.object({

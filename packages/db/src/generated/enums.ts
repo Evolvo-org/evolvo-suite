@@ -9,6 +9,39 @@
 * 🟢 You can import this file directly.
 */
 
+export const WorkItemState = {
+  INBOX: 'INBOX',
+  PLANNING: 'PLANNING',
+  READY_FOR_DEV: 'READY_FOR_DEV',
+  IN_DEV: 'IN_DEV',
+  READY_FOR_REVIEW: 'READY_FOR_REVIEW',
+  IN_REVIEW: 'IN_REVIEW',
+  READY_FOR_RELEASE: 'READY_FOR_RELEASE',
+  REQUIRES_HUMAN_INTERVENTION: 'REQUIRES_HUMAN_INTERVENTION',
+  RELEASED: 'RELEASED'
+} as const
+
+export type WorkItemState = (typeof WorkItemState)[keyof typeof WorkItemState]
+
+
+export const WorkItemKind = {
+  TASK: 'TASK',
+  SUBTASK: 'SUBTASK'
+} as const
+
+export type WorkItemKind = (typeof WorkItemKind)[keyof typeof WorkItemKind]
+
+
+export const WorkItemPriority = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
+} as const
+
+export type WorkItemPriority = (typeof WorkItemPriority)[keyof typeof WorkItemPriority]
+
+
 export const ProjectLifecycleStatus = {
   DRAFT: 'DRAFT',
   ACTIVE: 'ACTIVE',

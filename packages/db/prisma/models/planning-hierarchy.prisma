@@ -1,0 +1,106 @@
+enum WorkItemState {
+  INBOX
+  PLANNING
+  READY_FOR_DEV
+  IN_DEV
+  READY_FOR_REVIEW
+  IN_REVIEW
+  READY_FOR_RELEASE
+  REQUIRES_HUMAN_INTERVENTION
+  RELEASED
+}
+
+enum WorkItemKind {
+  TASK
+  SUBTASK
+}
+
+enum WorkItemPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model Epic {
+  id                String           @id @default(cuid())
+  projectId         String
+  developmentPlanId String?
+  title             String
+  summary           String?          @db.Text
+  sortOrder         Int              @default(0)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  project           Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  developmentPlan   DevelopmentPlan? @relation(fields: [developmentPlanId], references: [id], onDelete: SetNull)
+  workItems         WorkItem[]
+
+  @@index([projectId, sortOrder])
+}
+
+model WorkItem {
+  id                   String               @id @default(cuid())
+  projectId            String
+  epicId               String
+  parentId             String?
+  kind                 WorkItemKind
+  state                WorkItemState        @default(INBOX)
+  title                String
+  description          String?              @db.Text
+  priority             WorkItemPriority     @default(MEDIUM)
+  sortOrder            Int                  @default(0)
+  createdAt            DateTime             @default(now())
+  stateUpdatedAt       DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  project              Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  epic                 Epic                 @relation(fields: [epicId], references: [id], onDelete: Cascade)
+  parent               WorkItem?            @relation("WorkItemChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  children             WorkItem[]           @relation("WorkItemChildren")
+  acceptanceCriteria   AcceptanceCriterion[]
+  dependencies         WorkItemDependency[] @relation("WorkItemDependencies")
+  dependentWorkItems   WorkItemDependency[] @relation("WorkItemDependents")
+  transitions          WorkItemStateTransition[]
+
+  @@index([projectId, state, sortOrder])
+  @@index([projectId, epicId, parentId, sortOrder])
+}
+
+model AcceptanceCriterion {
+  id         String   @id @default(cuid())
+  workItemId String
+  text       String   @db.Text
+  isComplete Boolean  @default(false)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  workItem   WorkItem @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+
+  @@index([workItemId, sortOrder])
+}
+
+model WorkItemDependency {
+  id                  String   @id @default(cuid())
+  workItemId          String
+  dependsOnWorkItemId String
+  createdAt           DateTime @default(now())
+  workItem            WorkItem @relation("WorkItemDependencies", fields: [workItemId], references: [id], onDelete: Cascade)
+  dependsOnWorkItem   WorkItem @relation("WorkItemDependents", fields: [dependsOnWorkItemId], references: [id], onDelete: Cascade)
+
+  @@unique([workItemId, dependsOnWorkItemId])
+  @@index([dependsOnWorkItemId])
+}
+
+model WorkItemStateTransition {
+  id                 String        @id @default(cuid())
+  projectId          String
+  workItemId         String
+  fromState          WorkItemState
+  toState            WorkItemState
+  reason             String?       @db.Text
+  isOperatorOverride Boolean       @default(false)
+  createdAt          DateTime      @default(now())
+  workItem           WorkItem      @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
+  @@index([workItemId, createdAt])
+}
