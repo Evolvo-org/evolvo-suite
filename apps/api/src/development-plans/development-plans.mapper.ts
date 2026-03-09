@@ -1,4 +1,4 @@
-import type { DevelopmentPlan, PlanVersion } from '@repo/db';
+import type { DevelopmentPlan, PlanVersion } from '@repo/db/client';
 import type {
   DevelopmentPlanResponse,
   DevelopmentPlanVersionsResponse,

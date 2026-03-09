@@ -4,10 +4,10 @@ import type {
   UpsertProductSpecRequest,
 } from '@repo/shared';
 
-import { PrismaService } from '../prisma/prisma.service';
-import { ProjectsService } from '../projects/projects.service';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { ProjectsService } from '../projects/projects.service.js';
 
-import { mapProductSpec } from './product-specs.mapper';
+import { mapProductSpec } from './product-specs.mapper.js';
 
 @Injectable()
 export class ProductSpecsService {

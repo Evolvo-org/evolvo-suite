@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 
-import { ProjectsModule } from '../projects/projects.module';
+import { ProjectsModule } from '../projects/projects.module.js';
 
-import { DevelopmentPlansController } from './development-plans.controller';
-import { DevelopmentPlansService } from './development-plans.service';
+import { DevelopmentPlansController } from './development-plans.controller.js';
+import { DevelopmentPlansService } from './development-plans.service.js';
 
 @Module({
   imports: [ProjectsModule],

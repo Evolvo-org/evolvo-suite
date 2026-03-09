@@ -10,9 +10,9 @@ import {
 import type { UpsertProductSpecRequest } from '@repo/shared';
 import { upsertProductSpecSchema } from '@repo/validation';
 
-import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
+import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe.js';
 
-import { ProductSpecsService } from './product-specs.service';
+import { ProductSpecsService } from './product-specs.service.js';
 
 @Controller('projects/:projectId/product-spec')
 export class ProductSpecsController {

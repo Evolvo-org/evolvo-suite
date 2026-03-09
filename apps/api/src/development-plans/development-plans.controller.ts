@@ -19,9 +19,9 @@ import {
   updateDevelopmentPlanSchema,
 } from '@repo/validation';
 
-import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
+import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe.js';
 
-import { DevelopmentPlansService } from './development-plans.service';
+import { DevelopmentPlansService } from './development-plans.service.js';
 
 @Controller('projects/:projectId/development-plan')
 export class DevelopmentPlansController {

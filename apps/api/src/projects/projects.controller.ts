@@ -24,9 +24,9 @@ import {
   validateProjectRepositorySchema,
 } from '@repo/validation';
 
-import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
+import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe.js';
 
-import { ProjectsService } from './projects.service';
+import { ProjectsService } from './projects.service.js';
 
 @Controller('projects')
 export class ProjectsController {

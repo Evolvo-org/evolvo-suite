@@ -12,13 +12,13 @@ import type {
   UpdateDevelopmentPlanRequest,
 } from '@repo/shared';
 
-import { PrismaService } from '../prisma/prisma.service';
-import { ProjectsService } from '../projects/projects.service';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { ProjectsService } from '../projects/projects.service.js';
 
 import {
   mapDevelopmentPlan,
   mapDevelopmentPlanVersions,
-} from './development-plans.mapper';
+} from './development-plans.mapper.js';
 
 @Injectable()
 export class DevelopmentPlansService {

@@ -1,4 +1,4 @@
-import type { ProductSpec } from '@repo/db';
+import type { ProductSpec } from '@repo/db/client'
 import type { ProductSpecResponse } from '@repo/shared';
 
 export const mapProductSpec = (

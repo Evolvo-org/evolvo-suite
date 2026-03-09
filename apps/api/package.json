@@ -2,6 +2,7 @@
   "name": "api",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "nest start --watch",
     "build": "nest build",
@@ -15,10 +16,11 @@
     "lint": "biome lint --config-path ../../packages/biome-config/nest.json ./src ./test"
   },
   "dependencies": {
-    "@nestjs/config": "^4.0.2",
     "@nestjs/common": "^11.1.16",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.16",
     "@nestjs/platform-express": "^11.1.16",
+    "@prisma/adapter-pg": "^7.4.2",
     "@repo/db": "workspace:*",
     "@repo/shared": "workspace:*",
     "@repo/validation": "workspace:*",
@@ -27,15 +29,15 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^2.1.8",
     "@nestjs/cli": "^11.0.16",
     "@nestjs/schematics": "^11.0.9",
     "@nestjs/testing": "^11.1.16",
-    "@repo/vitest-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@repo/vitest-config": "workspace:*",
     "@types/express": "^5.0.6",
     "@types/node": "^22.19.3",
     "@types/supertest": "^7.2.0",
+    "@vitest/coverage-v8": "^2.1.8",
     "source-map-support": "^0.5.21",
     "supertest": "^7.2.2",
     "ts-loader": "^9.5.4",

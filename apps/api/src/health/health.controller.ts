@@ -1,7 +1,7 @@
 import { Controller, Get, Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import type { ApplicationEnvironment } from '../config/environment';
+import type { ApplicationEnvironment } from '../config/environment.js';
 
 @Controller('health')
 export class HealthController {

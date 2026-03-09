@@ -5,7 +5,7 @@ import type {
   ProductSpec,
   DevelopmentPlan,
   PlanVersion,
-} from '@repo/db';
+} from '@repo/db/client';
 import { defaultProjectQueueLimits } from '@repo/shared';
 import type {
   ProjectDetail,

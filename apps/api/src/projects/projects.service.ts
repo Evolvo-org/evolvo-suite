@@ -16,14 +16,14 @@ import type {
   UpdateProjectRequest,
 } from '@repo/shared';
 
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service.js';
 
 import {
   mapProjectDetail,
   mapProjectListItem,
   mapProjectRepositoryConfig,
   mapProjectStatus,
-} from './projects.mapper';
+} from './projects.mapper.js';
 
 const createRepositoryWriteData = (repository: ProjectRepositoryInput) => ({
   provider: 'GITHUB' as const,

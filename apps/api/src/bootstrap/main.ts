@@ -3,10 +3,10 @@ import type { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 
-import { AppModule } from '../app/app.module';
-import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
-import { RequestLoggingInterceptor } from '../common/interceptors/request-logging.interceptor';
-import type { ApplicationEnvironment } from '../config/environment';
+import { AppModule } from '../app/app.module.js';
+import { HttpExceptionFilter } from '../common/filters/http-exception.filter.js';
+import { RequestLoggingInterceptor } from '../common/interceptors/request-logging.interceptor.js';
+import type { ApplicationEnvironment } from '../config/environment.js';
 
 export const configureApiApp = (
   app: INestApplication,
