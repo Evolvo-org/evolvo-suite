@@ -27,4 +27,27 @@ describe('AppController (e2e)', () => {
         expect(response.body.status).toBe('ok');
       });
   });
+
+  it('/api/v1/projects/repository/validate (POST)', () => {
+    return request(app.getHttpServer())
+      .post('/api/v1/projects/repository/validate')
+      .send({
+        provider: 'github',
+        owner: 'Evolvo-org',
+        name: 'evolvo-suite',
+        url: 'https://github.com/Evolvo-org/evolvo-suite.git',
+        defaultBranch: 'main',
+        baseBranch: 'main',
+      })
+      .expect(201)
+      .expect((response) => {
+        expect(response.body.isValid).toBe(true);
+        expect(response.body.normalizedUrl).toBe(
+          'https://github.com/Evolvo-org/evolvo-suite',
+        );
+        expect(response.body.warnings).toContain(
+          'Repository URL was normalized to remove the trailing .git suffix.',
+        );
+      });
+  });
 });

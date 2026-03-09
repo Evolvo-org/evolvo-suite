@@ -10,10 +10,11 @@ import { defaultProjectQueueLimits } from '@repo/shared';
 import type {
   ProjectDetail,
   ProjectListItem,
+  ProjectRepositoryConfigResponse,
   ProjectStatusResponse,
 } from '@repo/shared';
 
-const mapRepository = (repository: ProjectRepository) => ({
+export const mapRepository = (repository: ProjectRepository) => ({
   provider: 'github' as const,
   owner: repository.owner,
   name: repository.name,
@@ -148,4 +149,13 @@ export const mapProjectStatus = (project: Project): ProjectStatusResponse => ({
   lifecycleStatus: mapLifecycleStatus(project.lifecycleStatus),
   runtimeStatus: 'offline',
   updatedAt: project.updatedAt.toISOString(),
+});
+
+export const mapProjectRepositoryConfig = (
+  projectId: string,
+  repository: ProjectRepository,
+): ProjectRepositoryConfigResponse => ({
+  projectId,
+  repository: mapRepository(repository),
+  updatedAt: repository.updatedAt.toISOString(),
 });

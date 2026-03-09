@@ -13,6 +13,22 @@ export interface ProjectRepositoryInput {
   baseBranch: string;
 }
 
+export interface ProjectRepositoryConfigResponse {
+  projectId: string;
+  repository: ProjectRepositoryInput;
+  updatedAt: string;
+}
+
+export interface ProjectRepositoryValidationResponse {
+  provider: 'github';
+  isValid: boolean;
+  normalizedUrl: string;
+  issues: string[];
+  warnings: string[];
+  inferredOwner: string | null;
+  inferredName: string | null;
+}
+
 export interface CreateProjectRequest {
   name: string;
   repository: ProjectRepositoryInput;

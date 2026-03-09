@@ -3,7 +3,7 @@ import { listProjects, projectQueryKeys } from '@repo/api-client';
 
 import { ProjectListPanel } from '../../../src/features/projects/components/project-list-panel';
 import { prefetchQuerySafely } from '../../../src/lib/prefetch-query-safely';
-import { createQueryClient } from '../../../src/lib/query-client';
+import { getQueryClient } from '../../../src/lib/query-client';
 
 export default async function ProjectsPage({
   searchParams,
@@ -12,7 +12,7 @@ export default async function ProjectsPage({
 }) {
   const resolvedSearchParams = await searchParams;
   const query = resolvedSearchParams.query?.trim() ?? '';
-  const queryClient = createQueryClient();
+  const queryClient = getQueryClient();
 
   await prefetchQuerySafely(queryClient, {
     queryKey: projectQueryKeys.list(query ? { query } : undefined),

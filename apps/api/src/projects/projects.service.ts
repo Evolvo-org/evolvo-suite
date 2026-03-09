@@ -9,6 +9,9 @@ import type {
   CreateProjectRequest,
   ProjectDetail,
   ProjectListFilters,
+  ProjectRepositoryConfigResponse,
+  ProjectRepositoryInput,
+  ProjectRepositoryValidationResponse,
   ProjectStatusResponse,
   UpdateProjectRequest,
 } from '@repo/shared';
@@ -18,8 +21,46 @@ import { PrismaService } from '../prisma/prisma.service';
 import {
   mapProjectDetail,
   mapProjectListItem,
+  mapProjectRepositoryConfig,
   mapProjectStatus,
 } from './projects.mapper';
+
+const createRepositoryWriteData = (repository: ProjectRepositoryInput) => ({
+  provider: 'GITHUB' as const,
+  owner: repository.owner.trim(),
+  name: repository.name.trim(),
+  url: repository.url.trim(),
+  defaultBranch: repository.defaultBranch.trim(),
+  baseBranch: repository.baseBranch.trim(),
+});
+
+const parseGithubRepositoryUrl = (
+  value: string,
+): { owner: string | null; name: string | null; normalizedUrl: string } => {
+  try {
+    const url = new URL(value);
+    const segments = url.pathname
+      .replace(/\.git$/, '')
+      .split('/')
+      .filter(Boolean);
+    const owner = segments[0] ?? null;
+    const name = segments[1] ?? null;
+    const normalizedUrl =
+      owner && name ? `https://github.com/${owner}/${name}` : value;
+
+    return {
+      owner,
+      name,
+      normalizedUrl,
+    };
+  } catch {
+    return {
+      owner: null,
+      name: null,
+      normalizedUrl: value,
+    };
+  }
+};
 
 const mapProjectLifecycleStatus = (
   value: ProjectListFilters['lifecycleStatus'],
@@ -67,12 +108,7 @@ export class ProjectsService {
           slug,
           repository: {
             create: {
-              provider: 'GITHUB',
-              owner: payload.repository.owner.trim(),
-              name: payload.repository.name.trim(),
-              url: payload.repository.url.trim(),
-              defaultBranch: payload.repository.defaultBranch.trim(),
-              baseBranch: payload.repository.baseBranch.trim(),
+              ...createRepositoryWriteData(payload.repository),
             },
           },
           queueLimits: {
@@ -217,21 +253,8 @@ export class ProjectsService {
         repository: payload.repository
           ? {
               upsert: {
-                create: {
-                  provider: 'GITHUB',
-                  owner: payload.repository.owner.trim(),
-                  name: payload.repository.name.trim(),
-                  url: payload.repository.url.trim(),
-                  defaultBranch: payload.repository.defaultBranch.trim(),
-                  baseBranch: payload.repository.baseBranch.trim(),
-                },
-                update: {
-                  owner: payload.repository.owner.trim(),
-                  name: payload.repository.name.trim(),
-                  url: payload.repository.url.trim(),
-                  defaultBranch: payload.repository.defaultBranch.trim(),
-                  baseBranch: payload.repository.baseBranch.trim(),
-                },
+                create: createRepositoryWriteData(payload.repository),
+                update: createRepositoryWriteData(payload.repository),
               },
             }
           : undefined,
@@ -297,6 +320,96 @@ export class ProjectsService {
     }
 
     return mapProjectStatus(project);
+  }
+
+  public async getRepositoryConfig(
+    projectId: string,
+  ): Promise<ProjectRepositoryConfigResponse> {
+    const repository = await this.prisma.projectRepository.findUnique({
+      where: { projectId },
+    });
+
+    if (!repository) {
+      throw new NotFoundException(
+        'Project repository configuration not found.',
+      );
+    }
+
+    return mapProjectRepositoryConfig(projectId, repository);
+  }
+
+  public async upsertRepositoryConfig(
+    projectId: string,
+    payload: ProjectRepositoryInput,
+  ): Promise<ProjectRepositoryConfigResponse> {
+    await this.ensureProjectExists(projectId);
+
+    const repository = await this.prisma.projectRepository.upsert({
+      where: { projectId },
+      create: {
+        projectId,
+        ...createRepositoryWriteData(payload),
+      },
+      update: createRepositoryWriteData(payload),
+    });
+
+    return mapProjectRepositoryConfig(projectId, repository);
+  }
+
+  public validateRepositoryConfig(
+    payload: ProjectRepositoryInput,
+  ): ProjectRepositoryValidationResponse {
+    const issues: string[] = [];
+    const warnings: string[] = [];
+    const parsedUrl = parseGithubRepositoryUrl(payload.url.trim());
+
+    try {
+      const url = new URL(payload.url.trim());
+
+      if (url.hostname !== 'github.com') {
+        issues.push('Repository URL must point to github.com.');
+      }
+    } catch {
+      issues.push('Repository URL must be a valid URL.');
+    }
+
+    if (!parsedUrl.owner || !parsedUrl.name) {
+      issues.push(
+        'Repository URL must include both owner and repository name.',
+      );
+    }
+
+    if (parsedUrl.owner && parsedUrl.owner !== payload.owner.trim()) {
+      issues.push('Repository URL owner does not match the provided owner.');
+    }
+
+    if (parsedUrl.name && parsedUrl.name !== payload.name.trim()) {
+      issues.push(
+        'Repository URL name does not match the provided repository name.',
+      );
+    }
+
+    if (payload.baseBranch.trim() !== payload.defaultBranch.trim()) {
+      warnings.push(
+        'Base branch differs from default branch. Confirm release and merge strategy expectations.',
+      );
+    }
+
+    if (payload.url.trim().endsWith('.git')) {
+      warnings.push(
+        'Repository URL was normalized to remove the trailing .git suffix.',
+      );
+    }
+
+    return {
+      provider: 'github',
+      isValid: issues.length === 0,
+      normalizedUrl: parsedUrl.normalizedUrl,
+      issues,
+      warnings,
+      inferredOwner: parsedUrl.owner,
+      inferredName: parsedUrl.name,
+    };
   }
 
   public async ensureProjectExists(projectId: string): Promise<void> {

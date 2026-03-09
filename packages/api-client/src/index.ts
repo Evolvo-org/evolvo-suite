@@ -10,6 +10,9 @@ import type {
   ProjectDetail,
   ProjectListFilters,
   ProjectListItem,
+  ProjectRepositoryConfigResponse,
+  ProjectRepositoryInput,
+  ProjectRepositoryValidationResponse,
   ProjectStatusResponse,
   UpdateDevelopmentPlanRequest,
   UpdateProjectRequest,
@@ -96,6 +99,8 @@ export const projectQueryKeys = {
   list: (filters?: ProjectListFilters) =>
     ['projects', 'list', filters ?? {}] as const,
   detail: (projectId: string) => ['projects', 'detail', projectId] as const,
+  repository: (projectId: string) =>
+    ['projects', 'repository', projectId] as const,
   status: (projectId: string) => ['projects', 'status', projectId] as const,
   productSpec: (projectId: string) =>
     ['projects', projectId, 'product-spec'] as const,
@@ -141,6 +146,42 @@ export const getProjectStatus = async (
   return fetchJson<ProjectStatusResponse>(`/projects/${projectId}/status`, {
     method: 'GET',
   });
+};
+
+export const getProjectRepository = async (
+  projectId: string,
+): Promise<ProjectRepositoryConfigResponse> => {
+  return fetchJson<ProjectRepositoryConfigResponse>(
+    `/projects/${projectId}/repository`,
+    {
+      method: 'GET',
+    },
+  );
+};
+
+export const updateProjectRepository = async (
+  projectId: string,
+  payload: ProjectRepositoryInput,
+): Promise<MutationResponse<ProjectRepositoryConfigResponse>> => {
+  return fetchJson<MutationResponse<ProjectRepositoryConfigResponse>>(
+    `/projects/${projectId}/repository`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const validateProjectRepository = async (
+  payload: ProjectRepositoryInput,
+): Promise<ProjectRepositoryValidationResponse> => {
+  return fetchJson<ProjectRepositoryValidationResponse>(
+    '/projects/repository/validate',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
 };
 
 export const createProject = async (

@@ -55,6 +55,10 @@ export const projectListFiltersSchema = z.object({
   lifecycleStatus: z.enum(projectLifecycleStatuses).optional(),
 });
 
+export const updateProjectRepositorySchema = projectRepositorySchema;
+
+export const validateProjectRepositorySchema = projectRepositorySchema;
+
 export const upsertProductSpecSchema = z.object({
   content: z.string().trim().min(1),
 });
@@ -101,4 +105,8 @@ export const runtimeEnvironmentSchema = z.object({
   HEARTBEAT_INTERVAL_MS: z.coerce.number().int().positive().default(30000),
 });
 
-export { defaultProjectQueueLimits, projectQueueLimitsSchema };
+export {
+  defaultProjectQueueLimits,
+  projectQueueLimitsSchema,
+  projectRepositorySchema,
+};

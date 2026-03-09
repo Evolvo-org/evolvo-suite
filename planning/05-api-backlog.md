@@ -5,30 +5,30 @@
 Build a NestJS API that acts as the only backend authority for Evolvo v2.
 
 ## API-001 - Create NestJS app shell
-**Status:** todo  
+**Status:** done  
 **Outcome:** A bootable NestJS app exists with configuration loading, health endpoint, module boundaries, and environment validation.
 
 Tasks:
-- [ ] Create NestJS app in `apps/api`
-- [ ] Add config module and env validation
-- [ ] Add `/health` endpoint
-- [ ] Add base error filter strategy
-- [ ] Add logging bootstrap
-- [ ] Add versioned API prefix
+- [x] Create NestJS app in `apps/api`
+- [x] Add config module and env validation
+- [x] Add `/health` endpoint
+- [x] Add base error filter strategy
+- [x] Add logging bootstrap
+- [x] Add versioned API prefix
 
 ## API-002 - Add Prisma integration
-**Status:** todo  
+**Status:** done  
 **Outcome:** The API can connect to the cloud database via Prisma.
 
 Tasks:
-- [ ] Add Prisma package usage from `packages/db`
-- [ ] Create Prisma service for Nest
-- [ ] Add app lifecycle hooks for clean shutdown
-- [ ] Add migration execution strategy
-- [ ] Add local dev DB instructions
+- [x] Add Prisma package usage from `packages/db`
+- [x] Create Prisma service for Nest
+- [x] Add app lifecycle hooks for clean shutdown
+- [x] Add migration execution strategy
+- [x] Add local dev DB instructions
 
 ## API-003 - Establish module boundaries
-**Status:** todo  
+**Status:** done  
 **Outcome:** Domain modules exist with clear ownership.
 
 Modules:
@@ -48,20 +48,20 @@ Modules:
 - logs
 
 Tasks:
-- [ ] Create initial module structure
-- [ ] Define import rules
-- [ ] Prevent circular coupling
+- [x] Create initial module structure
+- [x] Define import rules
+- [x] Prevent circular coupling
 
 ## API-004 - Create contract DTO layer
-**Status:** todo  
+**Status:** done  
 **Outcome:** Request and response DTOs are typed and shared.
 
 Tasks:
-- [ ] Define shared DTO patterns
-- [ ] Use zod or class-validator consistently
-- [ ] Create paginated response types
-- [ ] Create standard mutation response type
-- [ ] Export DTOs for `packages/api-client`
+- [x] Define shared DTO patterns
+- [x] Use zod or class-validator consistently
+- [x] Create paginated response types
+- [x] Create standard mutation response type
+- [x] Export DTOs for `packages/api-client`
 
 ## API-005 - Implement auth foundation
 **Status:** todo  
@@ -75,47 +75,47 @@ Tasks:
 - [ ] Add admin bypass rules
 
 ## API-006 - Implement project CRUD
-**Status:** todo  
+**Status:** done  
 **Outcome:** Projects can be created, viewed, updated, started, and stopped.
 
 Tasks:
-- [ ] Create project create endpoint
-- [ ] Create project list endpoint
-- [ ] Create project detail endpoint
-- [ ] Create project update endpoint
-- [ ] Create project start endpoint
-- [ ] Create project stop endpoint
-- [ ] Create project status endpoint
+- [x] Create project create endpoint
+- [x] Create project list endpoint
+- [x] Create project detail endpoint
+- [x] Create project update endpoint
+- [x] Create project start endpoint
+- [x] Create project stop endpoint
+- [x] Create project status endpoint
 
 ## API-007 - Add repository configuration endpoints
-**Status:** todo  
+**Status:** done  
 **Outcome:** Project repositories and runtime-relevant repo settings are persisted.
 
 Tasks:
-- [ ] Add repository config model
-- [ ] Add repository create/update endpoints
-- [ ] Add branch config fields
-- [ ] Add repo validation endpoint
+- [x] Add repository config model
+- [x] Add repository create/update endpoints
+- [x] Add branch config fields
+- [x] Add repo validation endpoint
 
 ## API-008 - Add product spec endpoints
-**Status:** todo  
+**Status:** done  
 **Outcome:** Product descriptions can be created and updated.
 
 Tasks:
-- [ ] Create product spec get endpoint
-- [ ] Create product spec upsert endpoint
-- [ ] Add spec version support if needed
-- [ ] Add validation rules
+- [x] Create product spec get endpoint
+- [x] Create product spec upsert endpoint
+- [x] Add spec version support if needed
+- [x] Add validation rules
 
 ## API-009 - Add development plan endpoints
-**Status:** todo  
+**Status:** done  
 **Outcome:** Development plans are versioned and editable.
 
 Tasks:
-- [ ] Create plan create endpoint
-- [ ] Create plan update endpoint
-- [ ] Create plan version list endpoint
-- [ ] Create active plan selection endpoint
+- [x] Create plan create endpoint
+- [x] Create plan update endpoint
+- [x] Create plan version list endpoint
+- [x] Create active plan selection endpoint
 
 ## API-010 - Add hierarchy endpoints
 **Status:** todo  

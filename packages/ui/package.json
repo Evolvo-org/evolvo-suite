@@ -7,7 +7,12 @@
     "./components/button/button": "./src/components/button/button.tsx",
     "./components/card/card": "./src/components/card/card.tsx",
     "./components/code/code": "./src/components/code/code.tsx",
+    "./components/dialog/dialog": "./src/components/dialog/dialog.tsx",
     "./components/input/input": "./src/components/input/input.tsx",
+    "./components/select/select": "./src/components/select/select.tsx",
+    "./components/sheet/sheet": "./src/components/sheet/sheet.tsx",
+    "./components/table/table": "./src/components/table/table.tsx",
+    "./components/tabs/tabs": "./src/components/tabs/tabs.tsx",
     "./components/textarea/textarea": "./src/components/textarea/textarea.tsx"
   },
   "scripts": {

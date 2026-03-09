@@ -5,64 +5,64 @@
 Build a Next.js operator interface that consumes the API only, preloads page data, and uses TanStack Query for all reads and writes.
 
 ## WEB-001 - Create Next.js app shell
-**Status:** todo  
+**Status:** done  
 **Outcome:** A bootable Next.js app exists with Tailwind, routing, and app layout shell.
 
 Tasks:
-- [ ] Create `apps/web`
-- [ ] Add Tailwind CSS
-- [ ] Add app shell layout
-- [ ] Add route grouping strategy
-- [ ] Add error and loading boundaries
+- [x] Create `apps/web`
+- [x] Add Tailwind CSS
+- [x] Add app shell layout
+- [x] Add route grouping strategy
+- [x] Add error and loading boundaries
 
 ## WEB-002 - Establish frontend architecture rules
-**Status:** todo  
+**Status:** done  
 **Outcome:** The frontend has agreed conventions for components, features, and data fetching.
 
 Tasks:
-- [ ] Define folder structure
-- [ ] Define one-component-per-file rule
-- [ ] Define page preload pattern
-- [ ] Define client/server component rules
-- [ ] Define query key naming rules
+- [x] Define folder structure
+- [x] Define one-component-per-file rule
+- [x] Define page preload pattern
+- [x] Define client/server component rules
+- [x] Define query key naming rules
 
 ## WEB-003 - Build `packages/ui`
-**Status:** todo  
+**Status:** done  
 **Outcome:** Shared UI primitives exist and are reusable.
 
 Tasks:
-- [ ] Add button component
-- [ ] Add input component
-- [ ] Add textarea component
-- [ ] Add select component
-- [ ] Add badge component
-- [ ] Add card component
-- [ ] Add dialog component
-- [ ] Add sheet/drawer component
-- [ ] Add table component
-- [ ] Add tabs component
+- [x] Add button component
+- [x] Add input component
+- [x] Add textarea component
+- [x] Add select component
+- [x] Add badge component
+- [x] Add card component
+- [x] Add dialog component
+- [x] Add sheet/drawer component
+- [x] Add table component
+- [x] Add tabs component
 
 ## WEB-004 - Add TanStack Query foundation
-**Status:** todo  
+**Status:** done  
 **Outcome:** The app uses a single standard query architecture.
 
 Tasks:
-- [ ] Add query client provider
-- [ ] Add dehydrate/hydrate support
-- [ ] Add default query config
-- [ ] Add mutation error handling
-- [ ] Add auth-aware fetch wrapper integration
+- [x] Add query client provider
+- [x] Add dehydrate/hydrate support
+- [x] Add default query config
+- [x] Add mutation error handling
+- [x] Add auth-aware fetch wrapper integration
 
 ## WEB-005 - Create typed API client integration
-**Status:** todo  
+**Status:** done  
 **Outcome:** The web app consumes typed API methods only.
 
 Tasks:
-- [ ] Add `packages/api-client`
-- [ ] Add query functions
-- [ ] Add mutation functions
-- [ ] Add shared response typing
-- [ ] Add query key helpers
+- [x] Add `packages/api-client`
+- [x] Add query functions
+- [x] Add mutation functions
+- [x] Add shared response typing
+- [x] Add query key helpers
 
 ## WEB-006 - Implement auth UI
 **Status:** todo  
@@ -87,59 +87,59 @@ Tasks:
 - [ ] Add usage snapshot
 
 ## WEB-008 - Build projects list page
-**Status:** todo  
+**Status:** done  
 **Outcome:** All projects can be viewed, filtered, and opened.
 
 Tasks:
-- [ ] Add project list query
-- [ ] Add project list page
-- [ ] Add filters and search
-- [ ] Add status indicators
-- [ ] Add create project CTA
+- [x] Add project list query
+- [x] Add project list page
+- [x] Add filters and search
+- [x] Add status indicators
+- [x] Add create project CTA
 
 ## WEB-009 - Build project create flow
-**Status:** todo  
+**Status:** done  
 **Outcome:** Operators can create a project with product description and optional plan.
 
 Tasks:
-- [ ] Add create project page
-- [ ] Add repository config form
-- [ ] Add product spec field
-- [ ] Add optional development plan field
-- [ ] Add queue limit defaults support
+- [x] Add create project page
+- [x] Add repository config form
+- [x] Add product spec field
+- [x] Add optional development plan field
+- [x] Add queue limit defaults support
 
 ## WEB-010 - Build project overview page
-**Status:** todo  
+**Status:** done  
 **Outcome:** Each project has a summary page.
 
 Tasks:
-- [ ] Add overview route
-- [ ] Preload overview data
-- [ ] Add status summary
-- [ ] Add current queue counts
-- [ ] Add runtime summary
-- [ ] Add latest activity panel
+- [x] Add overview route
+- [x] Preload overview data
+- [x] Add status summary
+- [x] Add current queue counts
+- [x] Add runtime summary
+- [x] Add latest activity panel
 
 ## WEB-011 - Build product spec editor
-**Status:** todo  
+**Status:** done  
 **Outcome:** Product descriptions can be viewed and edited cleanly.
 
 Tasks:
-- [ ] Add spec editor component
-- [ ] Add save mutation
-- [ ] Add unsaved change handling
-- [ ] Add version display if applicable
+- [x] Add spec editor component
+- [x] Add save mutation
+- [x] Add unsaved change handling
+- [x] Add version display if applicable
 
 ## WEB-012 - Build development plan editor
-**Status:** todo  
+**Status:** done  
 **Outcome:** Plans can be viewed, edited, and versioned.
 
 Tasks:
-- [ ] Add plan editor page
-- [ ] Add version switcher
-- [ ] Add active plan controls
-- [ ] Add plan save mutation
-- [ ] Add plan generation trigger
+- [x] Add plan editor page
+- [x] Add version switcher
+- [x] Add active plan controls
+- [x] Add plan save mutation
+- [x] Add plan generation trigger
 
 ## WEB-013 - Build planning hierarchy view
 **Status:** todo  

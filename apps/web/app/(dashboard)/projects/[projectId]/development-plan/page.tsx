@@ -7,11 +7,11 @@ import {
   projectQueryKeys,
 } from '@repo/api-client';
 
-import { ProjectOverviewPanel } from '../../../../src/features/projects/components/project-overview-panel';
-import { prefetchQuerySafely } from '../../../../src/lib/prefetch-query-safely';
-import { getQueryClient } from '../../../../src/lib/query-client';
+import { DevelopmentPlanEditorPanel } from '../../../../../src/features/projects/components/development-plan-editor-panel';
+import { prefetchQuerySafely } from '../../../../../src/lib/prefetch-query-safely';
+import { getQueryClient } from '../../../../../src/lib/query-client';
 
-export default async function ProjectOverviewPage({
+export default async function DevelopmentPlanEditorPage({
   params,
 }: {
   params: Promise<{ projectId: string }>;
@@ -40,7 +40,7 @@ export default async function ProjectOverviewPage({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProjectOverviewPanel projectId={projectId} />
+      <DevelopmentPlanEditorPanel projectId={projectId} />
     </HydrationBoundary>
   );
 }

@@ -2,25 +2,21 @@
 
 import {
   getDevelopmentPlan,
-  getProductSpec,
   getProjectDetail,
   listDevelopmentPlanVersions,
   projectQueryKeys,
 } from '@repo/api-client';
 import { Card } from '@repo/ui/components/card/card';
 import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 
 import { ProjectStatusBadge } from './project-status-badge';
+import { ProductSpecEditor } from './product-spec-editor';
 
 export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
   const projectQuery = useQuery({
     queryKey: projectQueryKeys.detail(projectId),
     queryFn: () => getProjectDetail(projectId),
-  });
-
-  const specQuery = useQuery({
-    queryKey: projectQueryKeys.productSpec(projectId),
-    queryFn: () => getProductSpec(projectId),
   });
 
   const planQuery = useQuery({
@@ -119,15 +115,7 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
 
       <div className="grid gap-4 xl:grid-cols-2">
         <Card className="space-y-3 p-6" title="Product specification">
-          {specQuery.data?.content ? (
-            <p className="whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300">
-              {specQuery.data.content}
-            </p>
-          ) : (
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              No product specification stored yet.
-            </p>
-          )}
+          <ProductSpecEditor projectId={projectId} />
         </Card>
 
         <Card className="space-y-3 p-6" title="Development plan">
@@ -157,6 +145,12 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
               )}
             </ul>
           </div>
+          <Link
+            className="inline-flex items-center text-sm font-medium text-zinc-950 underline-offset-4 hover:underline dark:text-zinc-50"
+            href={`/projects/${projectId}/development-plan`}
+          >
+            Open development plan editor
+          </Link>
         </Card>
       </div>
     </div>

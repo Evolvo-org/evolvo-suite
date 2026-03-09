@@ -6,18 +6,22 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
   UsePipes,
 } from '@nestjs/common';
 import type {
   CreateProjectRequest,
   ProjectListFilters,
+  ProjectRepositoryInput,
   UpdateProjectRequest,
 } from '@repo/shared';
 import {
   createProjectSchema,
   projectListFiltersSchema,
+  updateProjectRepositorySchema,
   updateProjectSchema,
+  validateProjectRepositorySchema,
 } from '@repo/validation';
 
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
@@ -51,9 +55,38 @@ export class ProjectsController {
     return this.projectsService.listProjects(query);
   }
 
+  @Post('repository/validate')
+  @UsePipes(new ZodValidationPipe(validateProjectRepositorySchema))
+  public validateRepository(@Body() body: ProjectRepositoryInput) {
+    return this.projectsService.validateRepositoryConfig(body);
+  }
+
   @Get(':projectId')
   public async getProjectDetail(@Param('projectId') projectId: string) {
     return this.projectsService.getProjectDetail(projectId);
+  }
+
+  @Get(':projectId/repository')
+  public async getRepository(@Param('projectId') projectId: string) {
+    return this.projectsService.getRepositoryConfig(projectId);
+  }
+
+  @Put(':projectId/repository')
+  @UsePipes(new ZodValidationPipe(updateProjectRepositorySchema))
+  public async updateRepository(
+    @Param('projectId') projectId: string,
+    @Body() body: ProjectRepositoryInput,
+  ) {
+    const repository = await this.projectsService.upsertRepositoryConfig(
+      projectId,
+      body,
+    );
+
+    return {
+      success: true as const,
+      message: 'Project repository configuration saved successfully.',
+      data: repository,
+    };
   }
 
   @Patch(':projectId')
