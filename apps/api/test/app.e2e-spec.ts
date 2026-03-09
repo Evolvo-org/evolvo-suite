@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import { describe, it, beforeEach } from '@jest/globals';
+import { Test, type TestingModule } from '@nestjs/testing';
+import type { INestApplication } from '@nestjs/common';
+import { describe, it, beforeEach } from 'vitest';
 import request from 'supertest';
-import { AppModule } from './../src/app.module';
+import { AppModule } from './../src/app/app.module';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;

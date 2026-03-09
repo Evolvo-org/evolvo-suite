@@ -6,35 +6,37 @@
   "scripts": {
     "dev": "pnpm build --watch",
     "build": "tsc -b -v",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\""
+    "lint": "biome lint --config-path ../biome-config/library.json ./src"
   },
-  "main": "./dist/entry.js",
-  "types": "./dist/entry.d.ts",
-  "files": [
-    "./dist/**"
-  ],
+  "files": ["./dist/**"],
   "publishConfig": {
     "access": "public"
   },
   "exports": {
-    ".": {
-      "import": "./dist/entry.js",
-      "require": "./dist/entry.js"
+    "./dto/create-link.dto": {
+      "import": "./dist/dto/create-link.dto.js",
+      "require": "./dist/dto/create-link.dto.js",
+      "types": "./dist/dto/create-link.dto.d.ts"
     },
-    "./*": {
-      "import": "./dist/*.js",
-      "require": "./dist/*.js"
+    "./dto/update-link.dto": {
+      "import": "./dist/dto/update-link.dto.js",
+      "require": "./dist/dto/update-link.dto.js",
+      "types": "./dist/dto/update-link.dto.d.ts"
+    },
+    "./entities/link.entity": {
+      "import": "./dist/entities/link.entity.js",
+      "require": "./dist/entities/link.entity.js",
+      "types": "./dist/entities/link.entity.d.ts"
     }
   },
   "dependencies": {
     "@nestjs/mapped-types": "*"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^22.10.7",
-    "ts-loader": "^9.4.3",
+    "ts-loader": "^9.5.4",
     "ts-node": "^10.9.2",
-    "typescript": "5.5.4"
+    "typescript": "5.9.3"
   }
 }

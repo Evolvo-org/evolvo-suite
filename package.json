@@ -11,12 +11,13 @@
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "biome format --config-path ./packages/biome-config/monorepo.json --write .",
+    "format:check": "biome format --config-path ./packages/biome-config/monorepo.json ."
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
+    "@biomejs/biome": "^1.9.4",
+    "@repo/biome-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "prettier": "^3.2.5",
     "turbo": "^2.8.14"
   },
   "packageManager": "pnpm@8.15.5",

@@ -1,0 +1,23 @@
+{
+  "name": "@repo/vitest-config",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    "./base": "./src/base.ts",
+    "./nest": "./src/nest.ts",
+    "./next": "./src/next.ts"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^2.1.8",
+    "next": "16.1.6",
+    "vitest": "^2.1.8",
+    "typescript": "^5.9.3"
+  },
+  "scripts": {
+    "build": "echo \"No build step required for @repo/vitest-config\""
+  }
+}

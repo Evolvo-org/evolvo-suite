@@ -6,15 +6,19 @@ import {
   Patch,
   Param,
   Delete,
+  Inject,
 } from '@nestjs/common';
 
-import type { CreateLinkDto, UpdateLinkDto } from '@repo/api';
+import type { CreateLinkDto } from '@repo/api/dto/create-link.dto';
+import type { UpdateLinkDto } from '@repo/api/dto/update-link.dto';
 
 import { LinksService } from './links.service';
 
 @Controller('links')
 export class LinksController {
-  constructor(private readonly linksService: LinksService) {}
+  constructor(
+    @Inject(LinksService) private readonly linksService: LinksService,
+  ) {}
 
   @Post()
   create(@Body() createLinkDto: CreateLinkDto) {
