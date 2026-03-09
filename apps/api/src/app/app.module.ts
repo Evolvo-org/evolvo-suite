@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
@@ -19,10 +21,17 @@ import { UsageModule } from '../usage/usage.module';
 import { WorkflowModule } from '../workflow/workflow.module';
 import { WorktreesModule } from '../worktrees/worktrees.module';
 
+const rootEnvironmentFilePath = resolve(process.cwd(), '../../.env');
+const localEnvironmentFilePath = resolve(process.cwd(), '.env');
+const environmentFilePath = existsSync(rootEnvironmentFilePath)
+  ? rootEnvironmentFilePath
+  : localEnvironmentFilePath;
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: environmentFilePath,
       validate: validateEnvironment,
     }),
     PrismaModule,
