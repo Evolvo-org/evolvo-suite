@@ -31,8 +31,8 @@ export * from "./enums.js"
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more Epics
- * const epics = await prisma.epic.findMany()
+ * // Fetch zero or more AgentRuns
+ * const agentRuns = await prisma.agentRun.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -41,6 +41,56 @@ export const PrismaClient = $Class.getPrismaClientClass()
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>
 export { Prisma }
 
+/**
+ * Model AgentRun
+ * 
+ */
+export type AgentRun = Prisma.AgentRunModel
+/**
+ * Model AgentDecision
+ * 
+ */
+export type AgentDecision = Prisma.AgentDecisionModel
+/**
+ * Model AgentFailure
+ * 
+ */
+export type AgentFailure = Prisma.AgentFailureModel
+/**
+ * Model PromptSnapshot
+ * 
+ */
+export type PromptSnapshot = Prisma.PromptSnapshotModel
+/**
+ * Model AgentRunArtifact
+ * 
+ */
+export type AgentRunArtifact = Prisma.AgentRunArtifactModel
+/**
+ * Model StripeCustomer
+ * 
+ */
+export type StripeCustomer = Prisma.StripeCustomerModel
+/**
+ * Model Subscription
+ * 
+ */
+export type Subscription = Prisma.SubscriptionModel
+/**
+ * Model BillingWebhookEvent
+ * 
+ */
+export type BillingWebhookEvent = Prisma.BillingWebhookEventModel
+/**
+ * Model HumanInterventionCase
+ * 
+ */
+export type HumanInterventionCase = Prisma.HumanInterventionCaseModel
+/**
+ * Model StructuredLogEntry
+ * 
+ */
+export type StructuredLogEntry = Prisma.StructuredLogEntryModel
 /**
  * Model Epic
  * 
@@ -77,6 +127,11 @@ export type WorkItemStateTransition = Prisma.WorkItemStateTransitionModel
  */
 export type Project = Prisma.ProjectModel
 /**
+ * Model ProjectAgentRouting
+ * 
+ */
+export type ProjectAgentRouting = Prisma.ProjectAgentRoutingModel
+/**
  * Model ProjectRepository
  * 
  */
@@ -91,6 +146,11 @@ export type ProjectQueueLimits = Prisma.ProjectQueueLimitsModel
  * 
  */
 export type SystemQueueLimits = Prisma.SystemQueueLimitsModel
+/**
+ * Model SystemAgentRouting
+ * 
+ */
+export type SystemAgentRouting = Prisma.SystemAgentRoutingModel
 /**
  * Model ProductSpec
  * 
@@ -107,12 +167,67 @@ export type DevelopmentPlan = Prisma.DevelopmentPlanModel
  */
 export type PlanVersion = Prisma.PlanVersionModel
 /**
+ * Model ReleaseRun
+ * 
+ */
+export type ReleaseRun = Prisma.ReleaseRunModel
+/**
+ * Model ReleaseVersion
+ * 
+ */
+export type ReleaseVersion = Prisma.ReleaseVersionModel
+/**
+ * Model ReleaseNote
+ * 
+ */
+export type ReleaseNote = Prisma.ReleaseNoteModel
+/**
+ * Model ReviewGateResult
+ * 
+ */
+export type ReviewGateResult = Prisma.ReviewGateResultModel
+/**
+ * Model ReviewGateCheck
+ * 
+ */
+export type ReviewGateCheck = Prisma.ReviewGateCheckModel
+/**
+ * Model ReviewCriterionEvaluation
+ * 
+ */
+export type ReviewCriterionEvaluation = Prisma.ReviewCriterionEvaluationModel
+/**
  * Model RuntimeInstance
  * 
  */
 export type RuntimeInstance = Prisma.RuntimeInstanceModel
 /**
+ * Model RuntimeArtifact
+ * 
+ */
+export type RuntimeArtifact = Prisma.RuntimeArtifactModel
+/**
+ * Model SchedulerLaneCursor
+ * 
+ */
+export type SchedulerLaneCursor = Prisma.SchedulerLaneCursorModel
+/**
+ * Model WorkItemRetryState
+ * 
+ */
+export type WorkItemRetryState = Prisma.WorkItemRetryStateModel
+/**
  * Model WorkItemLease
  * 
  */
 export type WorkItemLease = Prisma.WorkItemLeaseModel
+/**
+ * Model UsageEvent
+ * 
+ */
+export type UsageEvent = Prisma.UsageEventModel
+/**
+ * Model Worktree
+ * 
+ */
+export type Worktree = Prisma.WorktreeModel

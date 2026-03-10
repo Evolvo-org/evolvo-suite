@@ -5,7 +5,7 @@
 Make Evolvo v2 debuggable, inspectable, and safe to operate.
 
 ## OBS-001 - Define structured log model
-**Status:** todo  
+**Status:** done  
 **Outcome:** All important events can be recorded consistently.
 
 Fields:
@@ -21,94 +21,94 @@ Fields:
 - timestamp
 
 Tasks:
-- [ ] Finalise schema
-- [ ] Add write helpers
-- [ ] Add log levels
+- [x] Finalise schema
+- [x] Add write helpers
+- [x] Add log levels
 
 ## OBS-002 - Add API request logging
-**Status:** todo  
+**Status:** done  
 **Outcome:** API behaviour is traceable.
 
 Tasks:
-- [ ] Add request logging middleware
-- [ ] Add correlation ids
-- [ ] Add error logging
-- [ ] Add slow request logging
+- [x] Add request logging middleware
+- [x] Add correlation ids
+- [x] Add error logging
+- [x] Add slow request logging
 
 ## OBS-003 - Add runtime event logging
-**Status:** todo  
+**Status:** done  
 **Outcome:** Runtime activity is durable and queryable.
 
 Tasks:
-- [ ] Log registration
-- [ ] Log heartbeat changes
-- [ ] Log work dispatch
-- [ ] Log command execution summaries
-- [ ] Log failures
+- [x] Log registration
+- [x] Log heartbeat changes
+- [x] Log work dispatch
+- [x] Log command execution summaries
+- [x] Log failures
 
 ## OBS-004 - Add scheduler event logging
-**Status:** todo  
+**Status:** done  
 **Outcome:** Scheduling decisions can be understood later.
 
 Tasks:
-- [ ] Log eligibility decisions
-- [ ] Log skip reasons
-- [ ] Log lease grants
-- [ ] Log lease expiry recovery
+- [x] Log eligibility decisions
+- [x] Log skip reasons
+- [x] Log lease grants
+- [x] Log lease expiry recovery
 
 ## OBS-005 - Add work item timeline
-**Status:** todo  
+**Status:** done  
 **Outcome:** Every task has a readable history.
 
 Tasks:
-- [ ] Aggregate comments, transitions, agent runs, and gate results
-- [ ] Expose timeline query
-- [ ] Render timeline in UI
+- [x] Aggregate comments, transitions, agent runs, and gate results
+- [x] Expose timeline query
+- [x] Render timeline in UI
 
 ## OBS-006 - Add runtime dashboard
-**Status:** todo  
+**Status:** done  
 **Outcome:** Runtime health is visible at a glance.
 
 Tasks:
-- [ ] Show heartbeat age
-- [ ] Show active jobs
-- [ ] Show last action
-- [ ] Show offline state
-- [ ] Show recent failures
+- [x] Show heartbeat age
+- [x] Show active jobs
+- [x] Show last action
+- [x] Show offline state
+- [x] Show recent failures
 
 ## OBS-007 - Add release dashboard
-**Status:** todo  
+**Status:** done  
 **Outcome:** Release flow can be monitored.
 
 Tasks:
-- [ ] Show release history
-- [ ] Show latest tag
-- [ ] Show failed releases
-- [ ] Show intervention-triggering releases
+- [x] Show release history
+- [x] Show latest tag
+- [x] Show failed releases
+- [x] Show intervention-triggering releases
 
 ## OBS-008 - Add intervention dashboard
-**Status:** todo  
+**Status:** done  
 **Outcome:** Human-blocked work is easy to act on.
 
 Tasks:
-- [ ] Show open interventions
-- [ ] Show aging interventions
-- [ ] Show reason categories
-- [ ] Show retry availability
+- [x] Show open interventions
+- [x] Show aging interventions
+- [x] Show reason categories
+- [x] Show retry availability
 
 ## OBS-009 - Add metrics and alerting hooks
-**Status:** todo  
+**Status:** done  
 **Outcome:** The platform is ready for future alerting.
 
 Tasks:
-- [ ] Add runtime offline metric
-- [ ] Add failed lease metric
-- [ ] Add repeated review failure metric
-- [ ] Add release failure metric
-- [ ] Add usage spike metric
+- [x] Add runtime offline metric
+- [x] Add failed lease metric
+- [x] Add repeated review failure metric
+- [x] Add release failure metric
+- [x] Add usage spike metric
 
 ## OBS-010 - Add operational docs
-**Status:** todo  
+**Status:** done  
 **Outcome:** Recovery procedures are documented.
 
 Docs should include:
@@ -119,11 +119,11 @@ Docs should include:
 - intervention resolution flow
 
 ## OBS-011 - Add observability tests
-**Status:** todo  
+**Status:** done  
 **Outcome:** Critical event paths are protected.
 
 Tasks:
-- [ ] Test timeline assembly
-- [ ] Test log persistence
-- [ ] Test offline detection
-- [ ] Test intervention visibility
+- [x] Test timeline assembly
+- [x] Test log persistence
+- [x] Test offline detection
+- [x] Test intervention visibility

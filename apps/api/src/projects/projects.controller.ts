@@ -12,6 +12,7 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import type {
+  AgentRoutingConfig,
   CreateProjectRequest,
   ProjectListFilters,
   ProjectQueueLimits,
@@ -21,6 +22,7 @@ import type {
 import {
   createProjectSchema,
   projectListFiltersSchema,
+  updateProjectAgentRoutingSchema,
   updateProjectQueueLimitsSchema,
   updateProjectRepositorySchema,
   updateProjectSchema,
@@ -28,6 +30,7 @@ import {
 } from '@repo/validation';
 
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe.js';
+import { AutomationService } from '../automation/automation.service.js';
 
 import { ProjectsService } from './projects.service.js';
 
@@ -36,6 +39,8 @@ export class ProjectsController {
   public constructor(
     @Inject(ProjectsService)
     private readonly projectsService: ProjectsService,
+    @Inject(AutomationService)
+    private readonly automationService: AutomationService,
   ) {}
 
   @Post()
@@ -67,6 +72,16 @@ export class ProjectsController {
   @Get(':projectId')
   public async getProjectDetail(@Param('projectId') projectId: string) {
     return this.projectsService.getProjectDetail(projectId);
+  }
+
+  @Get(':projectId/runtime-dashboard')
+  public getRuntimeDashboard(@Param('projectId') projectId: string) {
+    return this.projectsService.getRuntimeDashboard(projectId);
+  }
+
+  @Get(':projectId/observability/metrics')
+  public getObservabilityMetrics(@Param('projectId') projectId: string) {
+    return this.projectsService.getObservabilityMetrics(projectId);
   }
 
   @Get(':projectId/repository')
@@ -128,6 +143,48 @@ export class ProjectsController {
     };
   }
 
+  @Get(':projectId/agent-routing')
+  public async getProjectAgentRouting(@Param('projectId') projectId: string) {
+    return this.projectsService.getProjectAgentRouting(projectId);
+  }
+
+  @Put(':projectId/agent-routing')
+  public async updateProjectAgentRouting(
+    @Param('projectId') projectId: string,
+    @Body(new ZodValidationPipe(updateProjectAgentRoutingSchema))
+    body: AgentRoutingConfig,
+  ) {
+    const routing = await this.projectsService.upsertProjectAgentRouting(
+      projectId,
+      body,
+    );
+
+    return {
+      success: true as const,
+      message: 'Project agent routing updated successfully.',
+      data: routing,
+    };
+  }
+
+  @Delete(':projectId/agent-routing')
+  public async clearProjectAgentRouting(@Param('projectId') projectId: string) {
+    const routing = await this.projectsService.clearProjectAgentRouting(projectId);
+
+    return {
+      success: true as const,
+      message: 'Project agent routing reset to system defaults.',
+      data: routing,
+    };
+  }
+
+  @Get(':projectId/agent-routing/:agentType/resolve')
+  public async resolveProjectAgentRoute(
+    @Param('projectId') projectId: string,
+    @Param('agentType') agentType: 'inbox' | 'planning' | 'dev' | 'review' | 'release',
+  ) {
+    return this.projectsService.resolveProjectAgentRoute(projectId, agentType);
+  }
+
   @Patch(':projectId')
   @UsePipes(new ZodValidationPipe(updateProjectSchema))
   public async updateProject(
@@ -146,6 +203,9 @@ export class ProjectsController {
   @Post(':projectId/start')
   public async startProject(@Param('projectId') projectId: string) {
     const status = await this.projectsService.startProject(projectId);
+    await this.automationService.runProjectAutomation(projectId, {
+      maxActions: 5,
+    });
 
     return {
       success: true as const,

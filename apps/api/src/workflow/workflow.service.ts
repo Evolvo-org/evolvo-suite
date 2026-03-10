@@ -11,6 +11,8 @@ import type {
 
 import { PrismaService } from '../prisma/prisma.service.js';
 import { ProjectsService } from '../projects/projects.service.js';
+import { RealtimeService } from '../realtime/realtime.service.js';
+import { LogsService } from '../logs/logs.service.js';
 
 import {
   createEmptyBoardCounts,
@@ -88,6 +90,10 @@ export class WorkflowService {
     private readonly prisma: PrismaService,
     @Inject(ProjectsService)
     private readonly projectsService: ProjectsService,
+    @Inject(LogsService)
+    private readonly logsService: LogsService,
+    @Inject(RealtimeService)
+    private readonly realtimeService: RealtimeService,
     @Inject(WorkflowStateMachineService)
     private readonly workflowStateMachineService: WorkflowStateMachineService,
   ) {}
@@ -202,7 +208,7 @@ export class WorkflowService {
   ): Promise<WorkItemCommentsResponse> {
     await this.assertWorkItemExists(projectId, workItemId);
 
-    await this.prisma.workItemComment.create({
+    const comment = await this.prisma.workItemComment.create({
       data: {
         projectId,
         workItemId,
@@ -218,6 +224,20 @@ export class WorkflowService {
       },
     });
 
+    await this.logsService.writeLog({
+      level: 'info',
+      source: 'workflow',
+      projectId,
+      workItemId,
+      eventType: 'work-item.comment.created',
+      message: `Comment added to work item ${workItemId}.`,
+      payload: {
+        commentId: comment.id,
+        actorType: payload.actorType ?? 'human',
+        actorName: comment.actorName,
+      },
+    });
+
     return this.listWorkItemComments(projectId, workItemId);
   }
 
@@ -227,7 +247,7 @@ export class WorkflowService {
   ): Promise<WorkItemAuditTrailResponse> {
     await this.assertWorkItemExists(projectId, workItemId);
 
-    const [comments, transitions] = await Promise.all([
+    const [comments, transitions, agentRuns, reviewGateResults] = await Promise.all([
       this.prisma.workItemComment.findMany({
         where: {
           projectId,
@@ -242,9 +262,44 @@ export class WorkflowService {
         },
         orderBy: { createdAt: 'desc' },
       }),
+      this.prisma.agentRun.findMany({
+        where: {
+          projectId,
+          workItemId,
+        },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          decisions: {
+            orderBy: { createdAt: 'asc' },
+          },
+          failure: true,
+          artifacts: {
+            orderBy: { createdAt: 'asc' },
+          },
+        },
+      }),
+      this.prisma.reviewGateResult.findMany({
+        where: {
+          projectId,
+          workItemId,
+        },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          checks: {
+            orderBy: { createdAt: 'asc' },
+          },
+        },
+      }),
     ]);
 
-    return mapWorkItemAuditTrail(projectId, workItemId, comments, transitions);
+    return mapWorkItemAuditTrail(
+      projectId,
+      workItemId,
+      comments,
+      transitions,
+      agentRuns,
+      reviewGateResults,
+    );
   }
 
   public async transitionWorkItem(
@@ -287,6 +342,31 @@ export class WorkflowService {
           isOperatorOverride: payload.operatorOverride === true,
         },
       });
+    });
+
+    this.realtimeService.publishProjectEvent({
+      name: 'project.workflow.updated',
+      projectId,
+      entityId: workItem.id,
+      workItemId: workItem.id,
+      payload: {
+        toState: payload.toState,
+      },
+    });
+
+    await this.logsService.writeLog({
+      level: 'info',
+      source: 'workflow',
+      projectId,
+      workItemId: workItem.id,
+      eventType: 'work-item.transitioned',
+      message: `Work item ${workItem.id} moved from ${fromState} to ${payload.toState}.`,
+      payload: {
+        fromState,
+        toState: payload.toState,
+        reason: payload.reason?.trim() ?? null,
+        operatorOverride: payload.operatorOverride === true,
+      },
     });
 
     return this.getBoard(projectId);

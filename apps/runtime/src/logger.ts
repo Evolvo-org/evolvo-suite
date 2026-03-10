@@ -1,4 +1,4 @@
-export type LogLevel = 'info' | 'warn' | 'error';
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 const formatContext = (context?: Record<string, unknown>): string => {
   if (!context || Object.keys(context).length === 0) {
@@ -22,6 +22,11 @@ export const log = (
 
   if (level === 'warn') {
     console.warn(payload);
+    return;
+  }
+
+  if (level === 'debug') {
+    console.debug(payload);
     return;
   }
 

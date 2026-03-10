@@ -1,0 +1,64 @@
+enum ReleaseRunStatus {
+  RUNNING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
+enum ReleaseNoteFormat {
+  MARKDOWN
+  PLAIN_TEXT
+}
+
+model ReleaseRun {
+  id             String            @id @default(cuid())
+  projectId      String
+  workItemId     String
+  runtimeId      String?
+  leaseId        String?
+  worktreeId     String?
+  status         ReleaseRunStatus  @default(RUNNING)
+  summary        String?           @db.Text
+  errorMessage   String?           @db.Text
+  mergeCommitSha String?
+  releaseUrl     String?
+  startedAt      DateTime          @default(now())
+  completedAt    DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  workItem       WorkItem          @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+  runtime        RuntimeInstance?  @relation(fields: [runtimeId], references: [id], onDelete: SetNull)
+  lease          WorkItemLease?    @relation(fields: [leaseId], references: [id], onDelete: SetNull)
+  worktree       Worktree?         @relation(fields: [worktreeId], references: [id], onDelete: SetNull)
+  version        ReleaseVersion?
+  note           ReleaseNote?
+
+  @@index([projectId, createdAt])
+  @@index([workItemId, createdAt])
+  @@index([runtimeId, createdAt])
+  @@index([leaseId, createdAt])
+  @@index([worktreeId, createdAt])
+}
+
+model ReleaseVersion {
+  id          String      @id @default(cuid())
+  releaseRunId String     @unique
+  version     String
+  tagName     String
+  targetBranch String?
+  commitSha   String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  releaseRun  ReleaseRun  @relation(fields: [releaseRunId], references: [id], onDelete: Cascade)
+}
+
+model ReleaseNote {
+  id          String            @id @default(cuid())
+  releaseRunId String           @unique
+  title       String?
+  content     String            @db.Text
+  format      ReleaseNoteFormat @default(MARKDOWN)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  releaseRun  ReleaseRun        @relation(fields: [releaseRunId], references: [id], onDelete: Cascade)
+}

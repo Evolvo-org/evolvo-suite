@@ -233,6 +233,7 @@ export type AcceptanceCriterionWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"AcceptanceCriterion"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AcceptanceCriterion"> | Date | string
   workItem?: Prisma.XOR<Prisma.WorkItemScalarRelationFilter, Prisma.WorkItemWhereInput>
+  reviewGateEvaluations?: Prisma.ReviewCriterionEvaluationListRelationFilter
 }
 
 export type AcceptanceCriterionOrderByWithRelationInput = {
@@ -244,6 +245,7 @@ export type AcceptanceCriterionOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   workItem?: Prisma.WorkItemOrderByWithRelationInput
+  reviewGateEvaluations?: Prisma.ReviewCriterionEvaluationOrderByRelationAggregateInput
 }
 
 export type AcceptanceCriterionWhereUniqueInput = Prisma.AtLeast<{
@@ -258,6 +260,7 @@ export type AcceptanceCriterionWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"AcceptanceCriterion"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AcceptanceCriterion"> | Date | string
   workItem?: Prisma.XOR<Prisma.WorkItemScalarRelationFilter, Prisma.WorkItemWhereInput>
+  reviewGateEvaluations?: Prisma.ReviewCriterionEvaluationListRelationFilter
 }, "id">
 
 export type AcceptanceCriterionOrderByWithAggregationInput = {
@@ -296,6 +299,7 @@ export type AcceptanceCriterionCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   workItem: Prisma.WorkItemCreateNestedOneWithoutAcceptanceCriteriaInput
+  reviewGateEvaluations?: Prisma.ReviewCriterionEvaluationCreateNestedManyWithoutCriterionInput
 }
 
 export type AcceptanceCriterionUncheckedCreateInput = {
@@ -306,6 +310,7 @@ export type AcceptanceCriterionUncheckedCreateInput = {
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  reviewGateEvaluations?: Prisma.ReviewCriterionEvaluationUncheckedCreateNestedManyWithoutCriterionInput
 }
 
 export type AcceptanceCriterionUpdateInput = {
@@ -316,6 +321,7 @@ export type AcceptanceCriterionUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workItem?: Prisma.WorkItemUpdateOneRequiredWithoutAcceptanceCriteriaNestedInput
+  reviewGateEvaluations?: Prisma.ReviewCriterionEvaluationUpdateManyWithoutCriterionNestedInput
 }
 
 export type AcceptanceCriterionUncheckedUpdateInput = {
@@ -326,6 +332,7 @@ export type AcceptanceCriterionUncheckedUpdateInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewGateEvaluations?: Prisma.ReviewCriterionEvaluationUncheckedUpdateManyWithoutCriterionNestedInput
 }
 
 export type AcceptanceCriterionCreateManyInput = {
@@ -405,6 +412,11 @@ export type AcceptanceCriterionSumOrderByAggregateInput = {
   sortOrder?: Prisma.SortOrder
 }
 
+export type AcceptanceCriterionNullableScalarRelationFilter = {
+  is?: Prisma.AcceptanceCriterionWhereInput | null
+  isNot?: Prisma.AcceptanceCriterionWhereInput | null
+}
+
 export type AcceptanceCriterionCreateNestedManyWithoutWorkItemInput = {
   create?: Prisma.XOR<Prisma.AcceptanceCriterionCreateWithoutWorkItemInput, Prisma.AcceptanceCriterionUncheckedCreateWithoutWorkItemInput> | Prisma.AcceptanceCriterionCreateWithoutWorkItemInput[] | Prisma.AcceptanceCriterionUncheckedCreateWithoutWorkItemInput[]
   connectOrCreate?: Prisma.AcceptanceCriterionCreateOrConnectWithoutWorkItemInput | Prisma.AcceptanceCriterionCreateOrConnectWithoutWorkItemInput[]
@@ -447,8 +459,20 @@ export type AcceptanceCriterionUncheckedUpdateManyWithoutWorkItemNestedInput = {
   deleteMany?: Prisma.AcceptanceCriterionScalarWhereInput | Prisma.AcceptanceCriterionScalarWhereInput[]
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
+export type AcceptanceCriterionCreateNestedOneWithoutReviewGateEvaluationsInput = {
+  create?: Prisma.XOR<Prisma.AcceptanceCriterionCreateWithoutReviewGateEvaluationsInput, Prisma.AcceptanceCriterionUncheckedCreateWithoutReviewGateEvaluationsInput>
+  connectOrCreate?: Prisma.AcceptanceCriterionCreateOrConnectWithoutReviewGateEvaluationsInput
+  connect?: Prisma.AcceptanceCriterionWhereUniqueInput
+}
+
+export type AcceptanceCriterionUpdateOneWithoutReviewGateEvaluationsNestedInput = {
+  create?: Prisma.XOR<Prisma.AcceptanceCriterionCreateWithoutReviewGateEvaluationsInput, Prisma.AcceptanceCriterionUncheckedCreateWithoutReviewGateEvaluationsInput>
+  connectOrCreate?: Prisma.AcceptanceCriterionCreateOrConnectWithoutReviewGateEvaluationsInput
+  upsert?: Prisma.AcceptanceCriterionUpsertWithoutReviewGateEvaluationsInput
+  disconnect?: Prisma.AcceptanceCriterionWhereInput | boolean
+  delete?: Prisma.AcceptanceCriterionWhereInput | boolean
+  connect?: Prisma.AcceptanceCriterionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AcceptanceCriterionUpdateToOneWithWhereWithoutReviewGateEvaluationsInput, Prisma.AcceptanceCriterionUpdateWithoutReviewGateEvaluationsInput>, Prisma.AcceptanceCriterionUncheckedUpdateWithoutReviewGateEvaluationsInput>
 }
 
 export type AcceptanceCriterionCreateWithoutWorkItemInput = {
@@ -458,6 +482,7 @@ export type AcceptanceCriterionCreateWithoutWorkItemInput = {
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  reviewGateEvaluations?: Prisma.ReviewCriterionEvaluationCreateNestedManyWithoutCriterionInput
 }
 
 export type AcceptanceCriterionUncheckedCreateWithoutWorkItemInput = {
@@ -467,6 +492,7 @@ export type AcceptanceCriterionUncheckedCreateWithoutWorkItemInput = {
   sortOrder?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  reviewGateEvaluations?: Prisma.ReviewCriterionEvaluationUncheckedCreateNestedManyWithoutCriterionInput
 }
 
 export type AcceptanceCriterionCreateOrConnectWithoutWorkItemInput = {
@@ -508,6 +534,62 @@ export type AcceptanceCriterionScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"AcceptanceCriterion"> | Date | string
 }
 
+export type AcceptanceCriterionCreateWithoutReviewGateEvaluationsInput = {
+  id?: string
+  text: string
+  isComplete?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  workItem: Prisma.WorkItemCreateNestedOneWithoutAcceptanceCriteriaInput
+}
+
+export type AcceptanceCriterionUncheckedCreateWithoutReviewGateEvaluationsInput = {
+  id?: string
+  workItemId: string
+  text: string
+  isComplete?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type AcceptanceCriterionCreateOrConnectWithoutReviewGateEvaluationsInput = {
+  where: Prisma.AcceptanceCriterionWhereUniqueInput
+  create: Prisma.XOR<Prisma.AcceptanceCriterionCreateWithoutReviewGateEvaluationsInput, Prisma.AcceptanceCriterionUncheckedCreateWithoutReviewGateEvaluationsInput>
+}
+
+export type AcceptanceCriterionUpsertWithoutReviewGateEvaluationsInput = {
+  update: Prisma.XOR<Prisma.AcceptanceCriterionUpdateWithoutReviewGateEvaluationsInput, Prisma.AcceptanceCriterionUncheckedUpdateWithoutReviewGateEvaluationsInput>
+  create: Prisma.XOR<Prisma.AcceptanceCriterionCreateWithoutReviewGateEvaluationsInput, Prisma.AcceptanceCriterionUncheckedCreateWithoutReviewGateEvaluationsInput>
+  where?: Prisma.AcceptanceCriterionWhereInput
+}
+
+export type AcceptanceCriterionUpdateToOneWithWhereWithoutReviewGateEvaluationsInput = {
+  where?: Prisma.AcceptanceCriterionWhereInput
+  data: Prisma.XOR<Prisma.AcceptanceCriterionUpdateWithoutReviewGateEvaluationsInput, Prisma.AcceptanceCriterionUncheckedUpdateWithoutReviewGateEvaluationsInput>
+}
+
+export type AcceptanceCriterionUpdateWithoutReviewGateEvaluationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  text?: Prisma.StringFieldUpdateOperationsInput | string
+  isComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workItem?: Prisma.WorkItemUpdateOneRequiredWithoutAcceptanceCriteriaNestedInput
+}
+
+export type AcceptanceCriterionUncheckedUpdateWithoutReviewGateEvaluationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  workItemId?: Prisma.StringFieldUpdateOperationsInput | string
+  text?: Prisma.StringFieldUpdateOperationsInput | string
+  isComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type AcceptanceCriterionCreateManyWorkItemInput = {
   id?: string
   text: string
@@ -524,6 +606,7 @@ export type AcceptanceCriterionUpdateWithoutWorkItemInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewGateEvaluations?: Prisma.ReviewCriterionEvaluationUpdateManyWithoutCriterionNestedInput
 }
 
 export type AcceptanceCriterionUncheckedUpdateWithoutWorkItemInput = {
@@ -533,6 +616,7 @@ export type AcceptanceCriterionUncheckedUpdateWithoutWorkItemInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewGateEvaluations?: Prisma.ReviewCriterionEvaluationUncheckedUpdateManyWithoutCriterionNestedInput
 }
 
 export type AcceptanceCriterionUncheckedUpdateManyWithoutWorkItemInput = {
@@ -545,6 +629,35 @@ export type AcceptanceCriterionUncheckedUpdateManyWithoutWorkItemInput = {
 }
 
 
+/**
+ * Count Type AcceptanceCriterionCountOutputType
+ */
+
+export type AcceptanceCriterionCountOutputType = {
+  reviewGateEvaluations: number
+}
+
+export type AcceptanceCriterionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  reviewGateEvaluations?: boolean | AcceptanceCriterionCountOutputTypeCountReviewGateEvaluationsArgs
+}
+
+/**
+ * AcceptanceCriterionCountOutputType without action
+ */
+export type AcceptanceCriterionCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AcceptanceCriterionCountOutputType
+   */
+  select?: Prisma.AcceptanceCriterionCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * AcceptanceCriterionCountOutputType without action
+ */
+export type AcceptanceCriterionCountOutputTypeCountReviewGateEvaluationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReviewCriterionEvaluationWhereInput
+}
+
 
 export type AcceptanceCriterionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -555,6 +668,8 @@ export type AcceptanceCriterionSelect<ExtArgs extends runtime.Types.Extensions.I
   createdAt?: boolean
   updatedAt?: boolean
   workItem?: boolean | Prisma.WorkItemDefaultArgs<ExtArgs>
+  reviewGateEvaluations?: boolean | Prisma.AcceptanceCriterion$reviewGateEvaluationsArgs<ExtArgs>
+  _count?: boolean | Prisma.AcceptanceCriterionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["acceptanceCriterion"]>
 
 export type AcceptanceCriterionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -592,6 +707,8 @@ export type AcceptanceCriterionSelectScalar = {
 export type AcceptanceCriterionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workItemId" | "text" | "isComplete" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["acceptanceCriterion"]>
 export type AcceptanceCriterionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workItem?: boolean | Prisma.WorkItemDefaultArgs<ExtArgs>
+  reviewGateEvaluations?: boolean | Prisma.AcceptanceCriterion$reviewGateEvaluationsArgs<ExtArgs>
+  _count?: boolean | Prisma.AcceptanceCriterionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AcceptanceCriterionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workItem?: boolean | Prisma.WorkItemDefaultArgs<ExtArgs>
@@ -604,6 +721,7 @@ export type $AcceptanceCriterionPayload<ExtArgs extends runtime.Types.Extensions
   name: "AcceptanceCriterion"
   objects: {
     workItem: Prisma.$WorkItemPayload<ExtArgs>
+    reviewGateEvaluations: Prisma.$ReviewCriterionEvaluationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1008,6 +1126,7 @@ readonly fields: AcceptanceCriterionFieldRefs;
 export interface Prisma__AcceptanceCriterionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   workItem<T extends Prisma.WorkItemDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItemDefaultArgs<ExtArgs>>): Prisma.Prisma__WorkItemClient<runtime.Types.Result.GetResult<Prisma.$WorkItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  reviewGateEvaluations<T extends Prisma.AcceptanceCriterion$reviewGateEvaluationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcceptanceCriterion$reviewGateEvaluationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReviewCriterionEvaluationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1437,6 +1556,30 @@ export type AcceptanceCriterionDeleteManyArgs<ExtArgs extends runtime.Types.Exte
    * Limit how many AcceptanceCriteria to delete.
    */
   limit?: number
+}
+
+/**
+ * AcceptanceCriterion.reviewGateEvaluations
+ */
+export type AcceptanceCriterion$reviewGateEvaluationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReviewCriterionEvaluation
+   */
+  select?: Prisma.ReviewCriterionEvaluationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReviewCriterionEvaluation
+   */
+  omit?: Prisma.ReviewCriterionEvaluationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReviewCriterionEvaluationInclude<ExtArgs> | null
+  where?: Prisma.ReviewCriterionEvaluationWhereInput
+  orderBy?: Prisma.ReviewCriterionEvaluationOrderByWithRelationInput | Prisma.ReviewCriterionEvaluationOrderByWithRelationInput[]
+  cursor?: Prisma.ReviewCriterionEvaluationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReviewCriterionEvaluationScalarFieldEnum | Prisma.ReviewCriterionEvaluationScalarFieldEnum[]
 }
 
 /**

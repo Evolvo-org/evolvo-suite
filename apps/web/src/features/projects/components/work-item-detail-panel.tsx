@@ -2,14 +2,18 @@
 
 import {
   createWorkItemComment,
-  getWorkItemAuditTrail,
   getWorkItemComments,
   getWorkItemDetail,
+  getWorkItemTimeline,
   projectQueryKeys,
   updateAcceptanceCriterion,
   updateWorkItem,
 } from '@repo/api-client';
-import type { WorkItemCommentActorType, WorkItemPriority } from '@repo/shared';
+import type {
+  WorkItemAuditEvent,
+  WorkItemCommentActorType,
+  WorkItemPriority,
+} from '@repo/shared';
 import { Button } from '@repo/ui/components/button/button';
 import { Input } from '@repo/ui/components/input/input';
 import { Select } from '@repo/ui/components/select/select';
@@ -24,6 +28,53 @@ const formatLabel = (value: string): string => {
   return value
     .replace(/([A-Z])/g, ' $1')
     .replace(/^./, (character) => character.toUpperCase());
+};
+
+const formatTimelineTypeLabel = (item: WorkItemAuditEvent): string => {
+  switch (item.type) {
+    case 'agentRun':
+      return 'Agent run';
+    case 'reviewGate':
+      return 'Review gate';
+    case 'transition':
+      return 'Transition';
+    default:
+      return 'Comment';
+  }
+};
+
+const renderTimelineDetails = (item: WorkItemAuditEvent): string[] => {
+  if (item.type === 'transition') {
+    return item.metadata?.reason ? [`Reason: ${item.metadata.reason}`] : [];
+  }
+
+  if (item.type === 'agentRun') {
+    const details = [
+      `Status: ${formatLabel(item.metadata?.agentRunStatus ?? 'running')}`,
+      `Decisions: ${item.metadata?.decisionCount ?? 0}`,
+      `Artifacts: ${item.metadata?.artifactCount ?? 0}`,
+    ];
+
+    if (item.metadata?.completedAt) {
+      details.push(`Completed: ${new Date(item.metadata.completedAt).toLocaleString()}`);
+    }
+
+    if (item.metadata?.failureMessage) {
+      details.push(`Failure: ${item.metadata.failureMessage}`);
+    }
+
+    return details;
+  }
+
+  if (item.type === 'reviewGate') {
+    return [
+      `Status: ${formatLabel(item.metadata?.reviewGateOverallStatus ?? 'passed')}`,
+      `Checks: ${item.metadata?.reviewGatePassedChecks ?? 0} passed, ${item.metadata?.reviewGateFailedChecks ?? 0} failed, ${item.metadata?.reviewGateSkippedChecks ?? 0} skipped`,
+      `Total checks: ${item.metadata?.reviewGateTotalChecks ?? 0}`,
+    ];
+  }
+
+  return [];
 };
 
 export const WorkItemDetailPanel = ({
@@ -45,8 +96,8 @@ export const WorkItemDetailPanel = ({
     queryFn: () => getWorkItemComments(projectId, workItemId),
   });
   const auditQuery = useQuery({
-    queryKey: projectQueryKeys.workItemAudit(projectId, workItemId),
-    queryFn: () => getWorkItemAuditTrail(projectId, workItemId),
+    queryKey: projectQueryKeys.workItemTimeline(projectId, workItemId),
+    queryFn: () => getWorkItemTimeline(projectId, workItemId),
   });
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -76,7 +127,7 @@ export const WorkItemDetailPanel = ({
         queryKey: projectQueryKeys.workItemComments(projectId, workItemId),
       }),
       queryClient.invalidateQueries({
-        queryKey: projectQueryKeys.workItemAudit(projectId, workItemId),
+        queryKey: projectQueryKeys.workItemTimeline(projectId, workItemId),
       }),
       queryClient.invalidateQueries({
         queryKey: projectQueryKeys.board(projectId),
@@ -147,7 +198,7 @@ export const WorkItemDetailPanel = ({
               Work item detail
             </h2>
             <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-              Inspect workflow state, dependencies, comments, and audit history.
+              Inspect workflow state, dependencies, comments, and the full timeline.
             </p>
           </div>
           <button
@@ -302,27 +353,28 @@ export const WorkItemDetailPanel = ({
             </section>
 
             <section className="space-y-3 rounded-2xl border border-zinc-800/10 p-4 dark:border-white/10">
-              <h3 className="text-sm font-semibold text-zinc-950 dark:text-zinc-50">Audit history</h3>
+              <h3 className="text-sm font-semibold text-zinc-950 dark:text-zinc-50">Timeline</h3>
               {auditQuery.data?.items.length ? (
                 <ul className="space-y-3">
                   {auditQuery.data.items.map((item) => (
                     <li key={`${item.type}-${item.id}`} className="rounded-xl border border-zinc-800/10 p-3 dark:border-white/10">
                       <div className="flex flex-wrap gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+                        <span>{formatTimelineTypeLabel(item)}</span>
                         <span>{item.actorName}</span>
                         <span>{formatLabel(item.actorType)}</span>
                         <span>{new Date(item.createdAt).toLocaleString()}</span>
                       </div>
                       <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">{item.summary}</p>
-                      {item.metadata?.reason ? (
-                        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                          Reason: {item.metadata.reason}
+                      {renderTimelineDetails(item).map((detail) => (
+                        <p key={detail} className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                          {detail}
                         </p>
-                      ) : null}
+                      ))}
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-sm text-zinc-600 dark:text-zinc-400">No audit activity yet.</p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">No timeline activity yet.</p>
               )}
             </section>
 

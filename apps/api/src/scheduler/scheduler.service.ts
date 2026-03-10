@@ -15,15 +15,25 @@ import type {
 import type {
   AcquireSchedulerLeaseRequest,
   AcquireSchedulerLeaseResponse,
+  ProjectQueueLimits,
+  ProjectLifecycleStatus,
   RecoverSchedulerLeasesRequest,
   RecoverSchedulerLeasesResponse,
   RenewSchedulerLeaseRequest,
   SchedulerLease,
+  SchedulerLaneCursor,
   SchedulerLeaseLane,
+  SchedulerProjectLaneState,
+  SchedulerProjectSkipReason,
+  SchedulerSkippedProject,
+  SchedulerStateResponse,
 } from '@repo/shared';
+import { schedulerLeaseLanes } from '@repo/shared';
 
+import { LogsService } from '../logs/logs.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { ProjectsService } from '../projects/projects.service.js';
+import { SettingsService } from '../settings/settings.service.js';
 import { WorkflowStateMachineService } from '../workflow/workflow-state-machine.service.js';
 
 import { mapSchedulerLease } from './scheduler.mapper.js';
@@ -57,13 +67,44 @@ type CandidateWorkItem = Pick<
 
 type LeaseWithTitle = WorkItemLease & { workItem: { title: string; state: WorkItemState } };
 
+type EffectiveProjectQueueLimits = Pick<
+  ProjectQueueLimits,
+  'maxInDev' | 'maxInReview' | 'maxReadyForRelease'
+>;
+
+type ProjectQueueLimitsRecord = {
+  maxInDev: number;
+  maxInReview: number;
+  maxReadyForRelease: number;
+};
+
+type PersistedSchedulerLaneCursorRecord = {
+  lane: PrismaSchedulerLeaseLane;
+  lastProjectId: string | null;
+};
+
+const activeStateMap = {
+  dev: 'IN_DEV',
+  review: 'IN_REVIEW',
+} as const satisfies Partial<Record<SchedulerLeaseLane, WorkItemState>>;
+
+const queueLimitKeyByLane = {
+  dev: 'maxInDev',
+  review: 'maxInReview',
+  release: 'maxReadyForRelease',
+} as const satisfies Record<SchedulerLeaseLane, keyof EffectiveProjectQueueLimits>;
+
 @Injectable()
 export class SchedulerService {
   public constructor(
     @Inject(PrismaService)
     private readonly prisma: PrismaService,
+    @Inject(LogsService)
+    private readonly logsService: LogsService,
     @Inject(ProjectsService)
     private readonly projectsService: ProjectsService,
+    @Inject(SettingsService)
+    private readonly settingsService: SettingsService,
     @Inject(WorkflowStateMachineService)
     private readonly workflowStateMachineService: WorkflowStateMachineService,
   ) {}
@@ -73,21 +114,23 @@ export class SchedulerService {
   ): Promise<AcquireSchedulerLeaseResponse> {
     const recovered = await this.recoverExpiredLeases();
     const now = new Date();
+    const runtimeId = payload.runtimeId.trim();
+    const requestedProjectId = payload.projectId?.trim();
     const lanes: SchedulerLeaseLane[] = payload.lanes?.length
       ? payload.lanes
       : ['dev', 'review', 'release'];
     const leaseDurationSeconds =
       payload.leaseDurationSeconds ?? defaultLeaseDurationSeconds;
 
-    if (payload.projectId) {
-      await this.projectsService.ensureProjectExists(payload.projectId);
+    if (requestedProjectId) {
+      await this.projectsService.ensureProjectExists(requestedProjectId);
     }
 
     const lease = await this.prisma.$transaction(async (transaction) => {
       const candidate = await this.selectCandidateWorkItem(
         transaction,
         lanes,
-        payload.projectId,
+        requestedProjectId,
         now,
       );
 
@@ -113,7 +156,7 @@ export class SchedulerService {
         data: {
           projectId: candidate.projectId,
           workItemId: candidate.id,
-          runtimeId: payload.runtimeId.trim(),
+          runtimeId,
           lane: laneLeaseMap[lane],
           leaseToken: randomUUID(),
           leasedAt: now,
@@ -132,15 +175,231 @@ export class SchedulerService {
       await this.moveWorkItemIntoActiveExecution(
         transaction,
         candidate,
-        payload.runtimeId.trim(),
+        runtimeId,
       );
 
       return createdLease;
     });
 
+    const mappedLease = lease ? mapSchedulerLease(lease) : null;
+
+    if (mappedLease) {
+      await this.logsService.writeLog({
+        level: 'info',
+        source: 'scheduler',
+        projectId: mappedLease.projectId,
+        workItemId: mappedLease.workItemId,
+        runtimeId,
+        eventType: 'scheduler.eligibility.selected',
+        message: `Scheduler leased ${mappedLease.workItemTitle} on the ${mappedLease.lane} lane.`,
+        payload: {
+          requestedProjectId: requestedProjectId ?? null,
+          requestedLanes: lanes,
+          recoveredCount: recovered.recoveredCount,
+          leaseId: mappedLease.id,
+        },
+      });
+
+      await this.logsService.writeLog({
+        level: 'info',
+        source: 'scheduler',
+        projectId: mappedLease.projectId,
+        workItemId: mappedLease.workItemId,
+        runtimeId,
+        eventType: 'scheduler.lease.granted',
+        message: `Scheduler granted lease ${mappedLease.id} to runtime ${runtimeId}.`,
+        payload: {
+          leaseId: mappedLease.id,
+          lane: mappedLease.lane,
+          expiresAt: mappedLease.expiresAt,
+        },
+      });
+    } else {
+      const state = await this.getSchedulerState(requestedProjectId);
+
+      if (state.skippedProjects.length > 0) {
+        await this.logsService.writeLog({
+          level: 'info',
+          source: 'scheduler',
+          projectId: requestedProjectId,
+          runtimeId,
+          eventType: 'scheduler.projects.skipped',
+          message: 'Scheduler skipped one or more projects during lease acquisition.',
+          payload: {
+            requestedProjectId: requestedProjectId ?? null,
+            requestedLanes: lanes,
+            skippedProjects: state.skippedProjects,
+          },
+        });
+      }
+
+      await this.logsService.writeLog({
+        level: 'debug',
+        source: 'scheduler',
+        projectId: requestedProjectId,
+        runtimeId,
+        eventType: 'scheduler.eligibility.none',
+        message: 'No eligible work item was available for lease.',
+        payload: {
+          requestedProjectId: requestedProjectId ?? null,
+          requestedLanes: lanes,
+          recoveredCount: recovered.recoveredCount,
+          laneSummaries: state.laneSummaries,
+        },
+      });
+    }
+
     return {
-      lease: lease ? mapSchedulerLease(lease) : null,
+      lease: mappedLease,
       recoveredCount: recovered.recoveredCount,
+    };
+  }
+
+  public async getSchedulerState(
+    projectId?: string,
+  ): Promise<SchedulerStateResponse> {
+    const normalizedProjectId = projectId?.trim() || null;
+
+    if (normalizedProjectId) {
+      await this.projectsService.ensureProjectExists(normalizedProjectId);
+    }
+
+    const [systemQueueLimits, projects, workItemCounts, activeLeaseCounts, openInterventions, cursors] =
+      await Promise.all([
+        this.settingsService.getResolvedSystemQueueLimits(),
+        this.prisma.project.findMany({
+          where: normalizedProjectId ? { id: normalizedProjectId } : {},
+          orderBy: { name: 'asc' },
+          select: {
+            id: true,
+            name: true,
+            lifecycleStatus: true,
+            queueLimits: {
+              select: {
+                maxInDev: true,
+                maxInReview: true,
+                maxReadyForRelease: true,
+              },
+            },
+          },
+        }),
+        this.prisma.workItem.groupBy({
+          by: ['projectId', 'state'],
+          where: {
+            ...(normalizedProjectId ? { projectId: normalizedProjectId } : {}),
+            state: {
+              in: [
+                'READY_FOR_DEV',
+                'IN_DEV',
+                'READY_FOR_REVIEW',
+                'IN_REVIEW',
+                'READY_FOR_RELEASE',
+              ],
+            },
+          },
+          _count: {
+            _all: true,
+          },
+        }),
+        this.prisma.workItemLease.groupBy({
+          by: ['projectId', 'lane'],
+          where: {
+            ...(normalizedProjectId ? { projectId: normalizedProjectId } : {}),
+            status: 'ACTIVE',
+            expiresAt: {
+              gt: new Date(),
+            },
+          },
+          _count: {
+            _all: true,
+          },
+        }),
+        this.prisma.humanInterventionCase.groupBy({
+          by: ['projectId'],
+          where: {
+            ...(normalizedProjectId ? { projectId: normalizedProjectId } : {}),
+            status: 'OPEN',
+          },
+          _count: {
+            _all: true,
+          },
+        }),
+        this.prisma.schedulerLaneCursor.findMany({
+          where: {
+            lane: {
+              in: ['DEV', 'REVIEW', 'RELEASE'],
+            },
+          },
+          orderBy: { lane: 'asc' },
+        }),
+      ]);
+
+    const workItemCountMap = new Map<string, number>(
+      workItemCounts.map((item) => [`${item.projectId}:${item.state}`, item._count._all]),
+    );
+    const activeLeaseCountMap = new Map<string, number>(
+      activeLeaseCounts.map((item) => [`${item.projectId}:${item.lane}`, item._count._all]),
+    );
+    const openInterventionCountMap = new Map<string, number>(
+      openInterventions.map((item) => [item.projectId, item._count._all]),
+    );
+
+    const laneSummaries = schedulerLeaseLanes.map((lane) => ({
+      lane,
+      readyCount: 0,
+      inProgressCount: 0,
+      activeLeaseCount: 0,
+    }));
+
+    const projectsState = projects.map((project) => {
+      const laneStates = this.buildProjectLaneStates(
+        project.id,
+        project.queueLimits,
+        systemQueueLimits,
+        workItemCountMap,
+        activeLeaseCountMap,
+      );
+      const lifecycleStatus = project.lifecycleStatus.toLowerCase() as ProjectLifecycleStatus;
+      const openInterventionCount = openInterventionCountMap.get(project.id) ?? 0;
+
+      for (const laneState of laneStates) {
+        const summary = laneSummaries.find((item) => item.lane === laneState.lane);
+
+        if (!summary) {
+          continue;
+        }
+
+        summary.readyCount += laneState.readyCount;
+        summary.inProgressCount += laneState.inProgressCount;
+        summary.activeLeaseCount += laneState.activeLeaseCount;
+      }
+
+      return {
+        projectId: project.id,
+        projectName: project.name,
+        lifecycleStatus,
+        openInterventionCount,
+        laneStates,
+      };
+    });
+
+    const skippedProjects = projectsState
+      .map((project) => ({
+        projectId: project.projectId,
+        projectName: project.projectName,
+        reasons: this.getProjectSkipReasons(project),
+      }))
+      .filter(
+        (project): project is SchedulerSkippedProject => project.reasons.length > 0,
+      );
+
+    return {
+      projectId: normalizedProjectId,
+      generatedAt: new Date().toISOString(),
+      cursors: cursors.map((cursor) => this.mapSchedulerCursor(cursor)),
+      laneSummaries,
+      projects: projectsState,
+      skippedProjects,
     };
   }
 
@@ -163,22 +422,60 @@ export class SchedulerService {
     });
 
     if (!lease) {
+      await this.logLeaseFailure(
+        'scheduler.lease.renew.failed',
+        'Scheduler lease not found.',
+        leaseId,
+        payload.runtimeId,
+      );
       throw new NotFoundException('Scheduler lease not found.');
     }
 
     if (lease.runtimeId !== payload.runtimeId.trim()) {
+      await this.logLeaseFailure(
+        'scheduler.lease.renew.failed',
+        'Scheduler lease is owned by another runtime.',
+        leaseId,
+        payload.runtimeId,
+        lease.projectId,
+        lease.workItemId,
+      );
       throw new ConflictException('Scheduler lease is owned by another runtime.');
     }
 
     if (lease.leaseToken !== payload.leaseToken.trim()) {
+      await this.logLeaseFailure(
+        'scheduler.lease.renew.failed',
+        'Scheduler lease token is invalid.',
+        leaseId,
+        payload.runtimeId,
+        lease.projectId,
+        lease.workItemId,
+      );
       throw new ConflictException('Scheduler lease token is invalid.');
     }
 
     if (lease.status !== 'ACTIVE') {
+      await this.logLeaseFailure(
+        'scheduler.lease.renew.failed',
+        'Only active scheduler leases can be renewed.',
+        leaseId,
+        payload.runtimeId,
+        lease.projectId,
+        lease.workItemId,
+      );
       throw new ConflictException('Only active scheduler leases can be renewed.');
     }
 
     if (lease.expiresAt.getTime() <= Date.now()) {
+      await this.logLeaseFailure(
+        'scheduler.lease.renew.failed',
+        'Scheduler lease has already expired.',
+        leaseId,
+        payload.runtimeId,
+        lease.projectId,
+        lease.workItemId,
+      );
       throw new ConflictException('Scheduler lease has already expired.');
     }
 
@@ -198,6 +495,20 @@ export class SchedulerService {
             state: true,
           },
         },
+      },
+    });
+
+    await this.logsService.writeLog({
+      level: 'info',
+      source: 'scheduler',
+      projectId: renewedLease.projectId,
+      workItemId: renewedLease.workItemId,
+      runtimeId: payload.runtimeId.trim(),
+      eventType: 'scheduler.lease.renewed',
+      message: 'Scheduler lease renewed successfully.',
+      payload: {
+        leaseId,
+        expiresAt: renewedLease.expiresAt.toISOString(),
       },
     });
 
@@ -253,6 +564,21 @@ export class SchedulerService {
           },
         });
 
+        await this.logsService.writeLog({
+          level: 'warn',
+          source: 'scheduler',
+          projectId: updatedLease.projectId,
+          workItemId: updatedLease.workItemId,
+          runtimeId: updatedLease.runtimeId,
+          eventType: 'scheduler.lease.recovered',
+          message: `Recovered expired lease ${updatedLease.id} for work item ${updatedLease.workItemId}.`,
+          payload: {
+            leaseId: updatedLease.id,
+            lane: updatedLease.lane,
+            recoveryReason: updatedLease.recoveryReason,
+          },
+        });
+
         recovered.push(mapSchedulerLease(updatedLease));
       }
 
@@ -263,6 +589,118 @@ export class SchedulerService {
       recoveredCount: recoveredItems.length,
       items: recoveredItems,
     };
+  }
+
+  private buildProjectLaneStates(
+    projectId: string,
+    queueLimits: {
+      maxInDev: number | null;
+      maxInReview: number | null;
+      maxReadyForRelease: number | null;
+    } | null,
+    systemQueueLimits: ProjectQueueLimits,
+    workItemCountMap: Map<string, number>,
+    activeLeaseCountMap: Map<string, number>,
+  ): SchedulerProjectLaneState[] {
+    return schedulerLeaseLanes.map((lane) => {
+      const readyState = laneStateMap[lane][0];
+      const inProgressState = activeStateMap[lane];
+
+      return {
+        lane,
+        readyCount: workItemCountMap.get(`${projectId}:${readyState}`) ?? 0,
+        inProgressCount: inProgressState
+          ? (workItemCountMap.get(`${projectId}:${inProgressState}`) ?? 0)
+          : 0,
+        activeLeaseCount:
+          activeLeaseCountMap.get(`${projectId}:${laneLeaseMap[lane]}`) ?? 0,
+        limit: this.getProjectLaneLimit(queueLimits, systemQueueLimits, lane),
+      };
+    });
+  }
+
+  private getProjectLaneLimit(
+    queueLimits: {
+      maxInDev: number | null;
+      maxInReview: number | null;
+      maxReadyForRelease: number | null;
+    } | null,
+    systemQueueLimits: ProjectQueueLimits,
+    lane: SchedulerLeaseLane,
+  ): number {
+    switch (lane) {
+      case 'review':
+        return queueLimits?.maxInReview ?? systemQueueLimits.maxInReview;
+      case 'release':
+        return (
+          queueLimits?.maxReadyForRelease ?? systemQueueLimits.maxReadyForRelease
+        );
+      default:
+        return queueLimits?.maxInDev ?? systemQueueLimits.maxInDev;
+    }
+  }
+
+  private getProjectSkipReasons(project: {
+    lifecycleStatus: ProjectLifecycleStatus;
+    openInterventionCount: number;
+    laneStates: SchedulerProjectLaneState[];
+  }): SchedulerProjectSkipReason[] {
+    const reasons = new Set<SchedulerProjectSkipReason>();
+    const hasReadyWork = project.laneStates.some((laneState) => laneState.readyCount > 0);
+
+    if (hasReadyWork && project.lifecycleStatus !== 'active') {
+      reasons.add('paused');
+    }
+
+    if (hasReadyWork && project.openInterventionCount > 0) {
+      reasons.add('openIntervention');
+    }
+
+    if (
+      project.laneStates.some((laneState) => {
+        const activeCount =
+          laneState.lane === 'release'
+            ? laneState.activeLeaseCount
+            : laneState.inProgressCount;
+
+        return laneState.readyCount > 0 && activeCount >= laneState.limit;
+      })
+    ) {
+      reasons.add('queueCapReached');
+    }
+
+    return [...reasons];
+  }
+
+  private mapSchedulerCursor(
+    cursor: PersistedSchedulerLaneCursorRecord,
+  ): SchedulerLaneCursor {
+    return {
+      lane: cursor.lane.toLowerCase() as SchedulerLeaseLane,
+      lastProjectId: cursor.lastProjectId,
+    };
+  }
+
+  private async logLeaseFailure(
+    eventType: string,
+    message: string,
+    leaseId: string,
+    runtimeId: string,
+    projectId?: string,
+    workItemId?: string,
+  ): Promise<void> {
+    await this.logsService.writeLog({
+      level: 'warn',
+      source: 'scheduler',
+      projectId,
+      workItemId,
+      runtimeId: runtimeId.trim(),
+      eventType,
+      message,
+      payload: {
+        leaseId,
+      },
+    });
   }
 
   private async expireStaleLeases(limit = defaultRecoveryLimit): Promise<number> {
@@ -308,17 +746,50 @@ export class SchedulerService {
     projectId: string | undefined,
     now: Date,
   ): Promise<CandidateWorkItem | null> {
+    const systemQueueLimits = await this.settingsService.getResolvedSystemQueueLimits();
     const eligibleStates = lanes.flatMap(
       (lane) => laneStateMap[lane],
     ) as WorkItemState[];
     const candidates = await transaction.workItem.findMany({
       where: {
         projectId,
+        OR: [
+          {
+            retryState: {
+              is: null,
+            },
+          },
+          {
+            retryState: {
+              is: {
+                nextRetryAt: null,
+              },
+            },
+          },
+          {
+            retryState: {
+              is: {
+                nextRetryAt: {
+                  lte: now,
+                },
+              },
+            },
+          },
+        ],
         state: {
           in: eligibleStates,
         },
         project: {
           lifecycleStatus: 'ACTIVE',
+        },
+        dependencies: {
+          none: {
+            dependsOnWorkItem: {
+              state: {
+                not: 'RELEASED',
+              },
+            },
+          },
         },
         leases: {
           none: {
@@ -346,29 +817,116 @@ export class SchedulerService {
     }
 
     const candidateProjectIds = [...new Set(candidates.map((item) => item.projectId))];
-    const activeLeaseCounts = await transaction.workItemLease.groupBy({
-      by: ['projectId'],
-      where: {
-        projectId: {
-          in: candidateProjectIds,
+    const [projects, activeStateCounts, activeLeaseCountsByLane] = await Promise.all([
+      transaction.project.findMany({
+        where: {
+          id: {
+            in: candidateProjectIds,
+          },
         },
-        status: 'ACTIVE',
-        expiresAt: {
-          gt: now,
+        select: {
+          id: true,
+          queueLimits: {
+            select: {
+              maxInDev: true,
+              maxInReview: true,
+              maxReadyForRelease: true,
+            },
+          },
         },
-      },
-      _count: {
-        _all: true,
-      },
-    });
+      }),
+      transaction.workItem.groupBy({
+        by: ['projectId', 'state'],
+        where: {
+          projectId: {
+            in: candidateProjectIds,
+          },
+          state: {
+            in: ['IN_DEV', 'IN_REVIEW'],
+          },
+        },
+        _count: {
+          _all: true,
+        },
+      }),
+      transaction.workItemLease.groupBy({
+        by: ['projectId', 'lane'],
+        where: {
+          projectId: {
+            in: candidateProjectIds,
+          },
+          status: 'ACTIVE',
+          expiresAt: {
+            gt: now,
+          },
+        },
+        _count: {
+          _all: true,
+        },
+      }),
+    ]);
 
-    const activeLeaseCountMap = new Map<string, number>(
-      activeLeaseCounts.map((item) => [item.projectId, item._count._all]),
+    const projectQueueLimitMap = new Map<string, ProjectQueueLimitsRecord>(
+      projects.map((project) => [
+        project.id,
+        {
+          maxInDev: project.queueLimits?.maxInDev ?? systemQueueLimits.maxInDev,
+          maxInReview: project.queueLimits?.maxInReview ?? systemQueueLimits.maxInReview,
+          maxReadyForRelease:
+            project.queueLimits?.maxReadyForRelease ??
+            systemQueueLimits.maxReadyForRelease,
+        },
+      ]),
+    );
+
+    const activeStateCountMap = new Map<string, number>(
+      activeStateCounts.map((item) => [
+        `${item.projectId}:${item.state}`,
+        item._count._all,
+      ]),
+    );
+
+    const activeLeaseCountMap = new Map<string, number>();
+    const activeLeaseCountByProjectLaneMap = new Map<string, number>(
+      activeLeaseCountsByLane.map((item) => {
+        activeLeaseCountMap.set(
+          item.projectId,
+          (activeLeaseCountMap.get(item.projectId) ?? 0) + item._count._all,
+        );
+
+        return [`${item.projectId}:${item.lane}`, item._count._all];
+      }),
     );
 
     const laneOrder = new Map(lanes.map((lane, index) => [lane, index]));
 
-    const sortedCandidates = [...candidates].sort((left, right) => {
+    const eligibleCandidates = candidates.filter((candidate) => {
+      const lane = this.getLaneForState(candidate.state);
+      const queueLimits = projectQueueLimitMap.get(candidate.projectId);
+
+      if (!queueLimits) {
+        return false;
+      }
+
+      const activeCount = this.getProjectLaneActiveCount(
+        candidate.projectId,
+        lane,
+        activeStateCountMap,
+        activeLeaseCountByProjectLaneMap,
+      );
+
+      return activeCount < queueLimits[queueLimitKeyByLane[lane]];
+    });
+
+    if (eligibleCandidates.length === 0) {
+      if (!projectId) {
+        await this.resetRoundRobinCursors(transaction, lanes);
+      }
+
+      return null;
+    }
+
+    const sortedCandidates = [...eligibleCandidates].sort((left, right) => {
       const leftActiveLeaseCount = activeLeaseCountMap.get(left.projectId) ?? 0;
       const rightActiveLeaseCount = activeLeaseCountMap.get(right.projectId) ?? 0;
 
@@ -401,7 +959,148 @@ export class SchedulerService {
       return left.projectId.localeCompare(right.projectId);
     });
 
-    return sortedCandidates[0] ?? null;
+    if (projectId) {
+      return sortedCandidates[0] ?? null;
+    }
+
+    return this.selectRoundRobinCandidate(
+      transaction,
+      sortedCandidates,
+      lanes,
+      activeLeaseCountMap,
+    );
+  }
+
+  private async selectRoundRobinCandidate(
+    transaction: Prisma.TransactionClient,
+    candidates: CandidateWorkItem[],
+    lanes: SchedulerLeaseLane[],
+    activeLeaseCountMap: Map<string, number>,
+  ): Promise<CandidateWorkItem | null> {
+    const cursors = await transaction.schedulerLaneCursor.findMany({
+      where: {
+        lane: {
+          in: lanes.map((lane) => laneLeaseMap[lane]),
+        },
+      },
+    });
+    const cursorMap = new Map<PrismaSchedulerLeaseLane, string | null>(
+      cursors.map((cursor) => [cursor.lane, cursor.lastProjectId]),
+    );
+
+    for (const lane of lanes) {
+      const prismaLane = laneLeaseMap[lane];
+      const laneCandidates = candidates.filter(
+        (candidate) => this.getLaneForState(candidate.state) === lane,
+      );
+
+      if (laneCandidates.length === 0) {
+        await this.persistRoundRobinCursor(transaction, prismaLane, null);
+        continue;
+      }
+
+      const projectIds = [...new Set(laneCandidates.map((candidate) => candidate.projectId))];
+      const minimumActiveLeaseCount = Math.min(
+        ...projectIds.map((candidateProjectId) => {
+          return activeLeaseCountMap.get(candidateProjectId) ?? 0;
+        }),
+      );
+      const fairProjectIds = projectIds.filter((candidateProjectId) => {
+        return (activeLeaseCountMap.get(candidateProjectId) ?? 0) === minimumActiveLeaseCount;
+      });
+      const lastProjectId = cursorMap.get(prismaLane) ?? null;
+
+      if (lastProjectId && !fairProjectIds.includes(lastProjectId)) {
+        await this.persistRoundRobinCursor(transaction, prismaLane, null);
+      }
+
+      const orderedProjectIds = this.orderProjectIdsByCursor(
+        fairProjectIds,
+        fairProjectIds.includes(lastProjectId ?? '') ? lastProjectId : null,
+      );
+
+      for (const projectId of orderedProjectIds) {
+        const candidate = laneCandidates.find(
+          (laneCandidate) => laneCandidate.projectId === projectId,
+        );
+
+        if (!candidate) {
+          continue;
+        }
+
+        await this.persistRoundRobinCursor(transaction, prismaLane, projectId);
+        return candidate;
+      }
+    }
+
+    return candidates[0] ?? null;
+  }
+
+  private getProjectLaneActiveCount(
+    projectId: string,
+    lane: SchedulerLeaseLane,
+    activeStateCountMap: Map<string, number>,
+    activeLeaseCountByProjectLaneMap: Map<string, number>,
+  ): number {
+    if (lane === 'release') {
+      return activeLeaseCountByProjectLaneMap.get(`${projectId}:RELEASE`) ?? 0;
+    }
+
+    const state = activeStateMap[lane];
+
+    return state ? (activeStateCountMap.get(`${projectId}:${state}`) ?? 0) : 0;
+  }
+
+  private orderProjectIdsByCursor(
+    projectIds: string[],
+    lastProjectId: string | null,
+  ): string[] {
+    const sortedProjectIds = [...projectIds].sort((left, right) => {
+      return left.localeCompare(right);
+    });
+
+    if (!lastProjectId) {
+      return sortedProjectIds;
+    }
+
+    const lastProjectIndex = sortedProjectIds.indexOf(lastProjectId);
+
+    if (lastProjectIndex === -1) {
+      return sortedProjectIds;
+    }
+
+    return [
+      ...sortedProjectIds.slice(lastProjectIndex + 1),
+      ...sortedProjectIds.slice(0, lastProjectIndex + 1),
+    ];
+  }
+
+  private async resetRoundRobinCursors(
+    transaction: Prisma.TransactionClient,
+    lanes: SchedulerLeaseLane[],
+  ): Promise<void> {
+    await Promise.all(
+      lanes.map((lane) => {
+        return this.persistRoundRobinCursor(transaction, laneLeaseMap[lane], null);
+      }),
+    );
+  }
+
+  private async persistRoundRobinCursor(
+    transaction: Prisma.TransactionClient,
+    lane: PrismaSchedulerLeaseLane,
+    lastProjectId: string | null,
+  ): Promise<PersistedSchedulerLaneCursorRecord> {
+    return transaction.schedulerLaneCursor.upsert({
+      where: { lane },
+      create: {
+        lane,
+        lastProjectId,
+      },
+      update: {
+        lastProjectId,
+      },
+    });
   }
 
   private getLaneForState(state: WorkItemState): SchedulerLeaseLane {
@@ -426,6 +1125,22 @@ export class SchedulerService {
 
     const toState = workItem.state === 'READY_FOR_REVIEW' ? 'inReview' : 'inDev';
     const fromState = workItem.state === 'READY_FOR_REVIEW' ? 'readyForReview' : 'readyForDev';
+    const persistedToState = toState === 'inReview' ? 'IN_REVIEW' : 'IN_DEV';
+
+    await this.logsService.writeLog({
+      level: 'info',
+      source: 'scheduler',
+      projectId: workItem.projectId,
+      workItemId: workItem.id,
+      runtimeId,
+      eventType: 'scheduler.transition.attempt',
+      message: `Scheduler is attempting to move work item ${workItem.id} into active execution.`,
+      payload: {
+        fromState: workItem.state,
+        toState: persistedToState,
+        reason: 'lease-granted',
+      },
+    });
 
     this.workflowStateMachineService.assertTransition(fromState, {
       toState,
@@ -434,7 +1149,7 @@ export class SchedulerService {
     await transaction.workItem.update({
       where: { id: workItem.id },
       data: {
-        state: toState === 'inReview' ? 'IN_REVIEW' : 'IN_DEV',
+        state: persistedToState,
         stateUpdatedAt: new Date(),
       },
     });
@@ -444,7 +1159,7 @@ export class SchedulerService {
         projectId: workItem.projectId,
         workItemId: workItem.id,
         fromState: workItem.state,
-        toState: toState === 'inReview' ? 'IN_REVIEW' : 'IN_DEV',
+        toState: persistedToState,
         reason: `Scheduler lease granted to runtime ${runtimeId}.`,
         isOperatorOverride: false,
       },
@@ -468,6 +1183,22 @@ export class SchedulerService {
     if (currentState !== (lease.lane === 'REVIEW' ? 'IN_REVIEW' : 'IN_DEV')) {
       return;
     }
+
+    await this.logsService.writeLog({
+      level: 'info',
+      source: 'scheduler',
+      projectId: lease.projectId,
+      workItemId: lease.workItemId,
+      runtimeId: lease.runtimeId,
+      eventType: 'scheduler.transition.attempt',
+      message: `Scheduler is attempting to recover work item ${lease.workItemId} after an expired lease.`,
+      payload: {
+        fromState: currentState,
+        toState: recoveryTargetState,
+        reason: 'expired-lease-recovery',
+        leaseId: lease.id,
+      },
+    });
 
     this.workflowStateMachineService.assertTransition(fromState, {
       toState,

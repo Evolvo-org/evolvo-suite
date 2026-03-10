@@ -5,7 +5,7 @@
 Build the scheduler, agent lanes, retry policies, and automation flows that let Evolvo v2 operate as an autonomous software factory.
 
 ## ORCH-001 - Define scheduler rules
-**Status:** todo  
+**Status:** done  
 **Outcome:** A clear scheduling model exists.
 
 Rules:
@@ -17,44 +17,44 @@ Rules:
 - intervention escalation thresholds
 
 Tasks:
-- [ ] Document scheduler algorithm
-- [ ] Define eligibility rules
-- [ ] Define fairness rules
-- [ ] Define starvation prevention
+- [x] Document scheduler algorithm
+- [x] Define eligibility rules
+- [x] Define fairness rules
+- [x] Define starvation prevention
 
 ## ORCH-002 - Implement work eligibility engine
-**Status:** todo  
+**Status:** done  
 **Outcome:** The API can decide what work is eligible at any time.
 
 Tasks:
-- [ ] Add project eligibility calculation
-- [ ] Add work item eligibility calculation
-- [ ] Add queue cap checks
-- [ ] Add blocked-state checks
-- [ ] Add paused project checks
+- [x] Add project eligibility calculation
+- [x] Add work item eligibility calculation
+- [x] Add queue cap checks
+- [x] Add blocked-state checks
+- [x] Add paused project checks
 
 ## ORCH-003 - Implement round robin state
-**Status:** todo  
+**Status:** done  
 **Outcome:** Global agents process projects fairly.
 
 Tasks:
-- [ ] Add round robin cursor state
-- [ ] Add reset rules
-- [ ] Add fairness tests
-- [ ] Add skipped-project handling
+- [x] Add round robin cursor state
+- [x] Add reset rules
+- [x] Add fairness tests
+- [x] Add skipped-project handling
 
 ## ORCH-004 - Implement retry and backoff policies
-**Status:** todo  
+**Status:** done  
 **Outcome:** Agent retries are controlled and observable.
 
 Tasks:
-- [ ] Add retry counters
-- [ ] Add backoff calculation
-- [ ] Add per-project policy overrides
-- [ ] Add escalation threshold checks
+- [x] Add retry counters
+- [x] Add backoff calculation
+- [x] Add per-project policy overrides
+- [x] Add escalation threshold checks
 
 ## AGENT-001 - Define agent contracts
-**Status:** todo  
+**Status:** done  
 **Outcome:** All agents use a standard interface and output shape.
 
 Agents:
@@ -65,120 +65,120 @@ Agents:
 - release
 
 Tasks:
-- [ ] Define agent input contract
-- [ ] Define agent result contract
-- [ ] Define failure contract
-- [ ] Define usage report contract
+- [x] Define agent input contract
+- [x] Define agent result contract
+- [x] Define failure contract
+- [x] Define usage report contract
 
 ## AGENT-002 - Implement provider routing
-**Status:** todo  
+**Status:** done  
 **Outcome:** Agent calls can be routed to the correct provider/model.
 
 Tasks:
-- [ ] Add provider config schema
-- [ ] Add model routing rules
-- [ ] Add per-agent config support
-- [ ] Add project overrides if needed
+- [x] Add provider config schema
+- [x] Add model routing rules
+- [x] Add per-agent config support
+- [x] Add project overrides if needed
 
 ## AGENT-003 - Implement inbox agent lane
-**Status:** todo  
+**Status:** done  
 **Outcome:** The inbox agent can create candidate ideas.
 
 Tasks:
-- [ ] Define inbox context assembly
-- [ ] Add project analysis prompt composition
-- [ ] Add idea generation output validation
-- [ ] Persist inbox items
-- [ ] Record agent run and usage
+- [x] Define inbox context assembly
+- [x] Add project analysis prompt composition
+- [x] Add idea generation output validation
+- [x] Persist inbox items
+- [x] Record agent run and usage
 
 ## AGENT-004 - Implement planning agent lane
-**Status:** todo  
+**Status:** done  
 **Outcome:** The planning agent can accept/reject ideas and decompose work.
 
 Tasks:
-- [ ] Define idea triage flow
-- [ ] Define plan generation flow when missing
-- [ ] Define decomposition into epics/tasks/subtasks
-- [ ] Define acceptance criteria generation
-- [ ] Persist hierarchy updates
-- [ ] Fill ready-for-dev when below cap
+- [x] Define idea triage flow
+- [x] Define plan generation flow when missing
+- [x] Define decomposition into epics/tasks/subtasks
+- [x] Define acceptance criteria generation
+- [x] Persist hierarchy updates
+- [x] Fill ready-for-dev when below cap
 
 ## AGENT-005 - Implement dev agent lane
-**Status:** todo  
+**Status:** done  
 **Outcome:** The dev agent can implement tasks in task-scoped worktrees.
 
 Tasks:
-- [ ] Define task context bundle
-- [ ] Define coding prompt composition
-- [ ] Run implementation against repo
-- [ ] Run checks
-- [ ] Persist diff, commits, artifacts
-- [ ] Transition to ready-for-review
+- [x] Define task context bundle
+- [x] Define coding prompt composition
+- [x] Run implementation against repo
+- [x] Run checks
+- [x] Persist diff, commits, artifacts
+- [x] Transition to ready-for-review
 
 ## AGENT-006 - Implement review agent lane
-**Status:** todo  
+**Status:** done  
 **Outcome:** The review agent can validate work and provide useful feedback.
 
 Tasks:
-- [ ] Define review context bundle
-- [ ] Evaluate build/lint/typecheck/test results
-- [ ] Evaluate acceptance criteria
-- [ ] Record pass/fail decision
-- [ ] Comment on failures
-- [ ] Transition to ready-for-dev or ready-for-release
+- [x] Define review context bundle
+- [x] Evaluate build/lint/typecheck/test results
+- [x] Evaluate acceptance criteria
+- [x] Record pass/fail decision
+- [x] Comment on failures
+- [x] Transition to ready-for-dev or ready-for-release
 
 ## AGENT-007 - Implement release agent lane
-**Status:** todo  
+**Status:** done  
 **Outcome:** The release agent can merge, tag, and create notes.
 
 Tasks:
-- [ ] Define release context bundle
-- [ ] Add merge conflict attempt flow
-- [ ] Add success path
-- [ ] Add tag generation
-- [ ] Add release notes generation
-- [ ] Add intervention escalation on repeated failure
+- [x] Define release context bundle
+- [x] Add merge conflict attempt flow
+- [x] Add success path
+- [x] Add tag generation
+- [x] Add release notes generation
+- [x] Add intervention escalation on repeated failure
 
 ## AGENT-008 - Implement intervention creation rules
-**Status:** todo  
+**Status:** done  
 **Outcome:** The system raises human intervention cases consistently.
 
 Tasks:
-- [ ] Add review failure threshold rule
-- [ ] Add merge conflict failure threshold rule
-- [ ] Add missing-config rule
-- [ ] Add runtime failure threshold rule
-- [ ] Add ambiguity rule
+- [x] Add review failure threshold rule
+- [x] Add merge conflict failure threshold rule
+- [x] Add missing-config rule
+- [x] Add runtime failure threshold rule
+- [x] Add ambiguity rule
 
 ## AGENT-009 - Implement automation loops
-**Status:** todo  
+**Status:** done  
 **Outcome:** The system can self-feed work safely.
 
 Tasks:
-- [ ] Add inbox loop trigger
-- [ ] Add planning loop trigger
-- [ ] Add review loop trigger
-- [ ] Add release loop trigger
-- [ ] Add dev lane trigger per project
+- [x] Add inbox loop trigger
+- [x] Add planning loop trigger
+- [x] Add review loop trigger
+- [x] Add release loop trigger
+- [x] Add dev lane trigger per project
 
 ## AGENT-010 - Implement scheduler observability
-**Status:** todo  
+**Status:** done  
 **Outcome:** Scheduler decisions are visible and debuggable.
 
 Tasks:
-- [ ] Log eligibility decisions
-- [ ] Log skipped projects
-- [ ] Log lease failures
-- [ ] Log transition attempts
-- [ ] Expose scheduler state in UI queries
+- [x] Log eligibility decisions
+- [x] Log skipped projects
+- [x] Log lease failures
+- [x] Log transition attempts
+- [x] Expose scheduler state in UI queries
 
 ## AGENT-011 - Add orchestration tests
-**Status:** todo  
+**Status:** done  
 **Outcome:** Multi-project flow correctness is protected.
 
 Tasks:
-- [ ] Test round robin fairness
-- [ ] Test queue cap enforcement
-- [ ] Test retry escalation
-- [ ] Test paused project handling
-- [ ] Test intervention creation
+- [x] Test round robin fairness
+- [x] Test queue cap enforcement
+- [x] Test retry escalation
+- [x] Test paused project handling
+- [x] Test intervention creation

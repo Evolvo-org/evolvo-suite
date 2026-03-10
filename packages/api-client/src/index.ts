@@ -1,21 +1,56 @@
 import type {
   ActivateDevelopmentPlanVersionRequest,
+  AgentRunListResponse,
+  AgentRunRecord,
+  AgentRoutingConfig,
+  AutomationActionRecord,
   AcquireSchedulerLeaseRequest,
   AcquireSchedulerLeaseResponse,
+  CurrentUserResponse,
+  CreateAgentArtifactRequest,
+  CreateAgentDecisionRequest,
+  CreateAgentFailureRequest,
+  CreateAgentRunRequest,
+  LoginRequest,
+  LoginResponse,
+  LogoutResponse,
   CreateDevelopmentPlanRequest,
   CreateAcceptanceCriterionRequest,
   CreateEpicRequest,
   CreateProjectRequest,
+  CreateBillingPortalSessionRequest,
+  CreateHumanInterventionRequest,
+  CreateReleaseRunRequest,
+  CreateReleaseVersionRequest,
+  CreateUsageEventRequest,
+  BillingPortalSessionResponse,
+  BillingStatusResponse,
+  BillingSubscriptionRecord,
+  StripeCustomerMappingRecord,
   CreateWorkItemCommentRequest,
   CreateWorkItemRequest,
   DevelopmentPlanResponse,
   DevelopmentPlanVersionsResponse,
+  ExecuteDevTaskRequest,
+  ExecuteDevTaskResponse,
+  ExecuteReleaseRequest,
+  ExecuteReleaseResponse,
+  ExecuteReviewRequest,
+  ExecuteReviewResponse,
+  GenerateInboxIdeasRequest,
+  GenerateInboxIdeasResponse,
+  HumanInterventionCaseRecord,
+  HumanInterventionListResponse,
   KanbanBoardCounts,
   KanbanBoardResponse,
   MutationResponse,
+  ProjectObservabilityMetricsResponse,
   PaginatedResponse,
+  TriageInboxIdeaRequest,
+  TriageInboxIdeaResponse,
   PlanningHierarchyResponse,
   ProductSpecResponse,
+  ProjectAgentRoutingSettingsResponse,
   ProjectDetail,
   ProjectListFilters,
   ProjectListItem,
@@ -25,23 +60,56 @@ import type {
   ProjectRepositoryInput,
   ProjectRepositoryValidationResponse,
   ProjectStatusResponse,
+  RunProjectAutomationRequest,
+  RunProjectAutomationResponse,
+  RecordReleaseResultRequest,
   RegisterRuntimeRequest,
   RecoverSchedulerLeasesRequest,
   RecoverSchedulerLeasesResponse,
+  ResolveHumanInterventionRequest,
+  CreateReviewGateResultRequest,
+  RequestRuntimeWorkRequest,
+  ReleaseHistoryResponse,
+  ReleaseRunRecord,
+  RetryHumanInterventionRequest,
+  ReviewGateListResponse,
+  ReviewGateResultRecord,
+  ReviewGateSummaryResponse,
+  UsageEventRecord,
+  UsageSummaryResponse,
+  RuntimeArtifactUploadMetadataRequest,
+  RuntimeArtifactUploadMetadataResponse,
+  RuntimeDashboardResponse,
   RuntimeDetailResponse,
   RuntimeHeartbeatRequest,
+  RuntimeJobResultRequest,
+  RuntimeJobResultResponse,
+  RuntimeProgressUpdateRequest,
+  StripeWebhookEventRequest,
+  RuntimeWorkDispatchResponse,
   RenewSchedulerLeaseRequest,
   SchedulerLease,
+  SchedulerStateResponse,
+  StructuredLogListResponse,
+  StructuredLogQuery,
+  SystemAgentRoutingResponse,
   SystemQueueLimitsResponse,
   TransitionWorkItemRequest,
   UpdateAcceptanceCriterionRequest,
   UpdateDevelopmentPlanRequest,
   UpdateEpicRequest,
   UpdateProjectRequest,
+  UpsertReleaseNoteRequest,
   UpdateWorkItemDependenciesRequest,
   UpdateWorkItemPriorityRequest,
   UpdateWorkItemRequest,
   UpsertProductSpecRequest,
+  UpsertPromptSnapshotRequest,
+  UpsertBillingSubscriptionRequest,
+  UpsertStripeCustomerMappingRequest,
+  UpsertWorktreeRequest,
+  WorktreeListResponse,
+  WorktreeResponse,
   WorkItemAuditTrailResponse,
   WorkItemCommentsResponse,
   WorkItemDetailResponse,
@@ -59,11 +127,74 @@ export class ApiClientError extends Error {
   }
 }
 
+type ApiClientHeaders = HeadersInit | (() => HeadersInit | undefined);
+
+export interface ApiClientConfiguration {
+  baseUrl?: string;
+  defaultHeaders?: ApiClientHeaders;
+  fetchImplementation?: typeof fetch;
+}
+
+let apiClientConfiguration: ApiClientConfiguration = {};
+
 const defaultApiBaseUrl = 'http://localhost:3000/api/v1';
 
 const trimTrailingSlash = (value: string): string => value.replace(/\/$/, '');
 
+const appendHeaders = (target: Headers, headers?: HeadersInit): void => {
+  if (!headers) {
+    return;
+  }
+
+  if (headers instanceof Headers) {
+    headers.forEach((value, key) => {
+      target.set(key, value);
+    });
+    return;
+  }
+
+  if (Array.isArray(headers)) {
+    for (const [key, value] of headers) {
+      target.set(key, value);
+    }
+    return;
+  }
+
+  for (const [key, value] of Object.entries(headers)) {
+    if (value !== undefined) {
+      target.set(key, value);
+    }
+  }
+};
+
+const resolveDefaultHeaders = (): HeadersInit | undefined => {
+  const { defaultHeaders } = apiClientConfiguration;
+
+  if (typeof defaultHeaders === 'function') {
+    return defaultHeaders();
+  }
+
+  return defaultHeaders;
+};
+
+export const configureApiClient = (
+  configuration: ApiClientConfiguration,
+): void => {
+  apiClientConfiguration = {
+    ...apiClientConfiguration,
+    ...configuration,
+  };
+};
+
+export const resetApiClientConfiguration = (): void => {
+  apiClientConfiguration = {};
+};
+
 export const getApiBaseUrl = (): string => {
+  if (apiClientConfiguration.baseUrl?.trim()) {
+    return trimTrailingSlash(apiClientConfiguration.baseUrl);
+  }
+
   const fromEnvironment =
     process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL;
 
@@ -85,14 +216,21 @@ async function fetchJson<TResponse>(
   init?: RequestInit,
   searchParams?: URLSearchParams,
 ): Promise<TResponse> {
-  const response = await fetch(buildUrl(path, searchParams), {
-    credentials: 'include',
-    headers: {
-      'content-type': 'application/json',
-      ...(init?.headers ?? {}),
-    },
-    ...init,
+  const headers = new Headers();
+  appendHeaders(headers, resolveDefaultHeaders());
+  appendHeaders(headers, {
+    'content-type': 'application/json',
   });
+  appendHeaders(headers, init?.headers);
+
+  const response = await (apiClientConfiguration.fetchImplementation ?? fetch)(
+    buildUrl(path, searchParams),
+    {
+    credentials: 'include',
+      ...init,
+      headers,
+    },
+  );
 
   if (!response.ok) {
     let payload: unknown = undefined;
@@ -127,6 +265,10 @@ export const projectQueryKeys = {
   list: (filters?: ProjectListFilters) =>
     ['projects', 'list', filters ?? {}] as const,
   detail: (projectId: string) => ['projects', 'detail', projectId] as const,
+  runtimeDashboard: (projectId: string) =>
+    ['projects', projectId, 'runtime-dashboard'] as const,
+  observabilityMetrics: (projectId: string) =>
+    ['projects', projectId, 'observability-metrics'] as const,
   queueLimits: (projectId: string) =>
     ['projects', projectId, 'queue-limits'] as const,
   repository: (projectId: string) =>
@@ -147,8 +289,24 @@ export const projectQueryKeys = {
     ['projects', projectId, 'work-item-detail', workItemId] as const,
   workItemComments: (projectId: string, workItemId: string) =>
     ['projects', projectId, 'work-item-comments', workItemId] as const,
+  workItemTimeline: (projectId: string, workItemId: string) =>
+    ['projects', projectId, 'work-item-timeline', workItemId] as const,
   workItemAudit: (projectId: string, workItemId: string) =>
     ['projects', projectId, 'work-item-audit', workItemId] as const,
+  workItemReviewGates: (projectId: string, workItemId: string) =>
+    ['projects', projectId, 'work-item-review-gates', workItemId] as const,
+  workItemReviewGateSummary: (projectId: string, workItemId: string) =>
+    ['projects', projectId, 'work-item-review-gate-summary', workItemId] as const,
+  releases: (projectId: string) => ['projects', projectId, 'releases'] as const,
+  interventions: (projectId: string) => ['projects', projectId, 'interventions'] as const,
+  usageSummary: (projectId: string) => ['projects', projectId, 'usage-summary'] as const,
+  userUsageSummary: (userId: string) => ['usage', 'users', userId, 'summary'] as const,
+  logs: (projectId: string) => ['projects', projectId, 'logs'] as const,
+  systemLogs: (filters?: StructuredLogQuery) => ['logs', 'system', filters ?? {}] as const,
+};
+
+export const authQueryKeys = {
+  currentUser: ['auth', 'current-user'] as const,
 };
 
 export const settingsQueryKeys = {
@@ -158,6 +316,7 @@ export const settingsQueryKeys = {
 
 export const schedulerQueryKeys = {
   all: ['scheduler'] as const,
+  state: (projectId?: string) => ['scheduler', 'state', projectId ?? 'all'] as const,
 };
 
 export const listProjects = async (
@@ -190,12 +349,47 @@ export const getProjectDetail = async (
   });
 };
 
+export const getRuntimeDashboard = async (
+  projectId: string,
+): Promise<RuntimeDashboardResponse> => {
+  return fetchJson<RuntimeDashboardResponse>(
+    `/projects/${projectId}/runtime-dashboard`,
+    {
+      method: 'GET',
+    },
+  );
+};
+
+export const getProjectObservabilityMetrics = async (
+  projectId: string,
+): Promise<ProjectObservabilityMetricsResponse> => {
+  return fetchJson<ProjectObservabilityMetricsResponse>(
+    `/projects/${projectId}/observability/metrics`,
+    {
+      method: 'GET',
+    },
+  );
+};
+
 export const getProjectStatus = async (
   projectId: string,
 ): Promise<ProjectStatusResponse> => {
   return fetchJson<ProjectStatusResponse>(`/projects/${projectId}/status`, {
     method: 'GET',
   });
+};
+
+export const runProjectAutomation = async (
+  projectId: string,
+  payload: RunProjectAutomationRequest = {},
+): Promise<MutationResponse<RunProjectAutomationResponse>> => {
+  return fetchJson<MutationResponse<RunProjectAutomationResponse>>(
+    `/projects/${projectId}/automation/run`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
 };
 
 export const getProjectRepository = async (
@@ -244,8 +438,49 @@ export const clearProjectQueueLimits = async (
   );
 };
 
+export const getProjectAgentRouting = async (
+  projectId: string,
+): Promise<ProjectAgentRoutingSettingsResponse> => {
+  return fetchJson<ProjectAgentRoutingSettingsResponse>(
+    `/projects/${projectId}/agent-routing`,
+    {
+      method: 'GET',
+    },
+  );
+};
+
+export const updateProjectAgentRouting = async (
+  projectId: string,
+  payload: AgentRoutingConfig,
+): Promise<MutationResponse<ProjectAgentRoutingSettingsResponse>> => {
+  return fetchJson<MutationResponse<ProjectAgentRoutingSettingsResponse>>(
+    `/projects/${projectId}/agent-routing`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const clearProjectAgentRouting = async (
+  projectId: string,
+): Promise<MutationResponse<ProjectAgentRoutingSettingsResponse>> => {
+  return fetchJson<MutationResponse<ProjectAgentRoutingSettingsResponse>>(
+    `/projects/${projectId}/agent-routing`,
+    {
+      method: 'DELETE',
+    },
+  );
+};
+
 export const getSystemQueueLimits = async (): Promise<SystemQueueLimitsResponse> => {
   return fetchJson<SystemQueueLimitsResponse>('/settings/queue-limits/defaults', {
+    method: 'GET',
+  });
+};
+
+export const getSystemAgentRouting = async (): Promise<SystemAgentRoutingResponse> => {
+  return fetchJson<SystemAgentRoutingResponse>('/settings/agent-routing/defaults', {
     method: 'GET',
   });
 };
@@ -255,6 +490,18 @@ export const updateSystemQueueLimits = async (
 ): Promise<MutationResponse<SystemQueueLimitsResponse>> => {
   return fetchJson<MutationResponse<SystemQueueLimitsResponse>>(
     '/settings/queue-limits/defaults',
+    {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const updateSystemAgentRouting = async (
+  payload: AgentRoutingConfig,
+): Promise<MutationResponse<SystemAgentRoutingResponse>> => {
+  return fetchJson<MutationResponse<SystemAgentRoutingResponse>>(
+    '/settings/agent-routing/defaults',
     {
       method: 'PUT',
       body: JSON.stringify(payload),
@@ -299,6 +546,24 @@ export const recoverSchedulerLeases = async (
   );
 };
 
+export const getSchedulerState = async (
+  projectId?: string,
+): Promise<SchedulerStateResponse> => {
+  const searchParams = new URLSearchParams();
+
+  if (projectId) {
+    searchParams.set('projectId', projectId);
+  }
+
+  return fetchJson<SchedulerStateResponse>(
+    '/scheduler/state',
+    {
+      method: 'GET',
+    },
+    searchParams,
+  );
+};
+
 export const registerRuntime = async (
   payload: RegisterRuntimeRequest,
 ): Promise<MutationResponse<RuntimeDetailResponse>> => {
@@ -332,6 +597,554 @@ export const getRuntimeDetail = async (
   });
 };
 
+export const requestRuntimeWork = async (
+  runtimeId: string,
+  payload: RequestRuntimeWorkRequest = {},
+): Promise<MutationResponse<RuntimeWorkDispatchResponse>> => {
+  return fetchJson<MutationResponse<RuntimeWorkDispatchResponse>>(
+    `/runtimes/${runtimeId}/request-work`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const sendRuntimeProgress = async (
+  runtimeId: string,
+  leaseId: string,
+  payload: RuntimeProgressUpdateRequest,
+): Promise<MutationResponse<SchedulerLease>> => {
+  return fetchJson<MutationResponse<SchedulerLease>>(
+    `/runtimes/${runtimeId}/leases/${leaseId}/progress`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const submitRuntimeJobResult = async (
+  runtimeId: string,
+  leaseId: string,
+  payload: RuntimeJobResultRequest,
+): Promise<MutationResponse<RuntimeJobResultResponse>> => {
+  return fetchJson<MutationResponse<RuntimeJobResultResponse>>(
+    `/runtimes/${runtimeId}/leases/${leaseId}/result`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const createRuntimeArtifactUploadMetadata = async (
+  runtimeId: string,
+  leaseId: string,
+  payload: RuntimeArtifactUploadMetadataRequest,
+): Promise<MutationResponse<RuntimeArtifactUploadMetadataResponse>> => {
+  return fetchJson<MutationResponse<RuntimeArtifactUploadMetadataResponse>>(
+    `/runtimes/${runtimeId}/leases/${leaseId}/artifacts`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const getProjectWorktrees = async (
+  projectId: string,
+): Promise<WorktreeListResponse> => {
+  return fetchJson<WorktreeListResponse>(`/projects/${projectId}/worktrees`, {
+    method: 'GET',
+  });
+};
+
+export const getProjectWorktree = async (
+  projectId: string,
+  worktreeId: string,
+): Promise<WorktreeResponse> => {
+  return fetchJson<WorktreeResponse>(
+    `/projects/${projectId}/worktrees/${worktreeId}`,
+    {
+      method: 'GET',
+    },
+  );
+};
+
+export const upsertProjectWorktree = async (
+  projectId: string,
+  payload: UpsertWorktreeRequest,
+): Promise<MutationResponse<WorktreeResponse>> => {
+  return fetchJson<MutationResponse<WorktreeResponse>>(
+    `/projects/${projectId}/worktrees`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const requestProjectWorktreeCleanup = async (
+  projectId: string,
+  worktreeId: string,
+  payload: { reason?: string } = {},
+): Promise<MutationResponse<WorktreeResponse>> => {
+  return fetchJson<MutationResponse<WorktreeResponse>>(
+    `/projects/${projectId}/worktrees/${worktreeId}/cleanup`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const markProjectWorktreeStale = async (
+  projectId: string,
+  worktreeId: string,
+  payload: { reason?: string } = {},
+): Promise<MutationResponse<WorktreeResponse>> => {
+  return fetchJson<MutationResponse<WorktreeResponse>>(
+    `/projects/${projectId}/worktrees/${worktreeId}/stale`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const listAgentRuns = async (
+  projectId: string,
+  workItemId: string,
+): Promise<AgentRunListResponse> => {
+  return fetchJson<AgentRunListResponse>(
+    `/projects/${projectId}/work-items/${workItemId}/agent-runs`,
+    {
+      method: 'GET',
+    },
+  );
+};
+
+export const createAgentRun = async (
+  projectId: string,
+  workItemId: string,
+  payload: CreateAgentRunRequest,
+): Promise<MutationResponse<AgentRunRecord>> => {
+  return fetchJson<MutationResponse<AgentRunRecord>>(
+    `/projects/${projectId}/work-items/${workItemId}/agent-runs`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const generateInboxIdeas = async (
+  projectId: string,
+  payload: GenerateInboxIdeasRequest,
+): Promise<MutationResponse<GenerateInboxIdeasResponse>> => {
+  return fetchJson<MutationResponse<GenerateInboxIdeasResponse>>(
+    `/projects/${projectId}/agents/inbox/generate`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const triageInboxIdea = async (
+  projectId: string,
+  workItemId: string,
+  payload: TriageInboxIdeaRequest,
+): Promise<MutationResponse<TriageInboxIdeaResponse>> => {
+  return fetchJson<MutationResponse<TriageInboxIdeaResponse>>(
+    `/projects/${projectId}/agents/planning/work-items/${workItemId}/triage`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const executeDevTask = async (
+  projectId: string,
+  workItemId: string,
+  payload: ExecuteDevTaskRequest,
+): Promise<MutationResponse<ExecuteDevTaskResponse>> => {
+  return fetchJson<MutationResponse<ExecuteDevTaskResponse>>(
+    `/projects/${projectId}/agents/dev/work-items/${workItemId}/execute`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const executeReview = async (
+  projectId: string,
+  workItemId: string,
+  payload: ExecuteReviewRequest,
+): Promise<MutationResponse<ExecuteReviewResponse>> => {
+  return fetchJson<MutationResponse<ExecuteReviewResponse>>(
+    `/projects/${projectId}/agents/review/work-items/${workItemId}/execute`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const executeRelease = async (
+  projectId: string,
+  workItemId: string,
+  payload: ExecuteReleaseRequest,
+): Promise<MutationResponse<ExecuteReleaseResponse>> => {
+  return fetchJson<MutationResponse<ExecuteReleaseResponse>>(
+    `/projects/${projectId}/agents/release/work-items/${workItemId}/execute`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const createAgentDecision = async (
+  projectId: string,
+  workItemId: string,
+  runId: string,
+  payload: CreateAgentDecisionRequest,
+): Promise<MutationResponse<AgentRunRecord>> => {
+  return fetchJson<MutationResponse<AgentRunRecord>>(
+    `/projects/${projectId}/work-items/${workItemId}/agent-runs/${runId}/decisions`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const createAgentFailure = async (
+  projectId: string,
+  workItemId: string,
+  runId: string,
+  payload: CreateAgentFailureRequest,
+): Promise<MutationResponse<AgentRunRecord>> => {
+  return fetchJson<MutationResponse<AgentRunRecord>>(
+    `/projects/${projectId}/work-items/${workItemId}/agent-runs/${runId}/failure`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const upsertPromptSnapshot = async (
+  projectId: string,
+  workItemId: string,
+  runId: string,
+  payload: UpsertPromptSnapshotRequest,
+): Promise<MutationResponse<AgentRunRecord>> => {
+  return fetchJson<MutationResponse<AgentRunRecord>>(
+    `/projects/${projectId}/work-items/${workItemId}/agent-runs/${runId}/prompt-snapshot`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const createAgentArtifact = async (
+  projectId: string,
+  workItemId: string,
+  runId: string,
+  payload: CreateAgentArtifactRequest,
+): Promise<MutationResponse<AgentRunRecord>> => {
+  return fetchJson<MutationResponse<AgentRunRecord>>(
+    `/projects/${projectId}/work-items/${workItemId}/agent-runs/${runId}/artifacts`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const listReviewGateResults = async (
+  projectId: string,
+  workItemId: string,
+): Promise<ReviewGateListResponse> => {
+  return fetchJson<ReviewGateListResponse>(
+    `/projects/${projectId}/work-items/${workItemId}/review-gates`,
+    {
+      method: 'GET',
+    },
+  );
+};
+
+export const getReviewGateSummary = async (
+  projectId: string,
+  workItemId: string,
+): Promise<ReviewGateSummaryResponse> => {
+  return fetchJson<ReviewGateSummaryResponse>(
+    `/projects/${projectId}/work-items/${workItemId}/review-gates/summary`,
+    {
+      method: 'GET',
+    },
+  );
+};
+
+export const createReviewGateResult = async (
+  projectId: string,
+  workItemId: string,
+  payload: CreateReviewGateResultRequest,
+): Promise<MutationResponse<ReviewGateResultRecord>> => {
+  return fetchJson<MutationResponse<ReviewGateResultRecord>>(
+    `/projects/${projectId}/work-items/${workItemId}/review-gates`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const startReleaseRun = async (
+  projectId: string,
+  workItemId: string,
+  payload: CreateReleaseRunRequest,
+): Promise<MutationResponse<ReleaseRunRecord>> => {
+  return fetchJson<MutationResponse<ReleaseRunRecord>>(
+    `/projects/${projectId}/work-items/${workItemId}/releases`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const recordReleaseResult = async (
+  projectId: string,
+  workItemId: string,
+  releaseRunId: string,
+  payload: RecordReleaseResultRequest,
+): Promise<MutationResponse<ReleaseRunRecord>> => {
+  return fetchJson<MutationResponse<ReleaseRunRecord>>(
+    `/projects/${projectId}/work-items/${workItemId}/releases/${releaseRunId}/result`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const createReleaseVersion = async (
+  projectId: string,
+  workItemId: string,
+  releaseRunId: string,
+  payload: CreateReleaseVersionRequest,
+): Promise<MutationResponse<ReleaseRunRecord>> => {
+  return fetchJson<MutationResponse<ReleaseRunRecord>>(
+    `/projects/${projectId}/work-items/${workItemId}/releases/${releaseRunId}/version`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const upsertReleaseNote = async (
+  projectId: string,
+  workItemId: string,
+  releaseRunId: string,
+  payload: UpsertReleaseNoteRequest,
+): Promise<MutationResponse<ReleaseRunRecord>> => {
+  return fetchJson<MutationResponse<ReleaseRunRecord>>(
+    `/projects/${projectId}/work-items/${workItemId}/releases/${releaseRunId}/notes`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const getReleaseHistory = async (
+  projectId: string,
+): Promise<ReleaseHistoryResponse> => {
+  return fetchJson<ReleaseHistoryResponse>(`/projects/${projectId}/releases`, {
+    method: 'GET',
+  });
+};
+
+export const createHumanIntervention = async (
+  projectId: string,
+  workItemId: string,
+  payload: CreateHumanInterventionRequest,
+): Promise<MutationResponse<HumanInterventionCaseRecord>> => {
+  return fetchJson<MutationResponse<HumanInterventionCaseRecord>>(
+    `/projects/${projectId}/work-items/${workItemId}/interventions`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const listHumanInterventions = async (
+  projectId: string,
+): Promise<HumanInterventionListResponse> => {
+  return fetchJson<HumanInterventionListResponse>(
+    `/projects/${projectId}/interventions`,
+    {
+      method: 'GET',
+    },
+  );
+};
+
+export const resolveHumanIntervention = async (
+  projectId: string,
+  interventionId: string,
+  payload: ResolveHumanInterventionRequest = {},
+): Promise<MutationResponse<HumanInterventionCaseRecord>> => {
+  return fetchJson<MutationResponse<HumanInterventionCaseRecord>>(
+    `/projects/${projectId}/interventions/${interventionId}/resolve`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const retryHumanIntervention = async (
+  projectId: string,
+  interventionId: string,
+  payload: RetryHumanInterventionRequest,
+): Promise<MutationResponse<HumanInterventionCaseRecord>> => {
+  return fetchJson<MutationResponse<HumanInterventionCaseRecord>>(
+    `/projects/${projectId}/interventions/${interventionId}/retry`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const createUsageEvent = async (
+  projectId: string,
+  payload: CreateUsageEventRequest,
+): Promise<MutationResponse<UsageEventRecord>> => {
+  return fetchJson<MutationResponse<UsageEventRecord>>(
+    `/projects/${projectId}/usage/events`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const getProjectUsageSummary = async (
+  projectId: string,
+  filters?: { from?: string; to?: string },
+): Promise<UsageSummaryResponse> => {
+  const searchParams = new URLSearchParams();
+
+  if (filters?.from) {
+    searchParams.set('from', filters.from);
+  }
+
+  if (filters?.to) {
+    searchParams.set('to', filters.to);
+  }
+
+  return fetchJson<UsageSummaryResponse>(
+    `/projects/${projectId}/usage/summary`,
+    { method: 'GET' },
+    searchParams,
+  );
+};
+
+export const getUserUsageSummary = async (
+  userId: string,
+  filters?: { from?: string; to?: string },
+): Promise<UsageSummaryResponse> => {
+  const searchParams = new URLSearchParams();
+
+  if (filters?.from) {
+    searchParams.set('from', filters.from);
+  }
+
+  if (filters?.to) {
+    searchParams.set('to', filters.to);
+  }
+
+  return fetchJson<UsageSummaryResponse>(
+    `/usage/users/${userId}/summary`,
+    { method: 'GET' },
+    searchParams,
+  );
+};
+
+export const upsertStripeCustomerMapping = async (
+  payload: UpsertStripeCustomerMappingRequest,
+): Promise<MutationResponse<StripeCustomerMappingRecord>> => {
+  return fetchJson<MutationResponse<StripeCustomerMappingRecord>>(
+    '/billing/customer',
+    {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const upsertBillingSubscription = async (
+  payload: UpsertBillingSubscriptionRequest,
+): Promise<MutationResponse<BillingSubscriptionRecord>> => {
+  return fetchJson<MutationResponse<BillingSubscriptionRecord>>(
+    '/billing/subscription',
+    {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const getBillingStatus = async (
+  workspaceKey?: string,
+): Promise<BillingStatusResponse> => {
+  const searchParams = new URLSearchParams();
+
+  if (workspaceKey) {
+    searchParams.set('workspaceKey', workspaceKey);
+  }
+
+  return fetchJson<BillingStatusResponse>(
+    '/billing/subscription',
+    { method: 'GET' },
+    searchParams,
+  );
+};
+
+export const createBillingPortalSession = async (
+  payload: CreateBillingPortalSessionRequest = {},
+): Promise<MutationResponse<BillingPortalSessionResponse>> => {
+  return fetchJson<MutationResponse<BillingPortalSessionResponse>>(
+    '/billing/portal-session',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const postStripeWebhookEvent = async (
+  payload: StripeWebhookEventRequest,
+): Promise<MutationResponse<BillingStatusResponse>> => {
+  return fetchJson<MutationResponse<BillingStatusResponse>>(
+    '/billing/webhooks/stripe',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
 export const updateProjectRepository = async (
   projectId: string,
   payload: ProjectRepositoryInput,
@@ -363,6 +1176,25 @@ export const createProject = async (
   return fetchJson<MutationResponse<ProjectDetail>>('/projects', {
     method: 'POST',
     body: JSON.stringify(payload),
+  });
+};
+
+export const login = async (
+  payload: LoginRequest,
+): Promise<MutationResponse<LoginResponse>> => {
+  return fetchJson<MutationResponse<LoginResponse>>('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+};
+
+export const getCurrentUser = async (): Promise<CurrentUserResponse> => {
+  return fetchJson<CurrentUserResponse>('/auth/current-user');
+};
+
+export const logout = async (): Promise<MutationResponse<LogoutResponse>> => {
+  return fetchJson<MutationResponse<LogoutResponse>>('/auth/logout', {
+    method: 'POST',
   });
 };
 
@@ -705,7 +1537,7 @@ export const createWorkItemComment = async (
   );
 };
 
-export const getWorkItemAuditTrail = async (
+export const getWorkItemTimeline = async (
   projectId: string,
   workItemId: string,
 ): Promise<WorkItemAuditTrailResponse> => {
@@ -714,5 +1546,116 @@ export const getWorkItemAuditTrail = async (
     {
       method: 'GET',
     },
+  );
+};
+
+export const getWorkItemAuditTrail = getWorkItemTimeline;
+
+export const getSystemLogs = async (
+  filters?: StructuredLogQuery,
+): Promise<StructuredLogListResponse> => {
+  const searchParams = new URLSearchParams();
+
+  if (filters?.level) {
+    searchParams.set('level', filters.level);
+  }
+
+  if (filters?.source) {
+    searchParams.set('source', filters.source);
+  }
+
+  if (filters?.eventType) {
+    searchParams.set('eventType', filters.eventType);
+  }
+
+  if (filters?.correlationId) {
+    searchParams.set('correlationId', filters.correlationId);
+  }
+
+  if (filters?.workItemId) {
+    searchParams.set('workItemId', filters.workItemId);
+  }
+
+  if (filters?.agentRunId) {
+    searchParams.set('agentRunId', filters.agentRunId);
+  }
+
+  if (filters?.runtimeId) {
+    searchParams.set('runtimeId', filters.runtimeId);
+  }
+
+  if (filters?.from) {
+    searchParams.set('from', filters.from);
+  }
+
+  if (filters?.to) {
+    searchParams.set('to', filters.to);
+  }
+
+  if (filters?.limit !== undefined) {
+    searchParams.set('limit', String(filters.limit));
+  }
+
+  return fetchJson<StructuredLogListResponse>(
+    '/logs/system',
+    {
+      method: 'GET',
+    },
+    searchParams,
+  );
+};
+
+export const getProjectLogs = async (
+  projectId: string,
+  filters?: StructuredLogQuery,
+): Promise<StructuredLogListResponse> => {
+  const searchParams = new URLSearchParams();
+
+  if (filters?.level) {
+    searchParams.set('level', filters.level);
+  }
+
+  if (filters?.source) {
+    searchParams.set('source', filters.source);
+  }
+
+  if (filters?.eventType) {
+    searchParams.set('eventType', filters.eventType);
+  }
+
+  if (filters?.correlationId) {
+    searchParams.set('correlationId', filters.correlationId);
+  }
+
+  if (filters?.workItemId) {
+    searchParams.set('workItemId', filters.workItemId);
+  }
+
+  if (filters?.agentRunId) {
+    searchParams.set('agentRunId', filters.agentRunId);
+  }
+
+  if (filters?.runtimeId) {
+    searchParams.set('runtimeId', filters.runtimeId);
+  }
+
+  if (filters?.from) {
+    searchParams.set('from', filters.from);
+  }
+
+  if (filters?.to) {
+    searchParams.set('to', filters.to);
+  }
+
+  if (filters?.limit !== undefined) {
+    searchParams.set('limit', String(filters.limit));
+  }
+
+  return fetchJson<StructuredLogListResponse>(
+    `/projects/${projectId}/logs`,
+    {
+      method: 'GET',
+    },
+    searchParams,
   );
 };

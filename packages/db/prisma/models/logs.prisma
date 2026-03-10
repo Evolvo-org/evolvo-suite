@@ -1,0 +1,33 @@
+enum StructuredLogLevel {
+  DEBUG
+  INFO
+  WARN
+  ERROR
+}
+
+model StructuredLogEntry {
+  id            String             @id @default(cuid())
+  level         StructuredLogLevel @default(INFO)
+  source        String
+  projectId     String?
+  workItemId    String?
+  agentRunId    String?
+  runtimeId     String?
+  userId        String?
+  agentType     String?
+  eventType     String
+  message       String?            @db.Text
+  correlationId String?
+  payload       Json?
+  occurredAt    DateTime           @default(now())
+  createdAt     DateTime           @default(now())
+
+  @@index([projectId, occurredAt])
+  @@index([eventType, occurredAt])
+  @@index([source, occurredAt])
+  @@index([level, occurredAt])
+  @@index([correlationId, occurredAt])
+  @@index([workItemId, occurredAt])
+  @@index([agentRunId, occurredAt])
+  @@index([runtimeId, occurredAt])
+}

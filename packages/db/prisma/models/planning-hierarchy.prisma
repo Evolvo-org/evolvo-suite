@@ -66,8 +66,15 @@ model WorkItem {
   comments             WorkItemComment[]
   dependencies         WorkItemDependency[] @relation("WorkItemDependencies")
   dependentWorkItems   WorkItemDependency[] @relation("WorkItemDependents")
+  agentRuns            AgentRun[]
+  interventions        HumanInterventionCase[]
+  releaseRuns          ReleaseRun[]
+  reviewGateResults    ReviewGateResult[]
+  usageEvents          UsageEvent[]
   leases               WorkItemLease[]
+  worktrees            Worktree[]
   transitions          WorkItemStateTransition[]
+  retryState           WorkItemRetryState?
 
   @@index([projectId, state, sortOrder])
   @@index([projectId, epicId, parentId, sortOrder])
@@ -97,6 +104,7 @@ model AcceptanceCriterion {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   workItem   WorkItem @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+  reviewGateEvaluations ReviewCriterionEvaluation[]
 
   @@index([workItemId, sortOrder])
 }

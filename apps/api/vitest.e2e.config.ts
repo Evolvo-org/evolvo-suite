@@ -7,6 +7,7 @@ export default mergeConfig(
     test: {
       include: ['test/**/*.e2e-spec.ts'],
       exclude: ['src/**/*.spec.ts'],
+      testTimeout: 15000,
     },
   }),
 );

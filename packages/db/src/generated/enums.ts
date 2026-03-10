@@ -9,6 +9,56 @@
 * 🟢 You can import this file directly.
 */
 
+export const AgentRunStatus = {
+  RUNNING: 'RUNNING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type AgentRunStatus = (typeof AgentRunStatus)[keyof typeof AgentRunStatus]
+
+
+export const AgentArtifactType = {
+  LOG: 'LOG',
+  PATCH: 'PATCH',
+  REPORT: 'REPORT',
+  PLAN: 'PLAN',
+  OTHER: 'OTHER'
+} as const
+
+export type AgentArtifactType = (typeof AgentArtifactType)[keyof typeof AgentArtifactType]
+
+
+export const BillingSubscriptionStatus = {
+  TRIALING: 'TRIALING',
+  ACTIVE: 'ACTIVE',
+  PAST_DUE: 'PAST_DUE',
+  CANCELED: 'CANCELED',
+  INCOMPLETE: 'INCOMPLETE'
+} as const
+
+export type BillingSubscriptionStatus = (typeof BillingSubscriptionStatus)[keyof typeof BillingSubscriptionStatus]
+
+
+export const HumanInterventionStatus = {
+  OPEN: 'OPEN',
+  RESOLVED: 'RESOLVED'
+} as const
+
+export type HumanInterventionStatus = (typeof HumanInterventionStatus)[keyof typeof HumanInterventionStatus]
+
+
+export const StructuredLogLevel = {
+  DEBUG: 'DEBUG',
+  INFO: 'INFO',
+  WARN: 'WARN',
+  ERROR: 'ERROR'
+} as const
+
+export type StructuredLogLevel = (typeof StructuredLogLevel)[keyof typeof StructuredLogLevel]
+
+
 export const WorkItemState = {
   INBOX: 'INBOX',
   PLANNING: 'PLANNING',
@@ -67,6 +117,53 @@ export const ProjectRepositoryProvider = {
 export type ProjectRepositoryProvider = (typeof ProjectRepositoryProvider)[keyof typeof ProjectRepositoryProvider]
 
 
+export const ReleaseRunStatus = {
+  RUNNING: 'RUNNING',
+  SUCCEEDED: 'SUCCEEDED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ReleaseRunStatus = (typeof ReleaseRunStatus)[keyof typeof ReleaseRunStatus]
+
+
+export const ReleaseNoteFormat = {
+  MARKDOWN: 'MARKDOWN',
+  PLAIN_TEXT: 'PLAIN_TEXT'
+} as const
+
+export type ReleaseNoteFormat = (typeof ReleaseNoteFormat)[keyof typeof ReleaseNoteFormat]
+
+
+export const ReviewGateOverallStatus = {
+  PASSED: 'PASSED',
+  FAILED: 'FAILED'
+} as const
+
+export type ReviewGateOverallStatus = (typeof ReviewGateOverallStatus)[keyof typeof ReviewGateOverallStatus]
+
+
+export const ReviewGateCheckName = {
+  BUILD: 'BUILD',
+  LINT: 'LINT',
+  TYPECHECK: 'TYPECHECK',
+  TEST: 'TEST',
+  ACCEPTANCE_CRITERIA: 'ACCEPTANCE_CRITERIA',
+  REVIEW_FEEDBACK: 'REVIEW_FEEDBACK'
+} as const
+
+export type ReviewGateCheckName = (typeof ReviewGateCheckName)[keyof typeof ReviewGateCheckName]
+
+
+export const ReviewGateCheckStatus = {
+  PASSED: 'PASSED',
+  FAILED: 'FAILED',
+  SKIPPED: 'SKIPPED'
+} as const
+
+export type ReviewGateCheckStatus = (typeof ReviewGateCheckStatus)[keyof typeof ReviewGateCheckStatus]
+
+
 export const RuntimeStatus = {
   IDLE: 'IDLE',
   BUSY: 'BUSY',
@@ -74,6 +171,18 @@ export const RuntimeStatus = {
 } as const
 
 export type RuntimeStatus = (typeof RuntimeStatus)[keyof typeof RuntimeStatus]
+
+
+export const RuntimeArtifactType = {
+  LOG: 'LOG',
+  PATCH: 'PATCH',
+  TEST_REPORT: 'TEST_REPORT',
+  BUILD_OUTPUT: 'BUILD_OUTPUT',
+  RELEASE_NOTE: 'RELEASE_NOTE',
+  OTHER: 'OTHER'
+} as const
+
+export type RuntimeArtifactType = (typeof RuntimeArtifactType)[keyof typeof RuntimeArtifactType]
 
 
 export const SchedulerLeaseLane = {
@@ -93,3 +202,28 @@ export const SchedulerLeaseStatus = {
 } as const
 
 export type SchedulerLeaseStatus = (typeof SchedulerLeaseStatus)[keyof typeof SchedulerLeaseStatus]
+
+
+export const WorkItemRetryCategory = {
+  REVIEW: 'REVIEW',
+  MERGE_CONFLICT: 'MERGE_CONFLICT',
+  RUNTIME: 'RUNTIME',
+  AMBIGUITY: 'AMBIGUITY'
+} as const
+
+export type WorkItemRetryCategory = (typeof WorkItemRetryCategory)[keyof typeof WorkItemRetryCategory]
+
+
+export const WorktreeStatus = {
+  PENDING: 'PENDING',
+  ACTIVE: 'ACTIVE',
+  LOCKED_BY_DEV: 'LOCKED_BY_DEV',
+  LOCKED_BY_REVIEW: 'LOCKED_BY_REVIEW',
+  LOCKED_BY_RELEASE: 'LOCKED_BY_RELEASE',
+  STALE: 'STALE',
+  CLEANUP_PENDING: 'CLEANUP_PENDING',
+  ARCHIVED: 'ARCHIVED',
+  FAILED: 'FAILED'
+} as const
+
+export type WorktreeStatus = (typeof WorktreeStatus)[keyof typeof WorktreeStatus]

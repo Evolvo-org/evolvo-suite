@@ -5,7 +5,7 @@
 Build real auth and usage foundations now so Evolvo v2 can evolve into a paid platform later without re-architecture.
 
 ## AUTH-001 - Define auth model
-**Status:** todo  
+**Status:** done  
 **Outcome:** User, role, and access concepts are clear.
 
 Roles:
@@ -15,19 +15,19 @@ Roles:
 - viewer
 
 Tasks:
-- [ ] Define role capabilities
-- [ ] Define protected routes
-- [ ] Define admin bypass rules
+- [x] Define role capabilities
+- [x] Define protected routes
+- [x] Define admin bypass rules
 
 ## AUTH-002 - Implement login and session support
-**Status:** todo  
+**Status:** done  
 **Outcome:** Users can authenticate and maintain session state.
 
 Tasks:
-- [ ] Add login flow
-- [ ] Add session persistence
-- [ ] Add logout flow
-- [ ] Add current-user bootstrap
+- [x] Add login flow
+- [x] Add session persistence
+- [x] Add logout flow
+- [x] Add current-user bootstrap
 
 ## AUTH-003 - Add role-based access controls
 **Status:** todo  

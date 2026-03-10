@@ -11,6 +11,40 @@ enum SchedulerLeaseStatus {
   RECOVERED
 }
 
+enum WorkItemRetryCategory {
+  REVIEW
+  MERGE_CONFLICT
+  RUNTIME
+  AMBIGUITY
+}
+
+model SchedulerLaneCursor {
+  lane          SchedulerLeaseLane @id
+  lastProjectId String?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+}
+
+model WorkItemRetryState {
+  id                        String                @id @default(cuid())
+  projectId                 String
+  workItemId                String                @unique
+  reviewFailureCount        Int                   @default(0)
+  mergeConflictFailureCount Int                   @default(0)
+  runtimeFailureCount       Int                   @default(0)
+  ambiguityFailureCount     Int                   @default(0)
+  lastFailureCategory       WorkItemRetryCategory?
+  lastFailureMessage        String?               @db.Text
+  lastFailureAt             DateTime?
+  nextRetryAt               DateTime?
+  createdAt                 DateTime              @default(now())
+  updatedAt                 DateTime              @updatedAt
+  workItem                  WorkItem              @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, nextRetryAt])
+  @@index([lastFailureCategory, nextRetryAt])
+}
+
 model WorkItemLease {
   id             String               @id @default(cuid())
   projectId      String
@@ -27,6 +61,11 @@ model WorkItemLease {
   recoveryReason String?              @db.Text
   createdAt      DateTime             @default(now())
   updatedAt      DateTime             @updatedAt
+  agentRuns      AgentRun[]
+  artifacts      RuntimeArtifact[]
+  releaseRuns    ReleaseRun[]
+  reviewGateResults ReviewGateResult[]
+  worktrees      Worktree[]
   workItem       WorkItem             @relation(fields: [workItemId], references: [id], onDelete: Cascade)
 
   @@index([projectId, status, expiresAt])

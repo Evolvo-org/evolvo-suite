@@ -1,0 +1,49 @@
+enum BillingSubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  INCOMPLETE
+}
+
+model StripeCustomer {
+  id               String         @id @default(cuid())
+  workspaceKey     String         @unique
+  stripeCustomerId String         @unique
+  email            String?
+  displayName      String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  subscriptions    Subscription[]
+  webhookEvents    BillingWebhookEvent[]
+}
+
+model Subscription {
+  id                   String                    @id @default(cuid())
+  workspaceKey         String                    @unique
+  stripeCustomerId     String
+  stripeSubscriptionId String?                   @unique
+  status               BillingSubscriptionStatus
+  planKey              String?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean                   @default(false)
+  adminBypassActive    Boolean                   @default(false)
+  createdAt            DateTime                  @default(now())
+  updatedAt            DateTime                  @updatedAt
+  stripeCustomer       StripeCustomer            @relation(fields: [stripeCustomerId], references: [id], onDelete: Cascade)
+}
+
+model BillingWebhookEvent {
+  id               String          @id @default(cuid())
+  workspaceKey     String
+  stripeCustomerId String?
+  providerEventId  String          @unique
+  eventType        String
+  payloadJson      String?         @db.Text
+  receivedAt       DateTime        @default(now())
+  processedAt      DateTime?
+  stripeCustomer   StripeCustomer? @relation(fields: [stripeCustomerId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceKey, receivedAt])
+  @@index([stripeCustomerId, receivedAt])
+}

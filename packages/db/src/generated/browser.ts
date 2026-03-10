@@ -18,6 +18,56 @@ export { Prisma }
 export * as $Enums from './enums.js'
 export * from './enums.js';
 /**
+ * Model AgentRun
+ * 
+ */
+export type AgentRun = Prisma.AgentRunModel
+/**
+ * Model AgentDecision
+ * 
+ */
+export type AgentDecision = Prisma.AgentDecisionModel
+/**
+ * Model AgentFailure
+ * 
+ */
+export type AgentFailure = Prisma.AgentFailureModel
+/**
+ * Model PromptSnapshot
+ * 
+ */
+export type PromptSnapshot = Prisma.PromptSnapshotModel
+/**
+ * Model AgentRunArtifact
+ * 
+ */
+export type AgentRunArtifact = Prisma.AgentRunArtifactModel
+/**
+ * Model StripeCustomer
+ * 
+ */
+export type StripeCustomer = Prisma.StripeCustomerModel
+/**
+ * Model Subscription
+ * 
+ */
+export type Subscription = Prisma.SubscriptionModel
+/**
+ * Model BillingWebhookEvent
+ * 
+ */
+export type BillingWebhookEvent = Prisma.BillingWebhookEventModel
+/**
+ * Model HumanInterventionCase
+ * 
+ */
+export type HumanInterventionCase = Prisma.HumanInterventionCaseModel
+/**
+ * Model StructuredLogEntry
+ * 
+ */
+export type StructuredLogEntry = Prisma.StructuredLogEntryModel
+/**
  * Model Epic
  * 
  */
@@ -53,6 +103,11 @@ export type WorkItemStateTransition = Prisma.WorkItemStateTransitionModel
  */
 export type Project = Prisma.ProjectModel
 /**
+ * Model ProjectAgentRouting
+ * 
+ */
+export type ProjectAgentRouting = Prisma.ProjectAgentRoutingModel
+/**
  * Model ProjectRepository
  * 
  */
@@ -67,6 +122,11 @@ export type ProjectQueueLimits = Prisma.ProjectQueueLimitsModel
  * 
  */
 export type SystemQueueLimits = Prisma.SystemQueueLimitsModel
+/**
+ * Model SystemAgentRouting
+ * 
+ */
+export type SystemAgentRouting = Prisma.SystemAgentRoutingModel
 /**
  * Model ProductSpec
  * 
@@ -83,12 +143,67 @@ export type DevelopmentPlan = Prisma.DevelopmentPlanModel
  */
 export type PlanVersion = Prisma.PlanVersionModel
 /**
+ * Model ReleaseRun
+ * 
+ */
+export type ReleaseRun = Prisma.ReleaseRunModel
+/**
+ * Model ReleaseVersion
+ * 
+ */
+export type ReleaseVersion = Prisma.ReleaseVersionModel
+/**
+ * Model ReleaseNote
+ * 
+ */
+export type ReleaseNote = Prisma.ReleaseNoteModel
+/**
+ * Model ReviewGateResult
+ * 
+ */
+export type ReviewGateResult = Prisma.ReviewGateResultModel
+/**
+ * Model ReviewGateCheck
+ * 
+ */
+export type ReviewGateCheck = Prisma.ReviewGateCheckModel
+/**
+ * Model ReviewCriterionEvaluation
+ * 
+ */
+export type ReviewCriterionEvaluation = Prisma.ReviewCriterionEvaluationModel
+/**
  * Model RuntimeInstance
  * 
  */
 export type RuntimeInstance = Prisma.RuntimeInstanceModel
 /**
+ * Model RuntimeArtifact
+ * 
+ */
+export type RuntimeArtifact = Prisma.RuntimeArtifactModel
+/**
+ * Model SchedulerLaneCursor
+ * 
+ */
+export type SchedulerLaneCursor = Prisma.SchedulerLaneCursorModel
+/**
+ * Model WorkItemRetryState
+ * 
+ */
+export type WorkItemRetryState = Prisma.WorkItemRetryStateModel
+/**
  * Model WorkItemLease
  * 
  */
 export type WorkItemLease = Prisma.WorkItemLeaseModel
+/**
+ * Model UsageEvent
+ * 
+ */
+export type UsageEvent = Prisma.UsageEventModel
+/**
+ * Model Worktree
+ * 
+ */
+export type Worktree = Prisma.WorktreeModel

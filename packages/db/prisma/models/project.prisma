@@ -17,11 +17,23 @@ model Project {
   createdAt           DateTime               @default(now())
   updatedAt           DateTime               @updatedAt
   repository          ProjectRepository?
+  agentRouting        ProjectAgentRouting?
   productSpec         ProductSpec?
   developmentPlan     DevelopmentPlan?
   queueLimits         ProjectQueueLimits?
   epics               Epic[]
   workItems           WorkItem[]
+}
+
+model ProjectAgentRouting {
+  id              String   @id @default(cuid())
+  projectId       String   @unique
+  defaultProvider String
+  defaultModel    String
+  agentRoutesJson Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model ProjectRepository {
@@ -70,6 +82,15 @@ model SystemQueueLimits {
   maxAmbiguityRetries     Int
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
+}
+
+model SystemAgentRouting {
+  id              String   @id
+  defaultProvider String
+  defaultModel    String
+  agentRoutesJson Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model ProductSpec {

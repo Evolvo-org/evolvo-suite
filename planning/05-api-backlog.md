@@ -64,15 +64,15 @@ Tasks:
 - [x] Export DTOs for `packages/api-client`
 
 ## API-005 - Implement auth foundation
-**Status:** todo  
+**Status:** done  
 **Outcome:** API supports authenticated access and role checks.
 
 Tasks:
-- [ ] Add auth module
-- [ ] Add session/token strategy
-- [ ] Add current-user endpoint
-- [ ] Add role guards
-- [ ] Add admin bypass rules
+- [x] Add auth module
+- [x] Add session/token strategy
+- [x] Add current-user endpoint
+- [x] Add role guards
+- [x] Add admin bypass rules
 
 ## API-006 - Implement project CRUD
 **Status:** done  
@@ -194,120 +194,120 @@ Tasks:
 - [x] Add offline detection
 
 ## API-017 - Add runtime work dispatch
-**Status:** todo  
+**Status:** done  
 **Outcome:** The runtime can ask for work and receive leased jobs.
 
 Tasks:
-- [ ] Add request-work endpoint
-- [ ] Add runtime job result endpoint
-- [ ] Add runtime progress update endpoint
-- [ ] Add runtime artifact upload metadata endpoint
+- [x] Add request-work endpoint
+- [x] Add runtime job result endpoint
+- [x] Add runtime progress update endpoint
+- [x] Add runtime artifact upload metadata endpoint
 
 ## API-018 - Add worktree persistence endpoints
-**Status:** todo  
+**Status:** done  
 **Outcome:** Worktree lifecycle is stored centrally.
 
 Tasks:
-- [ ] Add worktree create/update endpoints
-- [ ] Add worktree status query
-- [ ] Add worktree cleanup endpoint
-- [ ] Add stale worktree mark endpoint
+- [x] Add worktree create/update endpoints
+- [x] Add worktree status query
+- [x] Add worktree cleanup endpoint
+- [x] Add stale worktree mark endpoint
 
 ## API-019 - Add agent run persistence
-**Status:** todo  
+**Status:** done  
 **Outcome:** Every agent action is durably recorded.
 
 Tasks:
-- [ ] Add agent run create path
-- [ ] Add agent decision record
-- [ ] Add agent failure record
-- [ ] Add prompt snapshot record
-- [ ] Add run artifact record
+- [x] Add agent run create path
+- [x] Add agent decision record
+- [x] Add agent failure record
+- [x] Add prompt snapshot record
+- [x] Add run artifact record
 
 ## API-020 - Add review gate persistence
-**Status:** todo  
+**Status:** done  
 **Outcome:** Build, lint, typecheck, test, and criteria results are recorded structurally.
 
 Tasks:
-- [ ] Add gate result schema
-- [ ] Add gate result report endpoint
-- [ ] Add gate summary query
-- [ ] Add criteria evaluation report fields
+- [x] Add gate result schema
+- [x] Add gate result report endpoint
+- [x] Add gate summary query
+- [x] Add criteria evaluation report fields
 
 ## API-021 - Add release endpoints
-**Status:** todo  
+**Status:** done  
 **Outcome:** Release attempts, versions, tags, and notes are stored.
 
 Tasks:
-- [ ] Add release start endpoint
-- [ ] Add release result endpoint
-- [ ] Add version record endpoint
-- [ ] Add release notes storage
-- [ ] Add release history query
+- [x] Add release start endpoint
+- [x] Add release result endpoint
+- [x] Add version record endpoint
+- [x] Add release notes storage
+- [x] Add release history query
 
 ## API-022 - Add human intervention endpoints
-**Status:** todo  
+**Status:** done  
 **Outcome:** Blocked work can be escalated and managed.
 
 Tasks:
-- [ ] Add intervention create endpoint
-- [ ] Add intervention list endpoint
-- [ ] Add intervention resolve endpoint
-- [ ] Add suggested action fields
-- [ ] Add retry-from-intervention flow
+- [x] Add intervention create endpoint
+- [x] Add intervention list endpoint
+- [x] Add intervention resolve endpoint
+- [x] Add suggested action fields
+- [x] Add retry-from-intervention flow
 
 ## API-023 - Add usage tracking endpoints
-**Status:** todo  
+**Status:** done  
 **Outcome:** Token and cost events are tracked from day one.
 
 Tasks:
-- [ ] Add token usage event endpoint
-- [ ] Add model/provider metadata support
-- [ ] Add project usage aggregation query
-- [ ] Add user usage aggregation query
-- [ ] Add cost estimate calculation
+- [x] Add token usage event endpoint
+- [x] Add model/provider metadata support
+- [x] Add project usage aggregation query
+- [x] Add user usage aggregation query
+- [x] Add cost estimate calculation
 
 ## API-024 - Add billing endpoints
-**Status:** todo  
+**Status:** done  
 **Outcome:** Stripe sandbox billing scaffolding is present.
 
 Tasks:
-- [ ] Add stripe customer mapping
-- [ ] Add subscription status query
-- [ ] Add billing portal/session support
-- [ ] Add admin bypass logic
-- [ ] Add webhook handling
+- [x] Add stripe customer mapping
+- [x] Add subscription status query
+- [x] Add billing portal/session support
+- [x] Add admin bypass logic
+- [x] Add webhook handling
 
 ## API-025 - Add websocket gateway
-**Status:** todo  
+**Status:** done  
 **Outcome:** The API can push system events to the web app.
 
 Tasks:
-- [ ] Add realtime gateway
-- [ ] Define event names
-- [ ] Add project-scoped event publishing
-- [ ] Add authentication for sockets
-- [ ] Add query invalidation mapping notes
+- [x] Add realtime gateway
+- [x] Define event names
+- [x] Add project-scoped event publishing
+- [x] Add authentication for sockets
+- [x] Add query invalidation mapping notes
 
 ## API-026 - Add structured logging and audit events
-**Status:** todo  
+**Status:** done  
 **Outcome:** System actions are queryable and traceable.
 
 Tasks:
-- [ ] Add structured log schema
-- [ ] Add log write service
-- [ ] Add system log query
-- [ ] Add project log query
-- [ ] Add request correlation id support
+- [x] Add structured log schema
+- [x] Add log write service
+- [x] Add system log query
+- [x] Add project log query
+- [x] Add request correlation id support
 
 ## API-027 - Add comprehensive tests
-**Status:** todo  
+**Status:** done  
 **Outcome:** Core API behaviour is protected by tests.
 
 Tasks:
-- [ ] Unit test workflow state machine
-- [ ] Unit test lease behaviour
-- [ ] Unit test queue limit logic
-- [ ] Integration test project lifecycle
-- [ ] Integration test runtime lifecycle
-- [ ] Integration test release lifecycle
+- [x] Unit test workflow state machine
+- [x] Unit test lease behaviour
+- [x] Unit test queue limit logic
+- [x] Integration test project lifecycle
+- [x] Integration test runtime lifecycle
+- [x] Integration test release lifecycle

@@ -262,6 +262,11 @@ export type WorkItemLeaseWhereInput = {
   recoveryReason?: Prisma.StringNullableFilter<"WorkItemLease"> | string | null
   createdAt?: Prisma.DateTimeFilter<"WorkItemLease"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"WorkItemLease"> | Date | string
+  agentRuns?: Prisma.AgentRunListRelationFilter
+  artifacts?: Prisma.RuntimeArtifactListRelationFilter
+  releaseRuns?: Prisma.ReleaseRunListRelationFilter
+  reviewGateResults?: Prisma.ReviewGateResultListRelationFilter
+  worktrees?: Prisma.WorktreeListRelationFilter
   workItem?: Prisma.XOR<Prisma.WorkItemScalarRelationFilter, Prisma.WorkItemWhereInput>
 }
 
@@ -281,6 +286,11 @@ export type WorkItemLeaseOrderByWithRelationInput = {
   recoveryReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  agentRuns?: Prisma.AgentRunOrderByRelationAggregateInput
+  artifacts?: Prisma.RuntimeArtifactOrderByRelationAggregateInput
+  releaseRuns?: Prisma.ReleaseRunOrderByRelationAggregateInput
+  reviewGateResults?: Prisma.ReviewGateResultOrderByRelationAggregateInput
+  worktrees?: Prisma.WorktreeOrderByRelationAggregateInput
   workItem?: Prisma.WorkItemOrderByWithRelationInput
 }
 
@@ -303,6 +313,11 @@ export type WorkItemLeaseWhereUniqueInput = Prisma.AtLeast<{
   recoveryReason?: Prisma.StringNullableFilter<"WorkItemLease"> | string | null
   createdAt?: Prisma.DateTimeFilter<"WorkItemLease"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"WorkItemLease"> | Date | string
+  agentRuns?: Prisma.AgentRunListRelationFilter
+  artifacts?: Prisma.RuntimeArtifactListRelationFilter
+  releaseRuns?: Prisma.ReleaseRunListRelationFilter
+  reviewGateResults?: Prisma.ReviewGateResultListRelationFilter
+  worktrees?: Prisma.WorktreeListRelationFilter
   workItem?: Prisma.XOR<Prisma.WorkItemScalarRelationFilter, Prisma.WorkItemWhereInput>
 }, "id" | "leaseToken">
 
@@ -363,6 +378,11 @@ export type WorkItemLeaseCreateInput = {
   recoveryReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutLeaseInput
+  artifacts?: Prisma.RuntimeArtifactCreateNestedManyWithoutLeaseInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutLeaseInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutLeaseInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutLeaseInput
   workItem: Prisma.WorkItemCreateNestedOneWithoutLeasesInput
 }
 
@@ -382,6 +402,11 @@ export type WorkItemLeaseUncheckedCreateInput = {
   recoveryReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutLeaseInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedCreateNestedManyWithoutLeaseInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutLeaseInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutLeaseInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutLeaseInput
 }
 
 export type WorkItemLeaseUpdateInput = {
@@ -399,6 +424,11 @@ export type WorkItemLeaseUpdateInput = {
   recoveryReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutLeaseNestedInput
+  artifacts?: Prisma.RuntimeArtifactUpdateManyWithoutLeaseNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutLeaseNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutLeaseNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutLeaseNestedInput
   workItem?: Prisma.WorkItemUpdateOneRequiredWithoutLeasesNestedInput
 }
 
@@ -418,6 +448,11 @@ export type WorkItemLeaseUncheckedUpdateInput = {
   recoveryReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutLeaseNestedInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedUpdateManyWithoutLeaseNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutLeaseNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutLeaseNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutLeaseNestedInput
 }
 
 export type WorkItemLeaseCreateManyInput = {
@@ -473,6 +508,11 @@ export type WorkItemLeaseUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type WorkItemLeaseNullableScalarRelationFilter = {
+  is?: Prisma.WorkItemLeaseWhereInput | null
+  isNot?: Prisma.WorkItemLeaseWhereInput | null
+}
+
 export type WorkItemLeaseListRelationFilter = {
   every?: Prisma.WorkItemLeaseWhereInput
   some?: Prisma.WorkItemLeaseWhereInput
@@ -481,6 +521,11 @@ export type WorkItemLeaseListRelationFilter = {
 
 export type WorkItemLeaseOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type WorkItemLeaseScalarRelationFilter = {
+  is?: Prisma.WorkItemLeaseWhereInput
+  isNot?: Prisma.WorkItemLeaseWhereInput
 }
 
 export type WorkItemLeaseCountOrderByAggregateInput = {
@@ -537,6 +582,22 @@ export type WorkItemLeaseMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type WorkItemLeaseCreateNestedOneWithoutAgentRunsInput = {
+  create?: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutAgentRunsInput, Prisma.WorkItemLeaseUncheckedCreateWithoutAgentRunsInput>
+  connectOrCreate?: Prisma.WorkItemLeaseCreateOrConnectWithoutAgentRunsInput
+  connect?: Prisma.WorkItemLeaseWhereUniqueInput
+}
+
+export type WorkItemLeaseUpdateOneWithoutAgentRunsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutAgentRunsInput, Prisma.WorkItemLeaseUncheckedCreateWithoutAgentRunsInput>
+  connectOrCreate?: Prisma.WorkItemLeaseCreateOrConnectWithoutAgentRunsInput
+  upsert?: Prisma.WorkItemLeaseUpsertWithoutAgentRunsInput
+  disconnect?: Prisma.WorkItemLeaseWhereInput | boolean
+  delete?: Prisma.WorkItemLeaseWhereInput | boolean
+  connect?: Prisma.WorkItemLeaseWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkItemLeaseUpdateToOneWithWhereWithoutAgentRunsInput, Prisma.WorkItemLeaseUpdateWithoutAgentRunsInput>, Prisma.WorkItemLeaseUncheckedUpdateWithoutAgentRunsInput>
+}
+
 export type WorkItemLeaseCreateNestedManyWithoutWorkItemInput = {
   create?: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutWorkItemInput, Prisma.WorkItemLeaseUncheckedCreateWithoutWorkItemInput> | Prisma.WorkItemLeaseCreateWithoutWorkItemInput[] | Prisma.WorkItemLeaseUncheckedCreateWithoutWorkItemInput[]
   connectOrCreate?: Prisma.WorkItemLeaseCreateOrConnectWithoutWorkItemInput | Prisma.WorkItemLeaseCreateOrConnectWithoutWorkItemInput[]
@@ -579,16 +640,174 @@ export type WorkItemLeaseUncheckedUpdateManyWithoutWorkItemNestedInput = {
   deleteMany?: Prisma.WorkItemLeaseScalarWhereInput | Prisma.WorkItemLeaseScalarWhereInput[]
 }
 
-export type EnumSchedulerLeaseLaneFieldUpdateOperationsInput = {
-  set?: $Enums.SchedulerLeaseLane
+export type WorkItemLeaseCreateNestedOneWithoutReleaseRunsInput = {
+  create?: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutReleaseRunsInput, Prisma.WorkItemLeaseUncheckedCreateWithoutReleaseRunsInput>
+  connectOrCreate?: Prisma.WorkItemLeaseCreateOrConnectWithoutReleaseRunsInput
+  connect?: Prisma.WorkItemLeaseWhereUniqueInput
+}
+
+export type WorkItemLeaseUpdateOneWithoutReleaseRunsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutReleaseRunsInput, Prisma.WorkItemLeaseUncheckedCreateWithoutReleaseRunsInput>
+  connectOrCreate?: Prisma.WorkItemLeaseCreateOrConnectWithoutReleaseRunsInput
+  upsert?: Prisma.WorkItemLeaseUpsertWithoutReleaseRunsInput
+  disconnect?: Prisma.WorkItemLeaseWhereInput | boolean
+  delete?: Prisma.WorkItemLeaseWhereInput | boolean
+  connect?: Prisma.WorkItemLeaseWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkItemLeaseUpdateToOneWithWhereWithoutReleaseRunsInput, Prisma.WorkItemLeaseUpdateWithoutReleaseRunsInput>, Prisma.WorkItemLeaseUncheckedUpdateWithoutReleaseRunsInput>
+}
+
+export type WorkItemLeaseCreateNestedOneWithoutReviewGateResultsInput = {
+  create?: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutReviewGateResultsInput, Prisma.WorkItemLeaseUncheckedCreateWithoutReviewGateResultsInput>
+  connectOrCreate?: Prisma.WorkItemLeaseCreateOrConnectWithoutReviewGateResultsInput
+  connect?: Prisma.WorkItemLeaseWhereUniqueInput
+}
+
+export type WorkItemLeaseUpdateOneWithoutReviewGateResultsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutReviewGateResultsInput, Prisma.WorkItemLeaseUncheckedCreateWithoutReviewGateResultsInput>
+  connectOrCreate?: Prisma.WorkItemLeaseCreateOrConnectWithoutReviewGateResultsInput
+  upsert?: Prisma.WorkItemLeaseUpsertWithoutReviewGateResultsInput
+  disconnect?: Prisma.WorkItemLeaseWhereInput | boolean
+  delete?: Prisma.WorkItemLeaseWhereInput | boolean
+  connect?: Prisma.WorkItemLeaseWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkItemLeaseUpdateToOneWithWhereWithoutReviewGateResultsInput, Prisma.WorkItemLeaseUpdateWithoutReviewGateResultsInput>, Prisma.WorkItemLeaseUncheckedUpdateWithoutReviewGateResultsInput>
+}
+
+export type WorkItemLeaseCreateNestedOneWithoutArtifactsInput = {
+  create?: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutArtifactsInput, Prisma.WorkItemLeaseUncheckedCreateWithoutArtifactsInput>
+  connectOrCreate?: Prisma.WorkItemLeaseCreateOrConnectWithoutArtifactsInput
+  connect?: Prisma.WorkItemLeaseWhereUniqueInput
+}
+
+export type WorkItemLeaseUpdateOneRequiredWithoutArtifactsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutArtifactsInput, Prisma.WorkItemLeaseUncheckedCreateWithoutArtifactsInput>
+  connectOrCreate?: Prisma.WorkItemLeaseCreateOrConnectWithoutArtifactsInput
+  upsert?: Prisma.WorkItemLeaseUpsertWithoutArtifactsInput
+  connect?: Prisma.WorkItemLeaseWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkItemLeaseUpdateToOneWithWhereWithoutArtifactsInput, Prisma.WorkItemLeaseUpdateWithoutArtifactsInput>, Prisma.WorkItemLeaseUncheckedUpdateWithoutArtifactsInput>
 }
 
 export type EnumSchedulerLeaseStatusFieldUpdateOperationsInput = {
   set?: $Enums.SchedulerLeaseStatus
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
+export type WorkItemLeaseCreateNestedOneWithoutWorktreesInput = {
+  create?: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutWorktreesInput, Prisma.WorkItemLeaseUncheckedCreateWithoutWorktreesInput>
+  connectOrCreate?: Prisma.WorkItemLeaseCreateOrConnectWithoutWorktreesInput
+  connect?: Prisma.WorkItemLeaseWhereUniqueInput
+}
+
+export type WorkItemLeaseUpdateOneWithoutWorktreesNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutWorktreesInput, Prisma.WorkItemLeaseUncheckedCreateWithoutWorktreesInput>
+  connectOrCreate?: Prisma.WorkItemLeaseCreateOrConnectWithoutWorktreesInput
+  upsert?: Prisma.WorkItemLeaseUpsertWithoutWorktreesInput
+  disconnect?: Prisma.WorkItemLeaseWhereInput | boolean
+  delete?: Prisma.WorkItemLeaseWhereInput | boolean
+  connect?: Prisma.WorkItemLeaseWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkItemLeaseUpdateToOneWithWhereWithoutWorktreesInput, Prisma.WorkItemLeaseUpdateWithoutWorktreesInput>, Prisma.WorkItemLeaseUncheckedUpdateWithoutWorktreesInput>
+}
+
+export type WorkItemLeaseCreateWithoutAgentRunsInput = {
+  id?: string
+  projectId: string
+  runtimeId: string
+  lane: $Enums.SchedulerLeaseLane
+  status?: $Enums.SchedulerLeaseStatus
+  leaseToken: string
+  leasedAt?: Date | string
+  expiresAt: Date | string
+  renewedAt?: Date | string | null
+  releasedAt?: Date | string | null
+  recoveredAt?: Date | string | null
+  recoveryReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  artifacts?: Prisma.RuntimeArtifactCreateNestedManyWithoutLeaseInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutLeaseInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutLeaseInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutLeaseInput
+  workItem: Prisma.WorkItemCreateNestedOneWithoutLeasesInput
+}
+
+export type WorkItemLeaseUncheckedCreateWithoutAgentRunsInput = {
+  id?: string
+  projectId: string
+  workItemId: string
+  runtimeId: string
+  lane: $Enums.SchedulerLeaseLane
+  status?: $Enums.SchedulerLeaseStatus
+  leaseToken: string
+  leasedAt?: Date | string
+  expiresAt: Date | string
+  renewedAt?: Date | string | null
+  releasedAt?: Date | string | null
+  recoveredAt?: Date | string | null
+  recoveryReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  artifacts?: Prisma.RuntimeArtifactUncheckedCreateNestedManyWithoutLeaseInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutLeaseInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutLeaseInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutLeaseInput
+}
+
+export type WorkItemLeaseCreateOrConnectWithoutAgentRunsInput = {
+  where: Prisma.WorkItemLeaseWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutAgentRunsInput, Prisma.WorkItemLeaseUncheckedCreateWithoutAgentRunsInput>
+}
+
+export type WorkItemLeaseUpsertWithoutAgentRunsInput = {
+  update: Prisma.XOR<Prisma.WorkItemLeaseUpdateWithoutAgentRunsInput, Prisma.WorkItemLeaseUncheckedUpdateWithoutAgentRunsInput>
+  create: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutAgentRunsInput, Prisma.WorkItemLeaseUncheckedCreateWithoutAgentRunsInput>
+  where?: Prisma.WorkItemLeaseWhereInput
+}
+
+export type WorkItemLeaseUpdateToOneWithWhereWithoutAgentRunsInput = {
+  where?: Prisma.WorkItemLeaseWhereInput
+  data: Prisma.XOR<Prisma.WorkItemLeaseUpdateWithoutAgentRunsInput, Prisma.WorkItemLeaseUncheckedUpdateWithoutAgentRunsInput>
+}
+
+export type WorkItemLeaseUpdateWithoutAgentRunsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  runtimeId?: Prisma.StringFieldUpdateOperationsInput | string
+  lane?: Prisma.EnumSchedulerLeaseLaneFieldUpdateOperationsInput | $Enums.SchedulerLeaseLane
+  status?: Prisma.EnumSchedulerLeaseStatusFieldUpdateOperationsInput | $Enums.SchedulerLeaseStatus
+  leaseToken?: Prisma.StringFieldUpdateOperationsInput | string
+  leasedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  renewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveryReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artifacts?: Prisma.RuntimeArtifactUpdateManyWithoutLeaseNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutLeaseNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutLeaseNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutLeaseNestedInput
+  workItem?: Prisma.WorkItemUpdateOneRequiredWithoutLeasesNestedInput
+}
+
+export type WorkItemLeaseUncheckedUpdateWithoutAgentRunsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  workItemId?: Prisma.StringFieldUpdateOperationsInput | string
+  runtimeId?: Prisma.StringFieldUpdateOperationsInput | string
+  lane?: Prisma.EnumSchedulerLeaseLaneFieldUpdateOperationsInput | $Enums.SchedulerLeaseLane
+  status?: Prisma.EnumSchedulerLeaseStatusFieldUpdateOperationsInput | $Enums.SchedulerLeaseStatus
+  leaseToken?: Prisma.StringFieldUpdateOperationsInput | string
+  leasedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  renewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveryReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artifacts?: Prisma.RuntimeArtifactUncheckedUpdateManyWithoutLeaseNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutLeaseNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutLeaseNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutLeaseNestedInput
 }
 
 export type WorkItemLeaseCreateWithoutWorkItemInput = {
@@ -606,6 +825,11 @@ export type WorkItemLeaseCreateWithoutWorkItemInput = {
   recoveryReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutLeaseInput
+  artifacts?: Prisma.RuntimeArtifactCreateNestedManyWithoutLeaseInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutLeaseInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutLeaseInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutLeaseInput
 }
 
 export type WorkItemLeaseUncheckedCreateWithoutWorkItemInput = {
@@ -623,6 +847,11 @@ export type WorkItemLeaseUncheckedCreateWithoutWorkItemInput = {
   recoveryReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutLeaseInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedCreateNestedManyWithoutLeaseInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutLeaseInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutLeaseInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutLeaseInput
 }
 
 export type WorkItemLeaseCreateOrConnectWithoutWorkItemInput = {
@@ -672,6 +901,422 @@ export type WorkItemLeaseScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"WorkItemLease"> | Date | string
 }
 
+export type WorkItemLeaseCreateWithoutReleaseRunsInput = {
+  id?: string
+  projectId: string
+  runtimeId: string
+  lane: $Enums.SchedulerLeaseLane
+  status?: $Enums.SchedulerLeaseStatus
+  leaseToken: string
+  leasedAt?: Date | string
+  expiresAt: Date | string
+  renewedAt?: Date | string | null
+  releasedAt?: Date | string | null
+  recoveredAt?: Date | string | null
+  recoveryReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutLeaseInput
+  artifacts?: Prisma.RuntimeArtifactCreateNestedManyWithoutLeaseInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutLeaseInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutLeaseInput
+  workItem: Prisma.WorkItemCreateNestedOneWithoutLeasesInput
+}
+
+export type WorkItemLeaseUncheckedCreateWithoutReleaseRunsInput = {
+  id?: string
+  projectId: string
+  workItemId: string
+  runtimeId: string
+  lane: $Enums.SchedulerLeaseLane
+  status?: $Enums.SchedulerLeaseStatus
+  leaseToken: string
+  leasedAt?: Date | string
+  expiresAt: Date | string
+  renewedAt?: Date | string | null
+  releasedAt?: Date | string | null
+  recoveredAt?: Date | string | null
+  recoveryReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutLeaseInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedCreateNestedManyWithoutLeaseInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutLeaseInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutLeaseInput
+}
+
+export type WorkItemLeaseCreateOrConnectWithoutReleaseRunsInput = {
+  where: Prisma.WorkItemLeaseWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutReleaseRunsInput, Prisma.WorkItemLeaseUncheckedCreateWithoutReleaseRunsInput>
+}
+
+export type WorkItemLeaseUpsertWithoutReleaseRunsInput = {
+  update: Prisma.XOR<Prisma.WorkItemLeaseUpdateWithoutReleaseRunsInput, Prisma.WorkItemLeaseUncheckedUpdateWithoutReleaseRunsInput>
+  create: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutReleaseRunsInput, Prisma.WorkItemLeaseUncheckedCreateWithoutReleaseRunsInput>
+  where?: Prisma.WorkItemLeaseWhereInput
+}
+
+export type WorkItemLeaseUpdateToOneWithWhereWithoutReleaseRunsInput = {
+  where?: Prisma.WorkItemLeaseWhereInput
+  data: Prisma.XOR<Prisma.WorkItemLeaseUpdateWithoutReleaseRunsInput, Prisma.WorkItemLeaseUncheckedUpdateWithoutReleaseRunsInput>
+}
+
+export type WorkItemLeaseUpdateWithoutReleaseRunsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  runtimeId?: Prisma.StringFieldUpdateOperationsInput | string
+  lane?: Prisma.EnumSchedulerLeaseLaneFieldUpdateOperationsInput | $Enums.SchedulerLeaseLane
+  status?: Prisma.EnumSchedulerLeaseStatusFieldUpdateOperationsInput | $Enums.SchedulerLeaseStatus
+  leaseToken?: Prisma.StringFieldUpdateOperationsInput | string
+  leasedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  renewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveryReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutLeaseNestedInput
+  artifacts?: Prisma.RuntimeArtifactUpdateManyWithoutLeaseNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutLeaseNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutLeaseNestedInput
+  workItem?: Prisma.WorkItemUpdateOneRequiredWithoutLeasesNestedInput
+}
+
+export type WorkItemLeaseUncheckedUpdateWithoutReleaseRunsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  workItemId?: Prisma.StringFieldUpdateOperationsInput | string
+  runtimeId?: Prisma.StringFieldUpdateOperationsInput | string
+  lane?: Prisma.EnumSchedulerLeaseLaneFieldUpdateOperationsInput | $Enums.SchedulerLeaseLane
+  status?: Prisma.EnumSchedulerLeaseStatusFieldUpdateOperationsInput | $Enums.SchedulerLeaseStatus
+  leaseToken?: Prisma.StringFieldUpdateOperationsInput | string
+  leasedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  renewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveryReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutLeaseNestedInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedUpdateManyWithoutLeaseNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutLeaseNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutLeaseNestedInput
+}
+
+export type WorkItemLeaseCreateWithoutReviewGateResultsInput = {
+  id?: string
+  projectId: string
+  runtimeId: string
+  lane: $Enums.SchedulerLeaseLane
+  status?: $Enums.SchedulerLeaseStatus
+  leaseToken: string
+  leasedAt?: Date | string
+  expiresAt: Date | string
+  renewedAt?: Date | string | null
+  releasedAt?: Date | string | null
+  recoveredAt?: Date | string | null
+  recoveryReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutLeaseInput
+  artifacts?: Prisma.RuntimeArtifactCreateNestedManyWithoutLeaseInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutLeaseInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutLeaseInput
+  workItem: Prisma.WorkItemCreateNestedOneWithoutLeasesInput
+}
+
+export type WorkItemLeaseUncheckedCreateWithoutReviewGateResultsInput = {
+  id?: string
+  projectId: string
+  workItemId: string
+  runtimeId: string
+  lane: $Enums.SchedulerLeaseLane
+  status?: $Enums.SchedulerLeaseStatus
+  leaseToken: string
+  leasedAt?: Date | string
+  expiresAt: Date | string
+  renewedAt?: Date | string | null
+  releasedAt?: Date | string | null
+  recoveredAt?: Date | string | null
+  recoveryReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutLeaseInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedCreateNestedManyWithoutLeaseInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutLeaseInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutLeaseInput
+}
+
+export type WorkItemLeaseCreateOrConnectWithoutReviewGateResultsInput = {
+  where: Prisma.WorkItemLeaseWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutReviewGateResultsInput, Prisma.WorkItemLeaseUncheckedCreateWithoutReviewGateResultsInput>
+}
+
+export type WorkItemLeaseUpsertWithoutReviewGateResultsInput = {
+  update: Prisma.XOR<Prisma.WorkItemLeaseUpdateWithoutReviewGateResultsInput, Prisma.WorkItemLeaseUncheckedUpdateWithoutReviewGateResultsInput>
+  create: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutReviewGateResultsInput, Prisma.WorkItemLeaseUncheckedCreateWithoutReviewGateResultsInput>
+  where?: Prisma.WorkItemLeaseWhereInput
+}
+
+export type WorkItemLeaseUpdateToOneWithWhereWithoutReviewGateResultsInput = {
+  where?: Prisma.WorkItemLeaseWhereInput
+  data: Prisma.XOR<Prisma.WorkItemLeaseUpdateWithoutReviewGateResultsInput, Prisma.WorkItemLeaseUncheckedUpdateWithoutReviewGateResultsInput>
+}
+
+export type WorkItemLeaseUpdateWithoutReviewGateResultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  runtimeId?: Prisma.StringFieldUpdateOperationsInput | string
+  lane?: Prisma.EnumSchedulerLeaseLaneFieldUpdateOperationsInput | $Enums.SchedulerLeaseLane
+  status?: Prisma.EnumSchedulerLeaseStatusFieldUpdateOperationsInput | $Enums.SchedulerLeaseStatus
+  leaseToken?: Prisma.StringFieldUpdateOperationsInput | string
+  leasedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  renewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveryReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutLeaseNestedInput
+  artifacts?: Prisma.RuntimeArtifactUpdateManyWithoutLeaseNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutLeaseNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutLeaseNestedInput
+  workItem?: Prisma.WorkItemUpdateOneRequiredWithoutLeasesNestedInput
+}
+
+export type WorkItemLeaseUncheckedUpdateWithoutReviewGateResultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  workItemId?: Prisma.StringFieldUpdateOperationsInput | string
+  runtimeId?: Prisma.StringFieldUpdateOperationsInput | string
+  lane?: Prisma.EnumSchedulerLeaseLaneFieldUpdateOperationsInput | $Enums.SchedulerLeaseLane
+  status?: Prisma.EnumSchedulerLeaseStatusFieldUpdateOperationsInput | $Enums.SchedulerLeaseStatus
+  leaseToken?: Prisma.StringFieldUpdateOperationsInput | string
+  leasedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  renewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveryReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutLeaseNestedInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedUpdateManyWithoutLeaseNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutLeaseNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutLeaseNestedInput
+}
+
+export type WorkItemLeaseCreateWithoutArtifactsInput = {
+  id?: string
+  projectId: string
+  runtimeId: string
+  lane: $Enums.SchedulerLeaseLane
+  status?: $Enums.SchedulerLeaseStatus
+  leaseToken: string
+  leasedAt?: Date | string
+  expiresAt: Date | string
+  renewedAt?: Date | string | null
+  releasedAt?: Date | string | null
+  recoveredAt?: Date | string | null
+  recoveryReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutLeaseInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutLeaseInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutLeaseInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutLeaseInput
+  workItem: Prisma.WorkItemCreateNestedOneWithoutLeasesInput
+}
+
+export type WorkItemLeaseUncheckedCreateWithoutArtifactsInput = {
+  id?: string
+  projectId: string
+  workItemId: string
+  runtimeId: string
+  lane: $Enums.SchedulerLeaseLane
+  status?: $Enums.SchedulerLeaseStatus
+  leaseToken: string
+  leasedAt?: Date | string
+  expiresAt: Date | string
+  renewedAt?: Date | string | null
+  releasedAt?: Date | string | null
+  recoveredAt?: Date | string | null
+  recoveryReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutLeaseInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutLeaseInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutLeaseInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutLeaseInput
+}
+
+export type WorkItemLeaseCreateOrConnectWithoutArtifactsInput = {
+  where: Prisma.WorkItemLeaseWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutArtifactsInput, Prisma.WorkItemLeaseUncheckedCreateWithoutArtifactsInput>
+}
+
+export type WorkItemLeaseUpsertWithoutArtifactsInput = {
+  update: Prisma.XOR<Prisma.WorkItemLeaseUpdateWithoutArtifactsInput, Prisma.WorkItemLeaseUncheckedUpdateWithoutArtifactsInput>
+  create: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutArtifactsInput, Prisma.WorkItemLeaseUncheckedCreateWithoutArtifactsInput>
+  where?: Prisma.WorkItemLeaseWhereInput
+}
+
+export type WorkItemLeaseUpdateToOneWithWhereWithoutArtifactsInput = {
+  where?: Prisma.WorkItemLeaseWhereInput
+  data: Prisma.XOR<Prisma.WorkItemLeaseUpdateWithoutArtifactsInput, Prisma.WorkItemLeaseUncheckedUpdateWithoutArtifactsInput>
+}
+
+export type WorkItemLeaseUpdateWithoutArtifactsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  runtimeId?: Prisma.StringFieldUpdateOperationsInput | string
+  lane?: Prisma.EnumSchedulerLeaseLaneFieldUpdateOperationsInput | $Enums.SchedulerLeaseLane
+  status?: Prisma.EnumSchedulerLeaseStatusFieldUpdateOperationsInput | $Enums.SchedulerLeaseStatus
+  leaseToken?: Prisma.StringFieldUpdateOperationsInput | string
+  leasedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  renewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveryReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutLeaseNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutLeaseNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutLeaseNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutLeaseNestedInput
+  workItem?: Prisma.WorkItemUpdateOneRequiredWithoutLeasesNestedInput
+}
+
+export type WorkItemLeaseUncheckedUpdateWithoutArtifactsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  workItemId?: Prisma.StringFieldUpdateOperationsInput | string
+  runtimeId?: Prisma.StringFieldUpdateOperationsInput | string
+  lane?: Prisma.EnumSchedulerLeaseLaneFieldUpdateOperationsInput | $Enums.SchedulerLeaseLane
+  status?: Prisma.EnumSchedulerLeaseStatusFieldUpdateOperationsInput | $Enums.SchedulerLeaseStatus
+  leaseToken?: Prisma.StringFieldUpdateOperationsInput | string
+  leasedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  renewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveryReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutLeaseNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutLeaseNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutLeaseNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutLeaseNestedInput
+}
+
+export type WorkItemLeaseCreateWithoutWorktreesInput = {
+  id?: string
+  projectId: string
+  runtimeId: string
+  lane: $Enums.SchedulerLeaseLane
+  status?: $Enums.SchedulerLeaseStatus
+  leaseToken: string
+  leasedAt?: Date | string
+  expiresAt: Date | string
+  renewedAt?: Date | string | null
+  releasedAt?: Date | string | null
+  recoveredAt?: Date | string | null
+  recoveryReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutLeaseInput
+  artifacts?: Prisma.RuntimeArtifactCreateNestedManyWithoutLeaseInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutLeaseInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutLeaseInput
+  workItem: Prisma.WorkItemCreateNestedOneWithoutLeasesInput
+}
+
+export type WorkItemLeaseUncheckedCreateWithoutWorktreesInput = {
+  id?: string
+  projectId: string
+  workItemId: string
+  runtimeId: string
+  lane: $Enums.SchedulerLeaseLane
+  status?: $Enums.SchedulerLeaseStatus
+  leaseToken: string
+  leasedAt?: Date | string
+  expiresAt: Date | string
+  renewedAt?: Date | string | null
+  releasedAt?: Date | string | null
+  recoveredAt?: Date | string | null
+  recoveryReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutLeaseInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedCreateNestedManyWithoutLeaseInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutLeaseInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutLeaseInput
+}
+
+export type WorkItemLeaseCreateOrConnectWithoutWorktreesInput = {
+  where: Prisma.WorkItemLeaseWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutWorktreesInput, Prisma.WorkItemLeaseUncheckedCreateWithoutWorktreesInput>
+}
+
+export type WorkItemLeaseUpsertWithoutWorktreesInput = {
+  update: Prisma.XOR<Prisma.WorkItemLeaseUpdateWithoutWorktreesInput, Prisma.WorkItemLeaseUncheckedUpdateWithoutWorktreesInput>
+  create: Prisma.XOR<Prisma.WorkItemLeaseCreateWithoutWorktreesInput, Prisma.WorkItemLeaseUncheckedCreateWithoutWorktreesInput>
+  where?: Prisma.WorkItemLeaseWhereInput
+}
+
+export type WorkItemLeaseUpdateToOneWithWhereWithoutWorktreesInput = {
+  where?: Prisma.WorkItemLeaseWhereInput
+  data: Prisma.XOR<Prisma.WorkItemLeaseUpdateWithoutWorktreesInput, Prisma.WorkItemLeaseUncheckedUpdateWithoutWorktreesInput>
+}
+
+export type WorkItemLeaseUpdateWithoutWorktreesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  runtimeId?: Prisma.StringFieldUpdateOperationsInput | string
+  lane?: Prisma.EnumSchedulerLeaseLaneFieldUpdateOperationsInput | $Enums.SchedulerLeaseLane
+  status?: Prisma.EnumSchedulerLeaseStatusFieldUpdateOperationsInput | $Enums.SchedulerLeaseStatus
+  leaseToken?: Prisma.StringFieldUpdateOperationsInput | string
+  leasedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  renewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveryReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutLeaseNestedInput
+  artifacts?: Prisma.RuntimeArtifactUpdateManyWithoutLeaseNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutLeaseNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutLeaseNestedInput
+  workItem?: Prisma.WorkItemUpdateOneRequiredWithoutLeasesNestedInput
+}
+
+export type WorkItemLeaseUncheckedUpdateWithoutWorktreesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  workItemId?: Prisma.StringFieldUpdateOperationsInput | string
+  runtimeId?: Prisma.StringFieldUpdateOperationsInput | string
+  lane?: Prisma.EnumSchedulerLeaseLaneFieldUpdateOperationsInput | $Enums.SchedulerLeaseLane
+  status?: Prisma.EnumSchedulerLeaseStatusFieldUpdateOperationsInput | $Enums.SchedulerLeaseStatus
+  leaseToken?: Prisma.StringFieldUpdateOperationsInput | string
+  leasedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  renewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recoveryReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutLeaseNestedInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedUpdateManyWithoutLeaseNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutLeaseNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutLeaseNestedInput
+}
+
 export type WorkItemLeaseCreateManyWorkItemInput = {
   id?: string
   projectId: string
@@ -704,6 +1349,11 @@ export type WorkItemLeaseUpdateWithoutWorkItemInput = {
   recoveryReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutLeaseNestedInput
+  artifacts?: Prisma.RuntimeArtifactUpdateManyWithoutLeaseNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutLeaseNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutLeaseNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutLeaseNestedInput
 }
 
 export type WorkItemLeaseUncheckedUpdateWithoutWorkItemInput = {
@@ -721,6 +1371,11 @@ export type WorkItemLeaseUncheckedUpdateWithoutWorkItemInput = {
   recoveryReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutLeaseNestedInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedUpdateManyWithoutLeaseNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutLeaseNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutLeaseNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutLeaseNestedInput
 }
 
 export type WorkItemLeaseUncheckedUpdateManyWithoutWorkItemInput = {
@@ -741,6 +1396,71 @@ export type WorkItemLeaseUncheckedUpdateManyWithoutWorkItemInput = {
 }
 
 
+/**
+ * Count Type WorkItemLeaseCountOutputType
+ */
+
+export type WorkItemLeaseCountOutputType = {
+  agentRuns: number
+  artifacts: number
+  releaseRuns: number
+  reviewGateResults: number
+  worktrees: number
+}
+
+export type WorkItemLeaseCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  agentRuns?: boolean | WorkItemLeaseCountOutputTypeCountAgentRunsArgs
+  artifacts?: boolean | WorkItemLeaseCountOutputTypeCountArtifactsArgs
+  releaseRuns?: boolean | WorkItemLeaseCountOutputTypeCountReleaseRunsArgs
+  reviewGateResults?: boolean | WorkItemLeaseCountOutputTypeCountReviewGateResultsArgs
+  worktrees?: boolean | WorkItemLeaseCountOutputTypeCountWorktreesArgs
+}
+
+/**
+ * WorkItemLeaseCountOutputType without action
+ */
+export type WorkItemLeaseCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WorkItemLeaseCountOutputType
+   */
+  select?: Prisma.WorkItemLeaseCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * WorkItemLeaseCountOutputType without action
+ */
+export type WorkItemLeaseCountOutputTypeCountAgentRunsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AgentRunWhereInput
+}
+
+/**
+ * WorkItemLeaseCountOutputType without action
+ */
+export type WorkItemLeaseCountOutputTypeCountArtifactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RuntimeArtifactWhereInput
+}
+
+/**
+ * WorkItemLeaseCountOutputType without action
+ */
+export type WorkItemLeaseCountOutputTypeCountReleaseRunsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReleaseRunWhereInput
+}
+
+/**
+ * WorkItemLeaseCountOutputType without action
+ */
+export type WorkItemLeaseCountOutputTypeCountReviewGateResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReviewGateResultWhereInput
+}
+
+/**
+ * WorkItemLeaseCountOutputType without action
+ */
+export type WorkItemLeaseCountOutputTypeCountWorktreesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WorktreeWhereInput
+}
+
 
 export type WorkItemLeaseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -758,7 +1478,13 @@ export type WorkItemLeaseSelect<ExtArgs extends runtime.Types.Extensions.Interna
   recoveryReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  agentRuns?: boolean | Prisma.WorkItemLease$agentRunsArgs<ExtArgs>
+  artifacts?: boolean | Prisma.WorkItemLease$artifactsArgs<ExtArgs>
+  releaseRuns?: boolean | Prisma.WorkItemLease$releaseRunsArgs<ExtArgs>
+  reviewGateResults?: boolean | Prisma.WorkItemLease$reviewGateResultsArgs<ExtArgs>
+  worktrees?: boolean | Prisma.WorkItemLease$worktreesArgs<ExtArgs>
   workItem?: boolean | Prisma.WorkItemDefaultArgs<ExtArgs>
+  _count?: boolean | Prisma.WorkItemLeaseCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["workItemLease"]>
 
 export type WorkItemLeaseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -819,7 +1545,13 @@ export type WorkItemLeaseSelectScalar = {
 
 export type WorkItemLeaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "workItemId" | "runtimeId" | "lane" | "status" | "leaseToken" | "leasedAt" | "expiresAt" | "renewedAt" | "releasedAt" | "recoveredAt" | "recoveryReason" | "createdAt" | "updatedAt", ExtArgs["result"]["workItemLease"]>
 export type WorkItemLeaseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  agentRuns?: boolean | Prisma.WorkItemLease$agentRunsArgs<ExtArgs>
+  artifacts?: boolean | Prisma.WorkItemLease$artifactsArgs<ExtArgs>
+  releaseRuns?: boolean | Prisma.WorkItemLease$releaseRunsArgs<ExtArgs>
+  reviewGateResults?: boolean | Prisma.WorkItemLease$reviewGateResultsArgs<ExtArgs>
+  worktrees?: boolean | Prisma.WorkItemLease$worktreesArgs<ExtArgs>
   workItem?: boolean | Prisma.WorkItemDefaultArgs<ExtArgs>
+  _count?: boolean | Prisma.WorkItemLeaseCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type WorkItemLeaseIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workItem?: boolean | Prisma.WorkItemDefaultArgs<ExtArgs>
@@ -831,6 +1563,11 @@ export type WorkItemLeaseIncludeUpdateManyAndReturn<ExtArgs extends runtime.Type
 export type $WorkItemLeasePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "WorkItemLease"
   objects: {
+    agentRuns: Prisma.$AgentRunPayload<ExtArgs>[]
+    artifacts: Prisma.$RuntimeArtifactPayload<ExtArgs>[]
+    releaseRuns: Prisma.$ReleaseRunPayload<ExtArgs>[]
+    reviewGateResults: Prisma.$ReviewGateResultPayload<ExtArgs>[]
+    worktrees: Prisma.$WorktreePayload<ExtArgs>[]
     workItem: Prisma.$WorkItemPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1243,6 +1980,11 @@ readonly fields: WorkItemLeaseFieldRefs;
  */
 export interface Prisma__WorkItemLeaseClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  agentRuns<T extends Prisma.WorkItemLease$agentRunsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItemLease$agentRunsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgentRunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  artifacts<T extends Prisma.WorkItemLease$artifactsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItemLease$artifactsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RuntimeArtifactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  releaseRuns<T extends Prisma.WorkItemLease$releaseRunsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItemLease$releaseRunsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReleaseRunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reviewGateResults<T extends Prisma.WorkItemLease$reviewGateResultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItemLease$reviewGateResultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReviewGateResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  worktrees<T extends Prisma.WorkItemLease$worktreesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItemLease$worktreesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorktreePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   workItem<T extends Prisma.WorkItemDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItemDefaultArgs<ExtArgs>>): Prisma.Prisma__WorkItemClient<runtime.Types.Result.GetResult<Prisma.$WorkItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1681,6 +2423,126 @@ export type WorkItemLeaseDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many WorkItemLeases to delete.
    */
   limit?: number
+}
+
+/**
+ * WorkItemLease.agentRuns
+ */
+export type WorkItemLease$agentRunsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AgentRun
+   */
+  select?: Prisma.AgentRunSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AgentRun
+   */
+  omit?: Prisma.AgentRunOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AgentRunInclude<ExtArgs> | null
+  where?: Prisma.AgentRunWhereInput
+  orderBy?: Prisma.AgentRunOrderByWithRelationInput | Prisma.AgentRunOrderByWithRelationInput[]
+  cursor?: Prisma.AgentRunWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AgentRunScalarFieldEnum | Prisma.AgentRunScalarFieldEnum[]
+}
+
+/**
+ * WorkItemLease.artifacts
+ */
+export type WorkItemLease$artifactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RuntimeArtifact
+   */
+  select?: Prisma.RuntimeArtifactSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RuntimeArtifact
+   */
+  omit?: Prisma.RuntimeArtifactOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RuntimeArtifactInclude<ExtArgs> | null
+  where?: Prisma.RuntimeArtifactWhereInput
+  orderBy?: Prisma.RuntimeArtifactOrderByWithRelationInput | Prisma.RuntimeArtifactOrderByWithRelationInput[]
+  cursor?: Prisma.RuntimeArtifactWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RuntimeArtifactScalarFieldEnum | Prisma.RuntimeArtifactScalarFieldEnum[]
+}
+
+/**
+ * WorkItemLease.releaseRuns
+ */
+export type WorkItemLease$releaseRunsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReleaseRun
+   */
+  select?: Prisma.ReleaseRunSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReleaseRun
+   */
+  omit?: Prisma.ReleaseRunOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReleaseRunInclude<ExtArgs> | null
+  where?: Prisma.ReleaseRunWhereInput
+  orderBy?: Prisma.ReleaseRunOrderByWithRelationInput | Prisma.ReleaseRunOrderByWithRelationInput[]
+  cursor?: Prisma.ReleaseRunWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReleaseRunScalarFieldEnum | Prisma.ReleaseRunScalarFieldEnum[]
+}
+
+/**
+ * WorkItemLease.reviewGateResults
+ */
+export type WorkItemLease$reviewGateResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReviewGateResult
+   */
+  select?: Prisma.ReviewGateResultSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReviewGateResult
+   */
+  omit?: Prisma.ReviewGateResultOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReviewGateResultInclude<ExtArgs> | null
+  where?: Prisma.ReviewGateResultWhereInput
+  orderBy?: Prisma.ReviewGateResultOrderByWithRelationInput | Prisma.ReviewGateResultOrderByWithRelationInput[]
+  cursor?: Prisma.ReviewGateResultWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReviewGateResultScalarFieldEnum | Prisma.ReviewGateResultScalarFieldEnum[]
+}
+
+/**
+ * WorkItemLease.worktrees
+ */
+export type WorkItemLease$worktreesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Worktree
+   */
+  select?: Prisma.WorktreeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Worktree
+   */
+  omit?: Prisma.WorktreeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WorktreeInclude<ExtArgs> | null
+  where?: Prisma.WorktreeWhereInput
+  orderBy?: Prisma.WorktreeOrderByWithRelationInput | Prisma.WorktreeOrderByWithRelationInput[]
+  cursor?: Prisma.WorktreeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WorktreeScalarFieldEnum | Prisma.WorktreeScalarFieldEnum[]
 }
 
 /**

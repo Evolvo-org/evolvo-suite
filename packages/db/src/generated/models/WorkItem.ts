@@ -288,8 +288,15 @@ export type WorkItemWhereInput = {
   comments?: Prisma.WorkItemCommentListRelationFilter
   dependencies?: Prisma.WorkItemDependencyListRelationFilter
   dependentWorkItems?: Prisma.WorkItemDependencyListRelationFilter
+  agentRuns?: Prisma.AgentRunListRelationFilter
+  interventions?: Prisma.HumanInterventionCaseListRelationFilter
+  releaseRuns?: Prisma.ReleaseRunListRelationFilter
+  reviewGateResults?: Prisma.ReviewGateResultListRelationFilter
+  usageEvents?: Prisma.UsageEventListRelationFilter
   leases?: Prisma.WorkItemLeaseListRelationFilter
+  worktrees?: Prisma.WorktreeListRelationFilter
   transitions?: Prisma.WorkItemStateTransitionListRelationFilter
+  retryState?: Prisma.XOR<Prisma.WorkItemRetryStateNullableScalarRelationFilter, Prisma.WorkItemRetryStateWhereInput> | null
 }
 
 export type WorkItemOrderByWithRelationInput = {
@@ -314,8 +321,15 @@ export type WorkItemOrderByWithRelationInput = {
   comments?: Prisma.WorkItemCommentOrderByRelationAggregateInput
   dependencies?: Prisma.WorkItemDependencyOrderByRelationAggregateInput
   dependentWorkItems?: Prisma.WorkItemDependencyOrderByRelationAggregateInput
+  agentRuns?: Prisma.AgentRunOrderByRelationAggregateInput
+  interventions?: Prisma.HumanInterventionCaseOrderByRelationAggregateInput
+  releaseRuns?: Prisma.ReleaseRunOrderByRelationAggregateInput
+  reviewGateResults?: Prisma.ReviewGateResultOrderByRelationAggregateInput
+  usageEvents?: Prisma.UsageEventOrderByRelationAggregateInput
   leases?: Prisma.WorkItemLeaseOrderByRelationAggregateInput
+  worktrees?: Prisma.WorktreeOrderByRelationAggregateInput
   transitions?: Prisma.WorkItemStateTransitionOrderByRelationAggregateInput
+  retryState?: Prisma.WorkItemRetryStateOrderByWithRelationInput
 }
 
 export type WorkItemWhereUniqueInput = Prisma.AtLeast<{
@@ -343,8 +357,15 @@ export type WorkItemWhereUniqueInput = Prisma.AtLeast<{
   comments?: Prisma.WorkItemCommentListRelationFilter
   dependencies?: Prisma.WorkItemDependencyListRelationFilter
   dependentWorkItems?: Prisma.WorkItemDependencyListRelationFilter
+  agentRuns?: Prisma.AgentRunListRelationFilter
+  interventions?: Prisma.HumanInterventionCaseListRelationFilter
+  releaseRuns?: Prisma.ReleaseRunListRelationFilter
+  reviewGateResults?: Prisma.ReviewGateResultListRelationFilter
+  usageEvents?: Prisma.UsageEventListRelationFilter
   leases?: Prisma.WorkItemLeaseListRelationFilter
+  worktrees?: Prisma.WorktreeListRelationFilter
   transitions?: Prisma.WorkItemStateTransitionListRelationFilter
+  retryState?: Prisma.XOR<Prisma.WorkItemRetryStateNullableScalarRelationFilter, Prisma.WorkItemRetryStateWhereInput> | null
 }, "id">
 
 export type WorkItemOrderByWithAggregationInput = {
@@ -406,8 +427,15 @@ export type WorkItemCreateInput = {
   comments?: Prisma.WorkItemCommentCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemUncheckedCreateInput = {
@@ -429,8 +457,15 @@ export type WorkItemUncheckedCreateInput = {
   comments?: Prisma.WorkItemCommentUncheckedCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseUncheckedCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemUpdateInput = {
@@ -452,8 +487,15 @@ export type WorkItemUpdateInput = {
   comments?: Prisma.WorkItemCommentUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemUncheckedUpdateInput = {
@@ -475,8 +517,15 @@ export type WorkItemUncheckedUpdateInput = {
   comments?: Prisma.WorkItemCommentUncheckedUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemCreateManyInput = {
@@ -522,6 +571,11 @@ export type WorkItemUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stateUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type WorkItemScalarRelationFilter = {
+  is?: Prisma.WorkItemWhereInput
+  isNot?: Prisma.WorkItemWhereInput
 }
 
 export type WorkItemListRelationFilter = {
@@ -595,9 +649,32 @@ export type WorkItemSumOrderByAggregateInput = {
   sortOrder?: Prisma.SortOrder
 }
 
-export type WorkItemScalarRelationFilter = {
-  is?: Prisma.WorkItemWhereInput
-  isNot?: Prisma.WorkItemWhereInput
+export type WorkItemCreateNestedOneWithoutAgentRunsInput = {
+  create?: Prisma.XOR<Prisma.WorkItemCreateWithoutAgentRunsInput, Prisma.WorkItemUncheckedCreateWithoutAgentRunsInput>
+  connectOrCreate?: Prisma.WorkItemCreateOrConnectWithoutAgentRunsInput
+  connect?: Prisma.WorkItemWhereUniqueInput
+}
+
+export type WorkItemUpdateOneRequiredWithoutAgentRunsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkItemCreateWithoutAgentRunsInput, Prisma.WorkItemUncheckedCreateWithoutAgentRunsInput>
+  connectOrCreate?: Prisma.WorkItemCreateOrConnectWithoutAgentRunsInput
+  upsert?: Prisma.WorkItemUpsertWithoutAgentRunsInput
+  connect?: Prisma.WorkItemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkItemUpdateToOneWithWhereWithoutAgentRunsInput, Prisma.WorkItemUpdateWithoutAgentRunsInput>, Prisma.WorkItemUncheckedUpdateWithoutAgentRunsInput>
+}
+
+export type WorkItemCreateNestedOneWithoutInterventionsInput = {
+  create?: Prisma.XOR<Prisma.WorkItemCreateWithoutInterventionsInput, Prisma.WorkItemUncheckedCreateWithoutInterventionsInput>
+  connectOrCreate?: Prisma.WorkItemCreateOrConnectWithoutInterventionsInput
+  connect?: Prisma.WorkItemWhereUniqueInput
+}
+
+export type WorkItemUpdateOneRequiredWithoutInterventionsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkItemCreateWithoutInterventionsInput, Prisma.WorkItemUncheckedCreateWithoutInterventionsInput>
+  connectOrCreate?: Prisma.WorkItemCreateOrConnectWithoutInterventionsInput
+  upsert?: Prisma.WorkItemUpsertWithoutInterventionsInput
+  connect?: Prisma.WorkItemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkItemUpdateToOneWithWhereWithoutInterventionsInput, Prisma.WorkItemUpdateWithoutInterventionsInput>, Prisma.WorkItemUncheckedUpdateWithoutInterventionsInput>
 }
 
 export type WorkItemCreateNestedManyWithoutEpicInput = {
@@ -824,6 +901,48 @@ export type WorkItemUncheckedUpdateManyWithoutProjectNestedInput = {
   deleteMany?: Prisma.WorkItemScalarWhereInput | Prisma.WorkItemScalarWhereInput[]
 }
 
+export type WorkItemCreateNestedOneWithoutReleaseRunsInput = {
+  create?: Prisma.XOR<Prisma.WorkItemCreateWithoutReleaseRunsInput, Prisma.WorkItemUncheckedCreateWithoutReleaseRunsInput>
+  connectOrCreate?: Prisma.WorkItemCreateOrConnectWithoutReleaseRunsInput
+  connect?: Prisma.WorkItemWhereUniqueInput
+}
+
+export type WorkItemUpdateOneRequiredWithoutReleaseRunsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkItemCreateWithoutReleaseRunsInput, Prisma.WorkItemUncheckedCreateWithoutReleaseRunsInput>
+  connectOrCreate?: Prisma.WorkItemCreateOrConnectWithoutReleaseRunsInput
+  upsert?: Prisma.WorkItemUpsertWithoutReleaseRunsInput
+  connect?: Prisma.WorkItemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkItemUpdateToOneWithWhereWithoutReleaseRunsInput, Prisma.WorkItemUpdateWithoutReleaseRunsInput>, Prisma.WorkItemUncheckedUpdateWithoutReleaseRunsInput>
+}
+
+export type WorkItemCreateNestedOneWithoutReviewGateResultsInput = {
+  create?: Prisma.XOR<Prisma.WorkItemCreateWithoutReviewGateResultsInput, Prisma.WorkItemUncheckedCreateWithoutReviewGateResultsInput>
+  connectOrCreate?: Prisma.WorkItemCreateOrConnectWithoutReviewGateResultsInput
+  connect?: Prisma.WorkItemWhereUniqueInput
+}
+
+export type WorkItemUpdateOneRequiredWithoutReviewGateResultsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkItemCreateWithoutReviewGateResultsInput, Prisma.WorkItemUncheckedCreateWithoutReviewGateResultsInput>
+  connectOrCreate?: Prisma.WorkItemCreateOrConnectWithoutReviewGateResultsInput
+  upsert?: Prisma.WorkItemUpsertWithoutReviewGateResultsInput
+  connect?: Prisma.WorkItemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkItemUpdateToOneWithWhereWithoutReviewGateResultsInput, Prisma.WorkItemUpdateWithoutReviewGateResultsInput>, Prisma.WorkItemUncheckedUpdateWithoutReviewGateResultsInput>
+}
+
+export type WorkItemCreateNestedOneWithoutRetryStateInput = {
+  create?: Prisma.XOR<Prisma.WorkItemCreateWithoutRetryStateInput, Prisma.WorkItemUncheckedCreateWithoutRetryStateInput>
+  connectOrCreate?: Prisma.WorkItemCreateOrConnectWithoutRetryStateInput
+  connect?: Prisma.WorkItemWhereUniqueInput
+}
+
+export type WorkItemUpdateOneRequiredWithoutRetryStateNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkItemCreateWithoutRetryStateInput, Prisma.WorkItemUncheckedCreateWithoutRetryStateInput>
+  connectOrCreate?: Prisma.WorkItemCreateOrConnectWithoutRetryStateInput
+  upsert?: Prisma.WorkItemUpsertWithoutRetryStateInput
+  connect?: Prisma.WorkItemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkItemUpdateToOneWithWhereWithoutRetryStateInput, Prisma.WorkItemUpdateWithoutRetryStateInput>, Prisma.WorkItemUncheckedUpdateWithoutRetryStateInput>
+}
+
 export type WorkItemCreateNestedOneWithoutLeasesInput = {
   create?: Prisma.XOR<Prisma.WorkItemCreateWithoutLeasesInput, Prisma.WorkItemUncheckedCreateWithoutLeasesInput>
   connectOrCreate?: Prisma.WorkItemCreateOrConnectWithoutLeasesInput
@@ -836,6 +955,300 @@ export type WorkItemUpdateOneRequiredWithoutLeasesNestedInput = {
   upsert?: Prisma.WorkItemUpsertWithoutLeasesInput
   connect?: Prisma.WorkItemWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.WorkItemUpdateToOneWithWhereWithoutLeasesInput, Prisma.WorkItemUpdateWithoutLeasesInput>, Prisma.WorkItemUncheckedUpdateWithoutLeasesInput>
+}
+
+export type WorkItemCreateNestedOneWithoutUsageEventsInput = {
+  create?: Prisma.XOR<Prisma.WorkItemCreateWithoutUsageEventsInput, Prisma.WorkItemUncheckedCreateWithoutUsageEventsInput>
+  connectOrCreate?: Prisma.WorkItemCreateOrConnectWithoutUsageEventsInput
+  connect?: Prisma.WorkItemWhereUniqueInput
+}
+
+export type WorkItemUpdateOneWithoutUsageEventsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkItemCreateWithoutUsageEventsInput, Prisma.WorkItemUncheckedCreateWithoutUsageEventsInput>
+  connectOrCreate?: Prisma.WorkItemCreateOrConnectWithoutUsageEventsInput
+  upsert?: Prisma.WorkItemUpsertWithoutUsageEventsInput
+  disconnect?: Prisma.WorkItemWhereInput | boolean
+  delete?: Prisma.WorkItemWhereInput | boolean
+  connect?: Prisma.WorkItemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkItemUpdateToOneWithWhereWithoutUsageEventsInput, Prisma.WorkItemUpdateWithoutUsageEventsInput>, Prisma.WorkItemUncheckedUpdateWithoutUsageEventsInput>
+}
+
+export type WorkItemCreateNestedOneWithoutWorktreesInput = {
+  create?: Prisma.XOR<Prisma.WorkItemCreateWithoutWorktreesInput, Prisma.WorkItemUncheckedCreateWithoutWorktreesInput>
+  connectOrCreate?: Prisma.WorkItemCreateOrConnectWithoutWorktreesInput
+  connect?: Prisma.WorkItemWhereUniqueInput
+}
+
+export type WorkItemUpdateOneRequiredWithoutWorktreesNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkItemCreateWithoutWorktreesInput, Prisma.WorkItemUncheckedCreateWithoutWorktreesInput>
+  connectOrCreate?: Prisma.WorkItemCreateOrConnectWithoutWorktreesInput
+  upsert?: Prisma.WorkItemUpsertWithoutWorktreesInput
+  connect?: Prisma.WorkItemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkItemUpdateToOneWithWhereWithoutWorktreesInput, Prisma.WorkItemUpdateWithoutWorktreesInput>, Prisma.WorkItemUncheckedUpdateWithoutWorktreesInput>
+}
+
+export type WorkItemCreateWithoutAgentRunsInput = {
+  id?: string
+  kind: $Enums.WorkItemKind
+  state?: $Enums.WorkItemState
+  title: string
+  description?: string | null
+  priority?: $Enums.WorkItemPriority
+  sortOrder?: number
+  createdAt?: Date | string
+  stateUpdatedAt?: Date | string
+  updatedAt?: Date | string
+  project: Prisma.ProjectCreateNestedOneWithoutWorkItemsInput
+  epic: Prisma.EpicCreateNestedOneWithoutWorkItemsInput
+  parent?: Prisma.WorkItemCreateNestedOneWithoutChildrenInput
+  children?: Prisma.WorkItemCreateNestedManyWithoutParentInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionCreateNestedManyWithoutWorkItemInput
+  comments?: Prisma.WorkItemCommentCreateNestedManyWithoutWorkItemInput
+  dependencies?: Prisma.WorkItemDependencyCreateNestedManyWithoutWorkItemInput
+  dependentWorkItems?: Prisma.WorkItemDependencyCreateNestedManyWithoutDependsOnWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutWorkItemInput
+  leases?: Prisma.WorkItemLeaseCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutWorkItemInput
+  transitions?: Prisma.WorkItemStateTransitionCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateCreateNestedOneWithoutWorkItemInput
+}
+
+export type WorkItemUncheckedCreateWithoutAgentRunsInput = {
+  id?: string
+  projectId: string
+  epicId: string
+  parentId?: string | null
+  kind: $Enums.WorkItemKind
+  state?: $Enums.WorkItemState
+  title: string
+  description?: string | null
+  priority?: $Enums.WorkItemPriority
+  sortOrder?: number
+  createdAt?: Date | string
+  stateUpdatedAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.WorkItemUncheckedCreateNestedManyWithoutParentInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedCreateNestedManyWithoutWorkItemInput
+  comments?: Prisma.WorkItemCommentUncheckedCreateNestedManyWithoutWorkItemInput
+  dependencies?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutWorkItemInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutDependsOnWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutWorkItemInput
+  leases?: Prisma.WorkItemLeaseUncheckedCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutWorkItemInput
+  transitions?: Prisma.WorkItemStateTransitionUncheckedCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedCreateNestedOneWithoutWorkItemInput
+}
+
+export type WorkItemCreateOrConnectWithoutAgentRunsInput = {
+  where: Prisma.WorkItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkItemCreateWithoutAgentRunsInput, Prisma.WorkItemUncheckedCreateWithoutAgentRunsInput>
+}
+
+export type WorkItemUpsertWithoutAgentRunsInput = {
+  update: Prisma.XOR<Prisma.WorkItemUpdateWithoutAgentRunsInput, Prisma.WorkItemUncheckedUpdateWithoutAgentRunsInput>
+  create: Prisma.XOR<Prisma.WorkItemCreateWithoutAgentRunsInput, Prisma.WorkItemUncheckedCreateWithoutAgentRunsInput>
+  where?: Prisma.WorkItemWhereInput
+}
+
+export type WorkItemUpdateToOneWithWhereWithoutAgentRunsInput = {
+  where?: Prisma.WorkItemWhereInput
+  data: Prisma.XOR<Prisma.WorkItemUpdateWithoutAgentRunsInput, Prisma.WorkItemUncheckedUpdateWithoutAgentRunsInput>
+}
+
+export type WorkItemUpdateWithoutAgentRunsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumWorkItemKindFieldUpdateOperationsInput | $Enums.WorkItemKind
+  state?: Prisma.EnumWorkItemStateFieldUpdateOperationsInput | $Enums.WorkItemState
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumWorkItemPriorityFieldUpdateOperationsInput | $Enums.WorkItemPriority
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stateUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutWorkItemsNestedInput
+  epic?: Prisma.EpicUpdateOneRequiredWithoutWorkItemsNestedInput
+  parent?: Prisma.WorkItemUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.WorkItemUpdateManyWithoutParentNestedInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUpdateManyWithoutWorkItemNestedInput
+  comments?: Prisma.WorkItemCommentUpdateManyWithoutWorkItemNestedInput
+  dependencies?: Prisma.WorkItemDependencyUpdateManyWithoutWorkItemNestedInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUpdateManyWithoutDependsOnWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutWorkItemNestedInput
+  leases?: Prisma.WorkItemLeaseUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutWorkItemNestedInput
+  transitions?: Prisma.WorkItemStateTransitionUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUpdateOneWithoutWorkItemNestedInput
+}
+
+export type WorkItemUncheckedUpdateWithoutAgentRunsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  epicId?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.EnumWorkItemKindFieldUpdateOperationsInput | $Enums.WorkItemKind
+  state?: Prisma.EnumWorkItemStateFieldUpdateOperationsInput | $Enums.WorkItemState
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumWorkItemPriorityFieldUpdateOperationsInput | $Enums.WorkItemPriority
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stateUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.WorkItemUncheckedUpdateManyWithoutParentNestedInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedUpdateManyWithoutWorkItemNestedInput
+  comments?: Prisma.WorkItemCommentUncheckedUpdateManyWithoutWorkItemNestedInput
+  dependencies?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutWorkItemNestedInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutDependsOnWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutWorkItemNestedInput
+  leases?: Prisma.WorkItemLeaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutWorkItemNestedInput
+  transitions?: Prisma.WorkItemStateTransitionUncheckedUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedUpdateOneWithoutWorkItemNestedInput
+}
+
+export type WorkItemCreateWithoutInterventionsInput = {
+  id?: string
+  kind: $Enums.WorkItemKind
+  state?: $Enums.WorkItemState
+  title: string
+  description?: string | null
+  priority?: $Enums.WorkItemPriority
+  sortOrder?: number
+  createdAt?: Date | string
+  stateUpdatedAt?: Date | string
+  updatedAt?: Date | string
+  project: Prisma.ProjectCreateNestedOneWithoutWorkItemsInput
+  epic: Prisma.EpicCreateNestedOneWithoutWorkItemsInput
+  parent?: Prisma.WorkItemCreateNestedOneWithoutChildrenInput
+  children?: Prisma.WorkItemCreateNestedManyWithoutParentInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionCreateNestedManyWithoutWorkItemInput
+  comments?: Prisma.WorkItemCommentCreateNestedManyWithoutWorkItemInput
+  dependencies?: Prisma.WorkItemDependencyCreateNestedManyWithoutWorkItemInput
+  dependentWorkItems?: Prisma.WorkItemDependencyCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutWorkItemInput
+  leases?: Prisma.WorkItemLeaseCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutWorkItemInput
+  transitions?: Prisma.WorkItemStateTransitionCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateCreateNestedOneWithoutWorkItemInput
+}
+
+export type WorkItemUncheckedCreateWithoutInterventionsInput = {
+  id?: string
+  projectId: string
+  epicId: string
+  parentId?: string | null
+  kind: $Enums.WorkItemKind
+  state?: $Enums.WorkItemState
+  title: string
+  description?: string | null
+  priority?: $Enums.WorkItemPriority
+  sortOrder?: number
+  createdAt?: Date | string
+  stateUpdatedAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.WorkItemUncheckedCreateNestedManyWithoutParentInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedCreateNestedManyWithoutWorkItemInput
+  comments?: Prisma.WorkItemCommentUncheckedCreateNestedManyWithoutWorkItemInput
+  dependencies?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutWorkItemInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutWorkItemInput
+  leases?: Prisma.WorkItemLeaseUncheckedCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutWorkItemInput
+  transitions?: Prisma.WorkItemStateTransitionUncheckedCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedCreateNestedOneWithoutWorkItemInput
+}
+
+export type WorkItemCreateOrConnectWithoutInterventionsInput = {
+  where: Prisma.WorkItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkItemCreateWithoutInterventionsInput, Prisma.WorkItemUncheckedCreateWithoutInterventionsInput>
+}
+
+export type WorkItemUpsertWithoutInterventionsInput = {
+  update: Prisma.XOR<Prisma.WorkItemUpdateWithoutInterventionsInput, Prisma.WorkItemUncheckedUpdateWithoutInterventionsInput>
+  create: Prisma.XOR<Prisma.WorkItemCreateWithoutInterventionsInput, Prisma.WorkItemUncheckedCreateWithoutInterventionsInput>
+  where?: Prisma.WorkItemWhereInput
+}
+
+export type WorkItemUpdateToOneWithWhereWithoutInterventionsInput = {
+  where?: Prisma.WorkItemWhereInput
+  data: Prisma.XOR<Prisma.WorkItemUpdateWithoutInterventionsInput, Prisma.WorkItemUncheckedUpdateWithoutInterventionsInput>
+}
+
+export type WorkItemUpdateWithoutInterventionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumWorkItemKindFieldUpdateOperationsInput | $Enums.WorkItemKind
+  state?: Prisma.EnumWorkItemStateFieldUpdateOperationsInput | $Enums.WorkItemState
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumWorkItemPriorityFieldUpdateOperationsInput | $Enums.WorkItemPriority
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stateUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutWorkItemsNestedInput
+  epic?: Prisma.EpicUpdateOneRequiredWithoutWorkItemsNestedInput
+  parent?: Prisma.WorkItemUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.WorkItemUpdateManyWithoutParentNestedInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUpdateManyWithoutWorkItemNestedInput
+  comments?: Prisma.WorkItemCommentUpdateManyWithoutWorkItemNestedInput
+  dependencies?: Prisma.WorkItemDependencyUpdateManyWithoutWorkItemNestedInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutWorkItemNestedInput
+  leases?: Prisma.WorkItemLeaseUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutWorkItemNestedInput
+  transitions?: Prisma.WorkItemStateTransitionUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUpdateOneWithoutWorkItemNestedInput
+}
+
+export type WorkItemUncheckedUpdateWithoutInterventionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  epicId?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.EnumWorkItemKindFieldUpdateOperationsInput | $Enums.WorkItemKind
+  state?: Prisma.EnumWorkItemStateFieldUpdateOperationsInput | $Enums.WorkItemState
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumWorkItemPriorityFieldUpdateOperationsInput | $Enums.WorkItemPriority
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stateUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.WorkItemUncheckedUpdateManyWithoutParentNestedInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedUpdateManyWithoutWorkItemNestedInput
+  comments?: Prisma.WorkItemCommentUncheckedUpdateManyWithoutWorkItemNestedInput
+  dependencies?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutWorkItemNestedInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutWorkItemNestedInput
+  leases?: Prisma.WorkItemLeaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutWorkItemNestedInput
+  transitions?: Prisma.WorkItemStateTransitionUncheckedUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemCreateWithoutEpicInput = {
@@ -856,8 +1269,15 @@ export type WorkItemCreateWithoutEpicInput = {
   comments?: Prisma.WorkItemCommentCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemUncheckedCreateWithoutEpicInput = {
@@ -878,8 +1298,15 @@ export type WorkItemUncheckedCreateWithoutEpicInput = {
   comments?: Prisma.WorkItemCommentUncheckedCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseUncheckedCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemCreateOrConnectWithoutEpicInput = {
@@ -945,8 +1372,15 @@ export type WorkItemCreateWithoutChildrenInput = {
   comments?: Prisma.WorkItemCommentCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemUncheckedCreateWithoutChildrenInput = {
@@ -967,8 +1401,15 @@ export type WorkItemUncheckedCreateWithoutChildrenInput = {
   comments?: Prisma.WorkItemCommentUncheckedCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseUncheckedCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemCreateOrConnectWithoutChildrenInput = {
@@ -994,8 +1435,15 @@ export type WorkItemCreateWithoutParentInput = {
   comments?: Prisma.WorkItemCommentCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemUncheckedCreateWithoutParentInput = {
@@ -1016,8 +1464,15 @@ export type WorkItemUncheckedCreateWithoutParentInput = {
   comments?: Prisma.WorkItemCommentUncheckedCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseUncheckedCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemCreateOrConnectWithoutParentInput = {
@@ -1059,8 +1514,15 @@ export type WorkItemUpdateWithoutChildrenInput = {
   comments?: Prisma.WorkItemCommentUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemUncheckedUpdateWithoutChildrenInput = {
@@ -1081,8 +1543,15 @@ export type WorkItemUncheckedUpdateWithoutChildrenInput = {
   comments?: Prisma.WorkItemCommentUncheckedUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemUpsertWithWhereUniqueWithoutParentInput = {
@@ -1119,8 +1588,15 @@ export type WorkItemCreateWithoutCommentsInput = {
   acceptanceCriteria?: Prisma.AcceptanceCriterionCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemUncheckedCreateWithoutCommentsInput = {
@@ -1141,8 +1617,15 @@ export type WorkItemUncheckedCreateWithoutCommentsInput = {
   acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseUncheckedCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemCreateOrConnectWithoutCommentsInput = {
@@ -1179,8 +1662,15 @@ export type WorkItemUpdateWithoutCommentsInput = {
   acceptanceCriteria?: Prisma.AcceptanceCriterionUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemUncheckedUpdateWithoutCommentsInput = {
@@ -1201,8 +1691,15 @@ export type WorkItemUncheckedUpdateWithoutCommentsInput = {
   acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemCreateWithoutAcceptanceCriteriaInput = {
@@ -1223,8 +1720,15 @@ export type WorkItemCreateWithoutAcceptanceCriteriaInput = {
   comments?: Prisma.WorkItemCommentCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemUncheckedCreateWithoutAcceptanceCriteriaInput = {
@@ -1245,8 +1749,15 @@ export type WorkItemUncheckedCreateWithoutAcceptanceCriteriaInput = {
   comments?: Prisma.WorkItemCommentUncheckedCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseUncheckedCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemCreateOrConnectWithoutAcceptanceCriteriaInput = {
@@ -1283,8 +1794,15 @@ export type WorkItemUpdateWithoutAcceptanceCriteriaInput = {
   comments?: Prisma.WorkItemCommentUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemUncheckedUpdateWithoutAcceptanceCriteriaInput = {
@@ -1305,8 +1823,15 @@ export type WorkItemUncheckedUpdateWithoutAcceptanceCriteriaInput = {
   comments?: Prisma.WorkItemCommentUncheckedUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemCreateWithoutDependenciesInput = {
@@ -1327,8 +1852,15 @@ export type WorkItemCreateWithoutDependenciesInput = {
   acceptanceCriteria?: Prisma.AcceptanceCriterionCreateNestedManyWithoutWorkItemInput
   comments?: Prisma.WorkItemCommentCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemUncheckedCreateWithoutDependenciesInput = {
@@ -1349,8 +1881,15 @@ export type WorkItemUncheckedCreateWithoutDependenciesInput = {
   acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedCreateNestedManyWithoutWorkItemInput
   comments?: Prisma.WorkItemCommentUncheckedCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseUncheckedCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemCreateOrConnectWithoutDependenciesInput = {
@@ -1376,8 +1915,15 @@ export type WorkItemCreateWithoutDependentWorkItemsInput = {
   acceptanceCriteria?: Prisma.AcceptanceCriterionCreateNestedManyWithoutWorkItemInput
   comments?: Prisma.WorkItemCommentCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyCreateNestedManyWithoutWorkItemInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemUncheckedCreateWithoutDependentWorkItemsInput = {
@@ -1398,8 +1944,15 @@ export type WorkItemUncheckedCreateWithoutDependentWorkItemsInput = {
   acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedCreateNestedManyWithoutWorkItemInput
   comments?: Prisma.WorkItemCommentUncheckedCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutWorkItemInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseUncheckedCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemCreateOrConnectWithoutDependentWorkItemsInput = {
@@ -1436,8 +1989,15 @@ export type WorkItemUpdateWithoutDependenciesInput = {
   acceptanceCriteria?: Prisma.AcceptanceCriterionUpdateManyWithoutWorkItemNestedInput
   comments?: Prisma.WorkItemCommentUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemUncheckedUpdateWithoutDependenciesInput = {
@@ -1458,8 +2018,15 @@ export type WorkItemUncheckedUpdateWithoutDependenciesInput = {
   acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedUpdateManyWithoutWorkItemNestedInput
   comments?: Prisma.WorkItemCommentUncheckedUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemUpsertWithoutDependentWorkItemsInput = {
@@ -1491,8 +2058,15 @@ export type WorkItemUpdateWithoutDependentWorkItemsInput = {
   acceptanceCriteria?: Prisma.AcceptanceCriterionUpdateManyWithoutWorkItemNestedInput
   comments?: Prisma.WorkItemCommentUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUpdateManyWithoutWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemUncheckedUpdateWithoutDependentWorkItemsInput = {
@@ -1513,8 +2087,15 @@ export type WorkItemUncheckedUpdateWithoutDependentWorkItemsInput = {
   acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedUpdateManyWithoutWorkItemNestedInput
   comments?: Prisma.WorkItemCommentUncheckedUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemCreateWithoutTransitionsInput = {
@@ -1536,7 +2117,14 @@ export type WorkItemCreateWithoutTransitionsInput = {
   comments?: Prisma.WorkItemCommentCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemUncheckedCreateWithoutTransitionsInput = {
@@ -1558,7 +2146,14 @@ export type WorkItemUncheckedCreateWithoutTransitionsInput = {
   comments?: Prisma.WorkItemCommentUncheckedCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseUncheckedCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemCreateOrConnectWithoutTransitionsInput = {
@@ -1596,7 +2191,14 @@ export type WorkItemUpdateWithoutTransitionsInput = {
   comments?: Prisma.WorkItemCommentUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemUncheckedUpdateWithoutTransitionsInput = {
@@ -1618,7 +2220,14 @@ export type WorkItemUncheckedUpdateWithoutTransitionsInput = {
   comments?: Prisma.WorkItemCommentUncheckedUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemCreateWithoutProjectInput = {
@@ -1639,8 +2248,15 @@ export type WorkItemCreateWithoutProjectInput = {
   comments?: Prisma.WorkItemCommentCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemUncheckedCreateWithoutProjectInput = {
@@ -1661,8 +2277,15 @@ export type WorkItemUncheckedCreateWithoutProjectInput = {
   comments?: Prisma.WorkItemCommentUncheckedCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutWorkItemInput
   leases?: Prisma.WorkItemLeaseUncheckedCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemCreateOrConnectWithoutProjectInput = {
@@ -1691,6 +2314,402 @@ export type WorkItemUpdateManyWithWhereWithoutProjectInput = {
   data: Prisma.XOR<Prisma.WorkItemUpdateManyMutationInput, Prisma.WorkItemUncheckedUpdateManyWithoutProjectInput>
 }
 
+export type WorkItemCreateWithoutReleaseRunsInput = {
+  id?: string
+  kind: $Enums.WorkItemKind
+  state?: $Enums.WorkItemState
+  title: string
+  description?: string | null
+  priority?: $Enums.WorkItemPriority
+  sortOrder?: number
+  createdAt?: Date | string
+  stateUpdatedAt?: Date | string
+  updatedAt?: Date | string
+  project: Prisma.ProjectCreateNestedOneWithoutWorkItemsInput
+  epic: Prisma.EpicCreateNestedOneWithoutWorkItemsInput
+  parent?: Prisma.WorkItemCreateNestedOneWithoutChildrenInput
+  children?: Prisma.WorkItemCreateNestedManyWithoutParentInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionCreateNestedManyWithoutWorkItemInput
+  comments?: Prisma.WorkItemCommentCreateNestedManyWithoutWorkItemInput
+  dependencies?: Prisma.WorkItemDependencyCreateNestedManyWithoutWorkItemInput
+  dependentWorkItems?: Prisma.WorkItemDependencyCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutWorkItemInput
+  leases?: Prisma.WorkItemLeaseCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutWorkItemInput
+  transitions?: Prisma.WorkItemStateTransitionCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateCreateNestedOneWithoutWorkItemInput
+}
+
+export type WorkItemUncheckedCreateWithoutReleaseRunsInput = {
+  id?: string
+  projectId: string
+  epicId: string
+  parentId?: string | null
+  kind: $Enums.WorkItemKind
+  state?: $Enums.WorkItemState
+  title: string
+  description?: string | null
+  priority?: $Enums.WorkItemPriority
+  sortOrder?: number
+  createdAt?: Date | string
+  stateUpdatedAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.WorkItemUncheckedCreateNestedManyWithoutParentInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedCreateNestedManyWithoutWorkItemInput
+  comments?: Prisma.WorkItemCommentUncheckedCreateNestedManyWithoutWorkItemInput
+  dependencies?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutWorkItemInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutWorkItemInput
+  leases?: Prisma.WorkItemLeaseUncheckedCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutWorkItemInput
+  transitions?: Prisma.WorkItemStateTransitionUncheckedCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedCreateNestedOneWithoutWorkItemInput
+}
+
+export type WorkItemCreateOrConnectWithoutReleaseRunsInput = {
+  where: Prisma.WorkItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkItemCreateWithoutReleaseRunsInput, Prisma.WorkItemUncheckedCreateWithoutReleaseRunsInput>
+}
+
+export type WorkItemUpsertWithoutReleaseRunsInput = {
+  update: Prisma.XOR<Prisma.WorkItemUpdateWithoutReleaseRunsInput, Prisma.WorkItemUncheckedUpdateWithoutReleaseRunsInput>
+  create: Prisma.XOR<Prisma.WorkItemCreateWithoutReleaseRunsInput, Prisma.WorkItemUncheckedCreateWithoutReleaseRunsInput>
+  where?: Prisma.WorkItemWhereInput
+}
+
+export type WorkItemUpdateToOneWithWhereWithoutReleaseRunsInput = {
+  where?: Prisma.WorkItemWhereInput
+  data: Prisma.XOR<Prisma.WorkItemUpdateWithoutReleaseRunsInput, Prisma.WorkItemUncheckedUpdateWithoutReleaseRunsInput>
+}
+
+export type WorkItemUpdateWithoutReleaseRunsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumWorkItemKindFieldUpdateOperationsInput | $Enums.WorkItemKind
+  state?: Prisma.EnumWorkItemStateFieldUpdateOperationsInput | $Enums.WorkItemState
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumWorkItemPriorityFieldUpdateOperationsInput | $Enums.WorkItemPriority
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stateUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutWorkItemsNestedInput
+  epic?: Prisma.EpicUpdateOneRequiredWithoutWorkItemsNestedInput
+  parent?: Prisma.WorkItemUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.WorkItemUpdateManyWithoutParentNestedInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUpdateManyWithoutWorkItemNestedInput
+  comments?: Prisma.WorkItemCommentUpdateManyWithoutWorkItemNestedInput
+  dependencies?: Prisma.WorkItemDependencyUpdateManyWithoutWorkItemNestedInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutWorkItemNestedInput
+  leases?: Prisma.WorkItemLeaseUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutWorkItemNestedInput
+  transitions?: Prisma.WorkItemStateTransitionUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUpdateOneWithoutWorkItemNestedInput
+}
+
+export type WorkItemUncheckedUpdateWithoutReleaseRunsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  epicId?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.EnumWorkItemKindFieldUpdateOperationsInput | $Enums.WorkItemKind
+  state?: Prisma.EnumWorkItemStateFieldUpdateOperationsInput | $Enums.WorkItemState
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumWorkItemPriorityFieldUpdateOperationsInput | $Enums.WorkItemPriority
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stateUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.WorkItemUncheckedUpdateManyWithoutParentNestedInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedUpdateManyWithoutWorkItemNestedInput
+  comments?: Prisma.WorkItemCommentUncheckedUpdateManyWithoutWorkItemNestedInput
+  dependencies?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutWorkItemNestedInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutWorkItemNestedInput
+  leases?: Prisma.WorkItemLeaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutWorkItemNestedInput
+  transitions?: Prisma.WorkItemStateTransitionUncheckedUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedUpdateOneWithoutWorkItemNestedInput
+}
+
+export type WorkItemCreateWithoutReviewGateResultsInput = {
+  id?: string
+  kind: $Enums.WorkItemKind
+  state?: $Enums.WorkItemState
+  title: string
+  description?: string | null
+  priority?: $Enums.WorkItemPriority
+  sortOrder?: number
+  createdAt?: Date | string
+  stateUpdatedAt?: Date | string
+  updatedAt?: Date | string
+  project: Prisma.ProjectCreateNestedOneWithoutWorkItemsInput
+  epic: Prisma.EpicCreateNestedOneWithoutWorkItemsInput
+  parent?: Prisma.WorkItemCreateNestedOneWithoutChildrenInput
+  children?: Prisma.WorkItemCreateNestedManyWithoutParentInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionCreateNestedManyWithoutWorkItemInput
+  comments?: Prisma.WorkItemCommentCreateNestedManyWithoutWorkItemInput
+  dependencies?: Prisma.WorkItemDependencyCreateNestedManyWithoutWorkItemInput
+  dependentWorkItems?: Prisma.WorkItemDependencyCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutWorkItemInput
+  leases?: Prisma.WorkItemLeaseCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutWorkItemInput
+  transitions?: Prisma.WorkItemStateTransitionCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateCreateNestedOneWithoutWorkItemInput
+}
+
+export type WorkItemUncheckedCreateWithoutReviewGateResultsInput = {
+  id?: string
+  projectId: string
+  epicId: string
+  parentId?: string | null
+  kind: $Enums.WorkItemKind
+  state?: $Enums.WorkItemState
+  title: string
+  description?: string | null
+  priority?: $Enums.WorkItemPriority
+  sortOrder?: number
+  createdAt?: Date | string
+  stateUpdatedAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.WorkItemUncheckedCreateNestedManyWithoutParentInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedCreateNestedManyWithoutWorkItemInput
+  comments?: Prisma.WorkItemCommentUncheckedCreateNestedManyWithoutWorkItemInput
+  dependencies?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutWorkItemInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutWorkItemInput
+  leases?: Prisma.WorkItemLeaseUncheckedCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutWorkItemInput
+  transitions?: Prisma.WorkItemStateTransitionUncheckedCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedCreateNestedOneWithoutWorkItemInput
+}
+
+export type WorkItemCreateOrConnectWithoutReviewGateResultsInput = {
+  where: Prisma.WorkItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkItemCreateWithoutReviewGateResultsInput, Prisma.WorkItemUncheckedCreateWithoutReviewGateResultsInput>
+}
+
+export type WorkItemUpsertWithoutReviewGateResultsInput = {
+  update: Prisma.XOR<Prisma.WorkItemUpdateWithoutReviewGateResultsInput, Prisma.WorkItemUncheckedUpdateWithoutReviewGateResultsInput>
+  create: Prisma.XOR<Prisma.WorkItemCreateWithoutReviewGateResultsInput, Prisma.WorkItemUncheckedCreateWithoutReviewGateResultsInput>
+  where?: Prisma.WorkItemWhereInput
+}
+
+export type WorkItemUpdateToOneWithWhereWithoutReviewGateResultsInput = {
+  where?: Prisma.WorkItemWhereInput
+  data: Prisma.XOR<Prisma.WorkItemUpdateWithoutReviewGateResultsInput, Prisma.WorkItemUncheckedUpdateWithoutReviewGateResultsInput>
+}
+
+export type WorkItemUpdateWithoutReviewGateResultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumWorkItemKindFieldUpdateOperationsInput | $Enums.WorkItemKind
+  state?: Prisma.EnumWorkItemStateFieldUpdateOperationsInput | $Enums.WorkItemState
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumWorkItemPriorityFieldUpdateOperationsInput | $Enums.WorkItemPriority
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stateUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutWorkItemsNestedInput
+  epic?: Prisma.EpicUpdateOneRequiredWithoutWorkItemsNestedInput
+  parent?: Prisma.WorkItemUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.WorkItemUpdateManyWithoutParentNestedInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUpdateManyWithoutWorkItemNestedInput
+  comments?: Prisma.WorkItemCommentUpdateManyWithoutWorkItemNestedInput
+  dependencies?: Prisma.WorkItemDependencyUpdateManyWithoutWorkItemNestedInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutWorkItemNestedInput
+  leases?: Prisma.WorkItemLeaseUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutWorkItemNestedInput
+  transitions?: Prisma.WorkItemStateTransitionUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUpdateOneWithoutWorkItemNestedInput
+}
+
+export type WorkItemUncheckedUpdateWithoutReviewGateResultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  epicId?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.EnumWorkItemKindFieldUpdateOperationsInput | $Enums.WorkItemKind
+  state?: Prisma.EnumWorkItemStateFieldUpdateOperationsInput | $Enums.WorkItemState
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumWorkItemPriorityFieldUpdateOperationsInput | $Enums.WorkItemPriority
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stateUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.WorkItemUncheckedUpdateManyWithoutParentNestedInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedUpdateManyWithoutWorkItemNestedInput
+  comments?: Prisma.WorkItemCommentUncheckedUpdateManyWithoutWorkItemNestedInput
+  dependencies?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutWorkItemNestedInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutWorkItemNestedInput
+  leases?: Prisma.WorkItemLeaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutWorkItemNestedInput
+  transitions?: Prisma.WorkItemStateTransitionUncheckedUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedUpdateOneWithoutWorkItemNestedInput
+}
+
+export type WorkItemCreateWithoutRetryStateInput = {
+  id?: string
+  kind: $Enums.WorkItemKind
+  state?: $Enums.WorkItemState
+  title: string
+  description?: string | null
+  priority?: $Enums.WorkItemPriority
+  sortOrder?: number
+  createdAt?: Date | string
+  stateUpdatedAt?: Date | string
+  updatedAt?: Date | string
+  project: Prisma.ProjectCreateNestedOneWithoutWorkItemsInput
+  epic: Prisma.EpicCreateNestedOneWithoutWorkItemsInput
+  parent?: Prisma.WorkItemCreateNestedOneWithoutChildrenInput
+  children?: Prisma.WorkItemCreateNestedManyWithoutParentInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionCreateNestedManyWithoutWorkItemInput
+  comments?: Prisma.WorkItemCommentCreateNestedManyWithoutWorkItemInput
+  dependencies?: Prisma.WorkItemDependencyCreateNestedManyWithoutWorkItemInput
+  dependentWorkItems?: Prisma.WorkItemDependencyCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutWorkItemInput
+  leases?: Prisma.WorkItemLeaseCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutWorkItemInput
+  transitions?: Prisma.WorkItemStateTransitionCreateNestedManyWithoutWorkItemInput
+}
+
+export type WorkItemUncheckedCreateWithoutRetryStateInput = {
+  id?: string
+  projectId: string
+  epicId: string
+  parentId?: string | null
+  kind: $Enums.WorkItemKind
+  state?: $Enums.WorkItemState
+  title: string
+  description?: string | null
+  priority?: $Enums.WorkItemPriority
+  sortOrder?: number
+  createdAt?: Date | string
+  stateUpdatedAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.WorkItemUncheckedCreateNestedManyWithoutParentInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedCreateNestedManyWithoutWorkItemInput
+  comments?: Prisma.WorkItemCommentUncheckedCreateNestedManyWithoutWorkItemInput
+  dependencies?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutWorkItemInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutWorkItemInput
+  leases?: Prisma.WorkItemLeaseUncheckedCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutWorkItemInput
+  transitions?: Prisma.WorkItemStateTransitionUncheckedCreateNestedManyWithoutWorkItemInput
+}
+
+export type WorkItemCreateOrConnectWithoutRetryStateInput = {
+  where: Prisma.WorkItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkItemCreateWithoutRetryStateInput, Prisma.WorkItemUncheckedCreateWithoutRetryStateInput>
+}
+
+export type WorkItemUpsertWithoutRetryStateInput = {
+  update: Prisma.XOR<Prisma.WorkItemUpdateWithoutRetryStateInput, Prisma.WorkItemUncheckedUpdateWithoutRetryStateInput>
+  create: Prisma.XOR<Prisma.WorkItemCreateWithoutRetryStateInput, Prisma.WorkItemUncheckedCreateWithoutRetryStateInput>
+  where?: Prisma.WorkItemWhereInput
+}
+
+export type WorkItemUpdateToOneWithWhereWithoutRetryStateInput = {
+  where?: Prisma.WorkItemWhereInput
+  data: Prisma.XOR<Prisma.WorkItemUpdateWithoutRetryStateInput, Prisma.WorkItemUncheckedUpdateWithoutRetryStateInput>
+}
+
+export type WorkItemUpdateWithoutRetryStateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumWorkItemKindFieldUpdateOperationsInput | $Enums.WorkItemKind
+  state?: Prisma.EnumWorkItemStateFieldUpdateOperationsInput | $Enums.WorkItemState
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumWorkItemPriorityFieldUpdateOperationsInput | $Enums.WorkItemPriority
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stateUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutWorkItemsNestedInput
+  epic?: Prisma.EpicUpdateOneRequiredWithoutWorkItemsNestedInput
+  parent?: Prisma.WorkItemUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.WorkItemUpdateManyWithoutParentNestedInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUpdateManyWithoutWorkItemNestedInput
+  comments?: Prisma.WorkItemCommentUpdateManyWithoutWorkItemNestedInput
+  dependencies?: Prisma.WorkItemDependencyUpdateManyWithoutWorkItemNestedInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutWorkItemNestedInput
+  leases?: Prisma.WorkItemLeaseUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutWorkItemNestedInput
+  transitions?: Prisma.WorkItemStateTransitionUpdateManyWithoutWorkItemNestedInput
+}
+
+export type WorkItemUncheckedUpdateWithoutRetryStateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  epicId?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.EnumWorkItemKindFieldUpdateOperationsInput | $Enums.WorkItemKind
+  state?: Prisma.EnumWorkItemStateFieldUpdateOperationsInput | $Enums.WorkItemState
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumWorkItemPriorityFieldUpdateOperationsInput | $Enums.WorkItemPriority
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stateUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.WorkItemUncheckedUpdateManyWithoutParentNestedInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedUpdateManyWithoutWorkItemNestedInput
+  comments?: Prisma.WorkItemCommentUncheckedUpdateManyWithoutWorkItemNestedInput
+  dependencies?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutWorkItemNestedInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutWorkItemNestedInput
+  leases?: Prisma.WorkItemLeaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutWorkItemNestedInput
+  transitions?: Prisma.WorkItemStateTransitionUncheckedUpdateManyWithoutWorkItemNestedInput
+}
+
 export type WorkItemCreateWithoutLeasesInput = {
   id?: string
   kind: $Enums.WorkItemKind
@@ -1710,7 +2729,14 @@ export type WorkItemCreateWithoutLeasesInput = {
   comments?: Prisma.WorkItemCommentCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemUncheckedCreateWithoutLeasesInput = {
@@ -1732,7 +2758,14 @@ export type WorkItemUncheckedCreateWithoutLeasesInput = {
   comments?: Prisma.WorkItemCommentUncheckedCreateNestedManyWithoutWorkItemInput
   dependencies?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutWorkItemInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutWorkItemInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedCreateNestedOneWithoutWorkItemInput
 }
 
 export type WorkItemCreateOrConnectWithoutLeasesInput = {
@@ -1770,7 +2803,14 @@ export type WorkItemUpdateWithoutLeasesInput = {
   comments?: Prisma.WorkItemCommentUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemUncheckedUpdateWithoutLeasesInput = {
@@ -1792,7 +2832,278 @@ export type WorkItemUncheckedUpdateWithoutLeasesInput = {
   comments?: Prisma.WorkItemCommentUncheckedUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedUpdateOneWithoutWorkItemNestedInput
+}
+
+export type WorkItemCreateWithoutUsageEventsInput = {
+  id?: string
+  kind: $Enums.WorkItemKind
+  state?: $Enums.WorkItemState
+  title: string
+  description?: string | null
+  priority?: $Enums.WorkItemPriority
+  sortOrder?: number
+  createdAt?: Date | string
+  stateUpdatedAt?: Date | string
+  updatedAt?: Date | string
+  project: Prisma.ProjectCreateNestedOneWithoutWorkItemsInput
+  epic: Prisma.EpicCreateNestedOneWithoutWorkItemsInput
+  parent?: Prisma.WorkItemCreateNestedOneWithoutChildrenInput
+  children?: Prisma.WorkItemCreateNestedManyWithoutParentInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionCreateNestedManyWithoutWorkItemInput
+  comments?: Prisma.WorkItemCommentCreateNestedManyWithoutWorkItemInput
+  dependencies?: Prisma.WorkItemDependencyCreateNestedManyWithoutWorkItemInput
+  dependentWorkItems?: Prisma.WorkItemDependencyCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutWorkItemInput
+  leases?: Prisma.WorkItemLeaseCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutWorkItemInput
+  transitions?: Prisma.WorkItemStateTransitionCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateCreateNestedOneWithoutWorkItemInput
+}
+
+export type WorkItemUncheckedCreateWithoutUsageEventsInput = {
+  id?: string
+  projectId: string
+  epicId: string
+  parentId?: string | null
+  kind: $Enums.WorkItemKind
+  state?: $Enums.WorkItemState
+  title: string
+  description?: string | null
+  priority?: $Enums.WorkItemPriority
+  sortOrder?: number
+  createdAt?: Date | string
+  stateUpdatedAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.WorkItemUncheckedCreateNestedManyWithoutParentInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedCreateNestedManyWithoutWorkItemInput
+  comments?: Prisma.WorkItemCommentUncheckedCreateNestedManyWithoutWorkItemInput
+  dependencies?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutWorkItemInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutWorkItemInput
+  leases?: Prisma.WorkItemLeaseUncheckedCreateNestedManyWithoutWorkItemInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutWorkItemInput
+  transitions?: Prisma.WorkItemStateTransitionUncheckedCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedCreateNestedOneWithoutWorkItemInput
+}
+
+export type WorkItemCreateOrConnectWithoutUsageEventsInput = {
+  where: Prisma.WorkItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkItemCreateWithoutUsageEventsInput, Prisma.WorkItemUncheckedCreateWithoutUsageEventsInput>
+}
+
+export type WorkItemUpsertWithoutUsageEventsInput = {
+  update: Prisma.XOR<Prisma.WorkItemUpdateWithoutUsageEventsInput, Prisma.WorkItemUncheckedUpdateWithoutUsageEventsInput>
+  create: Prisma.XOR<Prisma.WorkItemCreateWithoutUsageEventsInput, Prisma.WorkItemUncheckedCreateWithoutUsageEventsInput>
+  where?: Prisma.WorkItemWhereInput
+}
+
+export type WorkItemUpdateToOneWithWhereWithoutUsageEventsInput = {
+  where?: Prisma.WorkItemWhereInput
+  data: Prisma.XOR<Prisma.WorkItemUpdateWithoutUsageEventsInput, Prisma.WorkItemUncheckedUpdateWithoutUsageEventsInput>
+}
+
+export type WorkItemUpdateWithoutUsageEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumWorkItemKindFieldUpdateOperationsInput | $Enums.WorkItemKind
+  state?: Prisma.EnumWorkItemStateFieldUpdateOperationsInput | $Enums.WorkItemState
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumWorkItemPriorityFieldUpdateOperationsInput | $Enums.WorkItemPriority
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stateUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutWorkItemsNestedInput
+  epic?: Prisma.EpicUpdateOneRequiredWithoutWorkItemsNestedInput
+  parent?: Prisma.WorkItemUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.WorkItemUpdateManyWithoutParentNestedInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUpdateManyWithoutWorkItemNestedInput
+  comments?: Prisma.WorkItemCommentUpdateManyWithoutWorkItemNestedInput
+  dependencies?: Prisma.WorkItemDependencyUpdateManyWithoutWorkItemNestedInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutWorkItemNestedInput
+  leases?: Prisma.WorkItemLeaseUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutWorkItemNestedInput
+  transitions?: Prisma.WorkItemStateTransitionUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUpdateOneWithoutWorkItemNestedInput
+}
+
+export type WorkItemUncheckedUpdateWithoutUsageEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  epicId?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.EnumWorkItemKindFieldUpdateOperationsInput | $Enums.WorkItemKind
+  state?: Prisma.EnumWorkItemStateFieldUpdateOperationsInput | $Enums.WorkItemState
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumWorkItemPriorityFieldUpdateOperationsInput | $Enums.WorkItemPriority
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stateUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.WorkItemUncheckedUpdateManyWithoutParentNestedInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedUpdateManyWithoutWorkItemNestedInput
+  comments?: Prisma.WorkItemCommentUncheckedUpdateManyWithoutWorkItemNestedInput
+  dependencies?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutWorkItemNestedInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutWorkItemNestedInput
+  leases?: Prisma.WorkItemLeaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutWorkItemNestedInput
+  transitions?: Prisma.WorkItemStateTransitionUncheckedUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedUpdateOneWithoutWorkItemNestedInput
+}
+
+export type WorkItemCreateWithoutWorktreesInput = {
+  id?: string
+  kind: $Enums.WorkItemKind
+  state?: $Enums.WorkItemState
+  title: string
+  description?: string | null
+  priority?: $Enums.WorkItemPriority
+  sortOrder?: number
+  createdAt?: Date | string
+  stateUpdatedAt?: Date | string
+  updatedAt?: Date | string
+  project: Prisma.ProjectCreateNestedOneWithoutWorkItemsInput
+  epic: Prisma.EpicCreateNestedOneWithoutWorkItemsInput
+  parent?: Prisma.WorkItemCreateNestedOneWithoutChildrenInput
+  children?: Prisma.WorkItemCreateNestedManyWithoutParentInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionCreateNestedManyWithoutWorkItemInput
+  comments?: Prisma.WorkItemCommentCreateNestedManyWithoutWorkItemInput
+  dependencies?: Prisma.WorkItemDependencyCreateNestedManyWithoutWorkItemInput
+  dependentWorkItems?: Prisma.WorkItemDependencyCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutWorkItemInput
+  leases?: Prisma.WorkItemLeaseCreateNestedManyWithoutWorkItemInput
+  transitions?: Prisma.WorkItemStateTransitionCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateCreateNestedOneWithoutWorkItemInput
+}
+
+export type WorkItemUncheckedCreateWithoutWorktreesInput = {
+  id?: string
+  projectId: string
+  epicId: string
+  parentId?: string | null
+  kind: $Enums.WorkItemKind
+  state?: $Enums.WorkItemState
+  title: string
+  description?: string | null
+  priority?: $Enums.WorkItemPriority
+  sortOrder?: number
+  createdAt?: Date | string
+  stateUpdatedAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.WorkItemUncheckedCreateNestedManyWithoutParentInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedCreateNestedManyWithoutWorkItemInput
+  comments?: Prisma.WorkItemCommentUncheckedCreateNestedManyWithoutWorkItemInput
+  dependencies?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutWorkItemInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUncheckedCreateNestedManyWithoutDependsOnWorkItemInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutWorkItemInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedCreateNestedManyWithoutWorkItemInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutWorkItemInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutWorkItemInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutWorkItemInput
+  leases?: Prisma.WorkItemLeaseUncheckedCreateNestedManyWithoutWorkItemInput
+  transitions?: Prisma.WorkItemStateTransitionUncheckedCreateNestedManyWithoutWorkItemInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedCreateNestedOneWithoutWorkItemInput
+}
+
+export type WorkItemCreateOrConnectWithoutWorktreesInput = {
+  where: Prisma.WorkItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkItemCreateWithoutWorktreesInput, Prisma.WorkItemUncheckedCreateWithoutWorktreesInput>
+}
+
+export type WorkItemUpsertWithoutWorktreesInput = {
+  update: Prisma.XOR<Prisma.WorkItemUpdateWithoutWorktreesInput, Prisma.WorkItemUncheckedUpdateWithoutWorktreesInput>
+  create: Prisma.XOR<Prisma.WorkItemCreateWithoutWorktreesInput, Prisma.WorkItemUncheckedCreateWithoutWorktreesInput>
+  where?: Prisma.WorkItemWhereInput
+}
+
+export type WorkItemUpdateToOneWithWhereWithoutWorktreesInput = {
+  where?: Prisma.WorkItemWhereInput
+  data: Prisma.XOR<Prisma.WorkItemUpdateWithoutWorktreesInput, Prisma.WorkItemUncheckedUpdateWithoutWorktreesInput>
+}
+
+export type WorkItemUpdateWithoutWorktreesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumWorkItemKindFieldUpdateOperationsInput | $Enums.WorkItemKind
+  state?: Prisma.EnumWorkItemStateFieldUpdateOperationsInput | $Enums.WorkItemState
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumWorkItemPriorityFieldUpdateOperationsInput | $Enums.WorkItemPriority
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stateUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutWorkItemsNestedInput
+  epic?: Prisma.EpicUpdateOneRequiredWithoutWorkItemsNestedInput
+  parent?: Prisma.WorkItemUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.WorkItemUpdateManyWithoutParentNestedInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUpdateManyWithoutWorkItemNestedInput
+  comments?: Prisma.WorkItemCommentUpdateManyWithoutWorkItemNestedInput
+  dependencies?: Prisma.WorkItemDependencyUpdateManyWithoutWorkItemNestedInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutWorkItemNestedInput
+  leases?: Prisma.WorkItemLeaseUpdateManyWithoutWorkItemNestedInput
+  transitions?: Prisma.WorkItemStateTransitionUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUpdateOneWithoutWorkItemNestedInput
+}
+
+export type WorkItemUncheckedUpdateWithoutWorktreesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  epicId?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.EnumWorkItemKindFieldUpdateOperationsInput | $Enums.WorkItemKind
+  state?: Prisma.EnumWorkItemStateFieldUpdateOperationsInput | $Enums.WorkItemState
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumWorkItemPriorityFieldUpdateOperationsInput | $Enums.WorkItemPriority
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stateUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.WorkItemUncheckedUpdateManyWithoutParentNestedInput
+  acceptanceCriteria?: Prisma.AcceptanceCriterionUncheckedUpdateManyWithoutWorkItemNestedInput
+  comments?: Prisma.WorkItemCommentUncheckedUpdateManyWithoutWorkItemNestedInput
+  dependencies?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutWorkItemNestedInput
+  dependentWorkItems?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutWorkItemNestedInput
+  leases?: Prisma.WorkItemLeaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  transitions?: Prisma.WorkItemStateTransitionUncheckedUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemCreateManyEpicInput = {
@@ -1828,8 +3139,15 @@ export type WorkItemUpdateWithoutEpicInput = {
   comments?: Prisma.WorkItemCommentUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemUncheckedUpdateWithoutEpicInput = {
@@ -1850,8 +3168,15 @@ export type WorkItemUncheckedUpdateWithoutEpicInput = {
   comments?: Prisma.WorkItemCommentUncheckedUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemUncheckedUpdateManyWithoutEpicInput = {
@@ -1902,8 +3227,15 @@ export type WorkItemUpdateWithoutParentInput = {
   comments?: Prisma.WorkItemCommentUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemUncheckedUpdateWithoutParentInput = {
@@ -1924,8 +3256,15 @@ export type WorkItemUncheckedUpdateWithoutParentInput = {
   comments?: Prisma.WorkItemCommentUncheckedUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemUncheckedUpdateManyWithoutParentInput = {
@@ -1976,8 +3315,15 @@ export type WorkItemUpdateWithoutProjectInput = {
   comments?: Prisma.WorkItemCommentUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemUncheckedUpdateWithoutProjectInput = {
@@ -1998,8 +3344,15 @@ export type WorkItemUncheckedUpdateWithoutProjectInput = {
   comments?: Prisma.WorkItemCommentUncheckedUpdateManyWithoutWorkItemNestedInput
   dependencies?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutWorkItemNestedInput
   dependentWorkItems?: Prisma.WorkItemDependencyUncheckedUpdateManyWithoutDependsOnWorkItemNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  interventions?: Prisma.HumanInterventionCaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutWorkItemNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutWorkItemNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutWorkItemNestedInput
   leases?: Prisma.WorkItemLeaseUncheckedUpdateManyWithoutWorkItemNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutWorkItemNestedInput
   transitions?: Prisma.WorkItemStateTransitionUncheckedUpdateManyWithoutWorkItemNestedInput
+  retryState?: Prisma.WorkItemRetryStateUncheckedUpdateOneWithoutWorkItemNestedInput
 }
 
 export type WorkItemUncheckedUpdateManyWithoutProjectInput = {
@@ -2028,7 +3381,13 @@ export type WorkItemCountOutputType = {
   comments: number
   dependencies: number
   dependentWorkItems: number
+  agentRuns: number
+  interventions: number
+  releaseRuns: number
+  reviewGateResults: number
+  usageEvents: number
   leases: number
+  worktrees: number
   transitions: number
 }
 
@@ -2038,7 +3397,13 @@ export type WorkItemCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensio
   comments?: boolean | WorkItemCountOutputTypeCountCommentsArgs
   dependencies?: boolean | WorkItemCountOutputTypeCountDependenciesArgs
   dependentWorkItems?: boolean | WorkItemCountOutputTypeCountDependentWorkItemsArgs
+  agentRuns?: boolean | WorkItemCountOutputTypeCountAgentRunsArgs
+  interventions?: boolean | WorkItemCountOutputTypeCountInterventionsArgs
+  releaseRuns?: boolean | WorkItemCountOutputTypeCountReleaseRunsArgs
+  reviewGateResults?: boolean | WorkItemCountOutputTypeCountReviewGateResultsArgs
+  usageEvents?: boolean | WorkItemCountOutputTypeCountUsageEventsArgs
   leases?: boolean | WorkItemCountOutputTypeCountLeasesArgs
+  worktrees?: boolean | WorkItemCountOutputTypeCountWorktreesArgs
   transitions?: boolean | WorkItemCountOutputTypeCountTransitionsArgs
 }
 
@@ -2090,8 +3455,50 @@ export type WorkItemCountOutputTypeCountDependentWorkItemsArgs<ExtArgs extends r
 /**
  * WorkItemCountOutputType without action
  */
+export type WorkItemCountOutputTypeCountAgentRunsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AgentRunWhereInput
+}
+
+/**
+ * WorkItemCountOutputType without action
+ */
+export type WorkItemCountOutputTypeCountInterventionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.HumanInterventionCaseWhereInput
+}
+
+/**
+ * WorkItemCountOutputType without action
+ */
+export type WorkItemCountOutputTypeCountReleaseRunsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReleaseRunWhereInput
+}
+
+/**
+ * WorkItemCountOutputType without action
+ */
+export type WorkItemCountOutputTypeCountReviewGateResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReviewGateResultWhereInput
+}
+
+/**
+ * WorkItemCountOutputType without action
+ */
+export type WorkItemCountOutputTypeCountUsageEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UsageEventWhereInput
+}
+
+/**
+ * WorkItemCountOutputType without action
+ */
 export type WorkItemCountOutputTypeCountLeasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.WorkItemLeaseWhereInput
+}
+
+/**
+ * WorkItemCountOutputType without action
+ */
+export type WorkItemCountOutputTypeCountWorktreesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WorktreeWhereInput
 }
 
 /**
@@ -2124,8 +3531,15 @@ export type WorkItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   comments?: boolean | Prisma.WorkItem$commentsArgs<ExtArgs>
   dependencies?: boolean | Prisma.WorkItem$dependenciesArgs<ExtArgs>
   dependentWorkItems?: boolean | Prisma.WorkItem$dependentWorkItemsArgs<ExtArgs>
+  agentRuns?: boolean | Prisma.WorkItem$agentRunsArgs<ExtArgs>
+  interventions?: boolean | Prisma.WorkItem$interventionsArgs<ExtArgs>
+  releaseRuns?: boolean | Prisma.WorkItem$releaseRunsArgs<ExtArgs>
+  reviewGateResults?: boolean | Prisma.WorkItem$reviewGateResultsArgs<ExtArgs>
+  usageEvents?: boolean | Prisma.WorkItem$usageEventsArgs<ExtArgs>
   leases?: boolean | Prisma.WorkItem$leasesArgs<ExtArgs>
+  worktrees?: boolean | Prisma.WorkItem$worktreesArgs<ExtArgs>
   transitions?: boolean | Prisma.WorkItem$transitionsArgs<ExtArgs>
+  retryState?: boolean | Prisma.WorkItem$retryStateArgs<ExtArgs>
   _count?: boolean | Prisma.WorkItemCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["workItem"]>
 
@@ -2193,8 +3607,15 @@ export type WorkItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   comments?: boolean | Prisma.WorkItem$commentsArgs<ExtArgs>
   dependencies?: boolean | Prisma.WorkItem$dependenciesArgs<ExtArgs>
   dependentWorkItems?: boolean | Prisma.WorkItem$dependentWorkItemsArgs<ExtArgs>
+  agentRuns?: boolean | Prisma.WorkItem$agentRunsArgs<ExtArgs>
+  interventions?: boolean | Prisma.WorkItem$interventionsArgs<ExtArgs>
+  releaseRuns?: boolean | Prisma.WorkItem$releaseRunsArgs<ExtArgs>
+  reviewGateResults?: boolean | Prisma.WorkItem$reviewGateResultsArgs<ExtArgs>
+  usageEvents?: boolean | Prisma.WorkItem$usageEventsArgs<ExtArgs>
   leases?: boolean | Prisma.WorkItem$leasesArgs<ExtArgs>
+  worktrees?: boolean | Prisma.WorkItem$worktreesArgs<ExtArgs>
   transitions?: boolean | Prisma.WorkItem$transitionsArgs<ExtArgs>
+  retryState?: boolean | Prisma.WorkItem$retryStateArgs<ExtArgs>
   _count?: boolean | Prisma.WorkItemCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type WorkItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2219,8 +3640,15 @@ export type $WorkItemPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     comments: Prisma.$WorkItemCommentPayload<ExtArgs>[]
     dependencies: Prisma.$WorkItemDependencyPayload<ExtArgs>[]
     dependentWorkItems: Prisma.$WorkItemDependencyPayload<ExtArgs>[]
+    agentRuns: Prisma.$AgentRunPayload<ExtArgs>[]
+    interventions: Prisma.$HumanInterventionCasePayload<ExtArgs>[]
+    releaseRuns: Prisma.$ReleaseRunPayload<ExtArgs>[]
+    reviewGateResults: Prisma.$ReviewGateResultPayload<ExtArgs>[]
+    usageEvents: Prisma.$UsageEventPayload<ExtArgs>[]
     leases: Prisma.$WorkItemLeasePayload<ExtArgs>[]
+    worktrees: Prisma.$WorktreePayload<ExtArgs>[]
     transitions: Prisma.$WorkItemStateTransitionPayload<ExtArgs>[]
+    retryState: Prisma.$WorkItemRetryStatePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2638,8 +4066,15 @@ export interface Prisma__WorkItemClient<T, Null = never, ExtArgs extends runtime
   comments<T extends Prisma.WorkItem$commentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItem$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkItemCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   dependencies<T extends Prisma.WorkItem$dependenciesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItem$dependenciesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkItemDependencyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   dependentWorkItems<T extends Prisma.WorkItem$dependentWorkItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItem$dependentWorkItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkItemDependencyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  agentRuns<T extends Prisma.WorkItem$agentRunsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItem$agentRunsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgentRunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  interventions<T extends Prisma.WorkItem$interventionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItem$interventionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HumanInterventionCasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  releaseRuns<T extends Prisma.WorkItem$releaseRunsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItem$releaseRunsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReleaseRunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reviewGateResults<T extends Prisma.WorkItem$reviewGateResultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItem$reviewGateResultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReviewGateResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  usageEvents<T extends Prisma.WorkItem$usageEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItem$usageEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UsageEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   leases<T extends Prisma.WorkItem$leasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItem$leasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkItemLeasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  worktrees<T extends Prisma.WorkItem$worktreesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItem$worktreesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorktreePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transitions<T extends Prisma.WorkItem$transitionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItem$transitionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkItemStateTransitionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  retryState<T extends Prisma.WorkItem$retryStateArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkItem$retryStateArgs<ExtArgs>>): Prisma.Prisma__WorkItemRetryStateClient<runtime.Types.Result.GetResult<Prisma.$WorkItemRetryStatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3217,6 +4652,126 @@ export type WorkItem$dependentWorkItemsArgs<ExtArgs extends runtime.Types.Extens
 }
 
 /**
+ * WorkItem.agentRuns
+ */
+export type WorkItem$agentRunsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AgentRun
+   */
+  select?: Prisma.AgentRunSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AgentRun
+   */
+  omit?: Prisma.AgentRunOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AgentRunInclude<ExtArgs> | null
+  where?: Prisma.AgentRunWhereInput
+  orderBy?: Prisma.AgentRunOrderByWithRelationInput | Prisma.AgentRunOrderByWithRelationInput[]
+  cursor?: Prisma.AgentRunWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AgentRunScalarFieldEnum | Prisma.AgentRunScalarFieldEnum[]
+}
+
+/**
+ * WorkItem.interventions
+ */
+export type WorkItem$interventionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the HumanInterventionCase
+   */
+  select?: Prisma.HumanInterventionCaseSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the HumanInterventionCase
+   */
+  omit?: Prisma.HumanInterventionCaseOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.HumanInterventionCaseInclude<ExtArgs> | null
+  where?: Prisma.HumanInterventionCaseWhereInput
+  orderBy?: Prisma.HumanInterventionCaseOrderByWithRelationInput | Prisma.HumanInterventionCaseOrderByWithRelationInput[]
+  cursor?: Prisma.HumanInterventionCaseWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.HumanInterventionCaseScalarFieldEnum | Prisma.HumanInterventionCaseScalarFieldEnum[]
+}
+
+/**
+ * WorkItem.releaseRuns
+ */
+export type WorkItem$releaseRunsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReleaseRun
+   */
+  select?: Prisma.ReleaseRunSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReleaseRun
+   */
+  omit?: Prisma.ReleaseRunOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReleaseRunInclude<ExtArgs> | null
+  where?: Prisma.ReleaseRunWhereInput
+  orderBy?: Prisma.ReleaseRunOrderByWithRelationInput | Prisma.ReleaseRunOrderByWithRelationInput[]
+  cursor?: Prisma.ReleaseRunWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReleaseRunScalarFieldEnum | Prisma.ReleaseRunScalarFieldEnum[]
+}
+
+/**
+ * WorkItem.reviewGateResults
+ */
+export type WorkItem$reviewGateResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReviewGateResult
+   */
+  select?: Prisma.ReviewGateResultSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReviewGateResult
+   */
+  omit?: Prisma.ReviewGateResultOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReviewGateResultInclude<ExtArgs> | null
+  where?: Prisma.ReviewGateResultWhereInput
+  orderBy?: Prisma.ReviewGateResultOrderByWithRelationInput | Prisma.ReviewGateResultOrderByWithRelationInput[]
+  cursor?: Prisma.ReviewGateResultWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReviewGateResultScalarFieldEnum | Prisma.ReviewGateResultScalarFieldEnum[]
+}
+
+/**
+ * WorkItem.usageEvents
+ */
+export type WorkItem$usageEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UsageEvent
+   */
+  select?: Prisma.UsageEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UsageEvent
+   */
+  omit?: Prisma.UsageEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UsageEventInclude<ExtArgs> | null
+  where?: Prisma.UsageEventWhereInput
+  orderBy?: Prisma.UsageEventOrderByWithRelationInput | Prisma.UsageEventOrderByWithRelationInput[]
+  cursor?: Prisma.UsageEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UsageEventScalarFieldEnum | Prisma.UsageEventScalarFieldEnum[]
+}
+
+/**
  * WorkItem.leases
  */
 export type WorkItem$leasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3241,6 +4796,30 @@ export type WorkItem$leasesArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
+ * WorkItem.worktrees
+ */
+export type WorkItem$worktreesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Worktree
+   */
+  select?: Prisma.WorktreeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Worktree
+   */
+  omit?: Prisma.WorktreeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WorktreeInclude<ExtArgs> | null
+  where?: Prisma.WorktreeWhereInput
+  orderBy?: Prisma.WorktreeOrderByWithRelationInput | Prisma.WorktreeOrderByWithRelationInput[]
+  cursor?: Prisma.WorktreeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WorktreeScalarFieldEnum | Prisma.WorktreeScalarFieldEnum[]
+}
+
+/**
  * WorkItem.transitions
  */
 export type WorkItem$transitionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3262,6 +4841,25 @@ export type WorkItem$transitionsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.WorkItemStateTransitionScalarFieldEnum | Prisma.WorkItemStateTransitionScalarFieldEnum[]
+}
+
+/**
+ * WorkItem.retryState
+ */
+export type WorkItem$retryStateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WorkItemRetryState
+   */
+  select?: Prisma.WorkItemRetryStateSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the WorkItemRetryState
+   */
+  omit?: Prisma.WorkItemRetryStateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WorkItemRetryStateInclude<ExtArgs> | null
+  where?: Prisma.WorkItemRetryStateWhereInput
 }
 
 /**

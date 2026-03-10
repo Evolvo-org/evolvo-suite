@@ -4,25 +4,34 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import type { Prisma } from '@repo/db/client';
 import type {
+  AgentRoutingConfig,
   KanbanBoardCounts,
   CreateProjectRequest,
   ProjectDetail,
+  ProjectAgentRoutingSettingsResponse,
   ProjectListFilters,
   ProjectQueueLimits,
   ProjectQueueLimitsSettingsResponse,
   ProjectRepositoryConfigResponse,
   ProjectRepositoryInput,
   ProjectRepositoryValidationResponse,
+  ProjectObservabilityMetricsResponse,
   ProjectStatusResponse,
+  RuntimeDashboardResponse,
   UpdateProjectRequest,
 } from '@repo/shared';
+import { runtimeOfflineThresholdMs } from '@repo/shared';
 
 import { PrismaService } from '../prisma/prisma.service.js';
 import { SettingsService } from '../settings/settings.service.js';
+import { LogsService } from '../logs/logs.service.js';
 
 import {
+  mapPersistedAgentRouting,
   mapProjectDetail,
+  mapProjectAgentRoutingSettings,
   mapProjectListItem,
   mapProjectQueueLimitsSettings,
   mapProjectRepositoryConfig,
@@ -105,6 +114,23 @@ const createEmptyKanbanCounts = (): KanbanBoardCounts => ({
   released: 0,
 });
 
+const mapRuntimeReportedStatus = (value: 'IDLE' | 'BUSY' | 'DEGRADED') => {
+  switch (value) {
+    case 'BUSY':
+      return 'busy' as const;
+    case 'DEGRADED':
+      return 'degraded' as const;
+    default:
+      return 'idle' as const;
+  }
+};
+
+const toAgentRoutesJson = (
+  agentRoutes: AgentRoutingConfig['agentRoutes'],
+): Prisma.InputJsonValue => {
+  return agentRoutes as unknown as Prisma.InputJsonValue;
+};
+
 @Injectable()
 export class ProjectsService {
   public constructor(
@@ -112,6 +138,8 @@ export class ProjectsService {
     private readonly prisma: PrismaService,
     @Inject(SettingsService)
     private readonly settingsService: SettingsService,
+    @Inject(LogsService)
+    private readonly logsService: LogsService,
   ) {}
 
   public async createProject(
@@ -204,11 +232,26 @@ export class ProjectsService {
       });
     });
 
-    return mapProjectDetail(
+    const detail = mapProjectDetail(
       project,
       payload.queueLimits ?? systemQueueLimits,
       createEmptyKanbanCounts(),
     );
+
+    await this.logsService.writeLog({
+      level: 'info',
+      source: 'projects',
+      projectId: project.id,
+      eventType: 'project.created',
+      message: `Project ${project.name} created.`,
+      payload: {
+        projectId: project.id,
+        slug: project.slug,
+        name: project.name,
+      },
+    });
+
+    return detail;
   }
 
   public async listProjects(filters: ProjectListFilters) {
@@ -270,6 +313,314 @@ export class ProjectsService {
       project.queueLimits ?? systemQueueLimits,
       kanbanCounts,
     );
+  }
+
+  public async getRuntimeDashboard(
+    projectId: string,
+  ): Promise<RuntimeDashboardResponse> {
+    await this.ensureProjectExists(projectId);
+
+    const now = new Date();
+    const [activeLeases, recentLeases, failureLogs] = await Promise.all([
+      this.prisma.workItemLease.findMany({
+        where: {
+          projectId,
+          status: 'ACTIVE',
+        },
+        select: {
+          runtimeId: true,
+        },
+      }),
+      this.prisma.workItemLease.findMany({
+        where: {
+          projectId,
+        },
+        orderBy: {
+          updatedAt: 'desc',
+        },
+        take: 50,
+        select: {
+          runtimeId: true,
+        },
+      }),
+      this.prisma.structuredLogEntry.findMany({
+        where: {
+          projectId,
+          source: 'runtime',
+          eventType: 'runtime.job.failed',
+          runtimeId: {
+            not: null,
+          },
+        },
+        orderBy: {
+          occurredAt: 'desc',
+        },
+        take: 25,
+        select: {
+          id: true,
+          runtimeId: true,
+          workItemId: true,
+          message: true,
+          occurredAt: true,
+        },
+      }),
+    ]);
+
+    const runtimeIds = Array.from(
+      new Set(
+        [...activeLeases, ...recentLeases]
+          .map((lease) => lease.runtimeId)
+          .concat(
+            failureLogs
+              .map((log) => log.runtimeId)
+              .filter((runtimeId): runtimeId is string => Boolean(runtimeId)),
+          ),
+      ),
+    );
+
+    if (runtimeIds.length === 0) {
+      return {
+        projectId,
+        generatedAt: now.toISOString(),
+        items: [],
+      };
+    }
+
+    const runtimes = await this.prisma.runtimeInstance.findMany({
+      where: {
+        id: {
+          in: runtimeIds,
+        },
+      },
+    });
+
+    const activeJobsByRuntime = activeLeases.reduce<Record<string, number>>(
+      (counts, lease) => {
+        counts[lease.runtimeId] = (counts[lease.runtimeId] ?? 0) + 1;
+        return counts;
+      },
+      {},
+    );
+    const recentFailuresByRuntime = failureLogs.reduce<
+      Record<
+        string,
+        Array<{
+          id: string;
+          workItemId: string | null;
+          message: string | null;
+          occurredAt: string;
+        }>
+      >
+    >((groups, log) => {
+      if (!log.runtimeId) {
+        return groups;
+      }
+
+      if (!groups[log.runtimeId]) {
+        groups[log.runtimeId] = [];
+      }
+
+      const runtimeFailures = groups[log.runtimeId];
+      if (!runtimeFailures) {
+        return groups;
+      }
+
+      if (runtimeFailures.length < 3) {
+        runtimeFailures.push({
+          id: log.id,
+          workItemId: log.workItemId,
+          message: log.message,
+          occurredAt: log.occurredAt.toISOString(),
+        });
+      }
+
+      return groups;
+    }, {});
+
+    return {
+      projectId,
+      generatedAt: now.toISOString(),
+      items: runtimes
+        .map((runtime) => {
+          const connectionStatus =
+            now.getTime() - runtime.lastSeenAt.getTime() > runtimeOfflineThresholdMs
+              ? ('offline' as const)
+              : ('online' as const);
+
+          return {
+            runtimeId: runtime.id,
+            displayName: runtime.displayName,
+            connectionStatus,
+            reportedStatus: mapRuntimeReportedStatus(runtime.status),
+            capabilities: runtime.capabilities,
+            heartbeatAgeSeconds: Math.max(
+              0,
+              Math.floor((now.getTime() - runtime.lastSeenAt.getTime()) / 1000),
+            ),
+            activeJobs: activeJobsByRuntime[runtime.id] ?? 0,
+            activeJobSummary: runtime.activeJobSummary ?? null,
+            lastAction: runtime.lastAction ?? null,
+            lastError: runtime.lastError ?? null,
+            lastSeenAt: runtime.lastSeenAt.toISOString(),
+            recentFailures: recentFailuresByRuntime[runtime.id] ?? [],
+          };
+        })
+        .sort((left, right) => {
+          if (left.connectionStatus !== right.connectionStatus) {
+            return left.connectionStatus === 'online' ? -1 : 1;
+          }
+
+          if (left.activeJobs !== right.activeJobs) {
+            return right.activeJobs - left.activeJobs;
+          }
+
+          return (
+            new Date(right.lastSeenAt).getTime() - new Date(left.lastSeenAt).getTime()
+          );
+        }),
+    };
+  }
+
+  public async getObservabilityMetrics(
+    projectId: string,
+  ): Promise<ProjectObservabilityMetricsResponse> {
+    await this.ensureProjectExists(projectId);
+
+    const now = new Date();
+    const runtimeWindowStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const usageWindowStart = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const previousUsageWindowStart = new Date(
+      now.getTime() - 2 * 24 * 60 * 60 * 1000,
+    );
+
+    const [
+      runtimeDashboard,
+      failedLeases,
+      retryStates,
+      releaseRuns,
+      recentUsage,
+      previousUsageAggregate,
+    ] =
+      await Promise.all([
+        this.getRuntimeDashboard(projectId),
+        this.prisma.workItemLease.count({
+          where: {
+            projectId,
+            status: {
+              in: ['EXPIRED', 'RECOVERED'],
+            },
+            updatedAt: {
+              gte: runtimeWindowStart,
+            },
+          },
+        }),
+        this.prisma.workItemRetryState.findMany({
+          where: {
+            projectId,
+            reviewFailureCount: {
+              gte: 2,
+            },
+          },
+          select: {
+            reviewFailureCount: true,
+          },
+        }),
+        this.prisma.releaseRun.count({
+          where: {
+            projectId,
+            status: {
+              in: ['FAILED', 'CANCELLED'],
+            },
+          },
+        }),
+        this.prisma.usageEvent.aggregate({
+          where: {
+            projectId,
+            occurredAt: {
+              gte: usageWindowStart,
+              lte: now,
+            },
+          },
+          _sum: {
+            totalTokens: true,
+          },
+        }),
+        this.prisma.usageEvent.aggregate({
+          where: {
+            projectId,
+            occurredAt: {
+              gte: previousUsageWindowStart,
+              lt: usageWindowStart,
+            },
+          },
+          _sum: {
+            totalTokens: true,
+          },
+        }),
+      ]);
+
+    const offlineRuntimes = runtimeDashboard.items.filter(
+      (item) => item.connectionStatus === 'offline',
+    ).length;
+    const repeatedReviewFailures = retryStates.reduce(
+      (total, item) => total + item.reviewFailureCount,
+      0,
+    );
+    const currentUsage = recentUsage._sum.totalTokens ?? 0;
+    const previousUsage = previousUsageAggregate._sum.totalTokens ?? 0;
+    const usageSpikeThreshold = previousUsage > 0 ? previousUsage * 2 : null;
+    const hasUsageSpike =
+      usageSpikeThreshold !== null ? currentUsage > usageSpikeThreshold : currentUsage > 0;
+
+    return {
+      projectId,
+      generatedAt: now.toISOString(),
+      items: [
+        {
+          name: 'runtimeOffline',
+          value: offlineRuntimes,
+          threshold: 0,
+          status: offlineRuntimes > 0 ? 'warning' : 'ok',
+          details: `${offlineRuntimes} runtimes are currently offline for this project context.`,
+          observedAt: now.toISOString(),
+        },
+        {
+          name: 'failedLease',
+          value: failedLeases,
+          threshold: 0,
+          status: failedLeases > 0 ? 'warning' : 'ok',
+          details: `${failedLeases} leases were recovered or expired in the last 7 days.`,
+          observedAt: now.toISOString(),
+        },
+        {
+          name: 'repeatedReviewFailure',
+          value: repeatedReviewFailures,
+          threshold: 0,
+          status: repeatedReviewFailures > 0 ? 'warning' : 'ok',
+          details: `${repeatedReviewFailures} accumulated repeated review failures are awaiting attention.`,
+          observedAt: now.toISOString(),
+        },
+        {
+          name: 'releaseFailure',
+          value: releaseRuns,
+          threshold: 0,
+          status: releaseRuns > 0 ? 'warning' : 'ok',
+          details: `${releaseRuns} release runs have failed or been cancelled.`,
+          observedAt: now.toISOString(),
+        },
+        {
+          name: 'usageSpike',
+          value: currentUsage,
+          threshold: usageSpikeThreshold,
+          status: hasUsageSpike ? 'warning' : 'ok',
+          details:
+            usageSpikeThreshold === null
+              ? `Current 24h token usage is ${currentUsage}. No prior baseline exists yet.`
+              : `Current 24h token usage is ${currentUsage} against a spike threshold of ${usageSpikeThreshold}.`,
+          observedAt: now.toISOString(),
+        },
+      ],
+    };
   }
 
   public async updateProject(
@@ -335,6 +686,57 @@ export class ProjectsService {
     return mapProjectQueueLimitsSettings(projectId, defaults, overrides);
   }
 
+  public async getProjectAgentRouting(
+    projectId: string,
+  ): Promise<ProjectAgentRoutingSettingsResponse> {
+    await this.ensureProjectExists(projectId);
+
+    const [defaults, overrides] = await Promise.all([
+      this.settingsService.getResolvedSystemAgentRouting(),
+      this.prisma.projectAgentRouting.findUnique({
+        where: { projectId },
+      }),
+    ]);
+
+    return mapProjectAgentRoutingSettings(projectId, defaults, overrides);
+  }
+
+  public async upsertProjectAgentRouting(
+    projectId: string,
+    payload: AgentRoutingConfig,
+  ): Promise<ProjectAgentRoutingSettingsResponse> {
+    await this.ensureProjectExists(projectId);
+
+    await this.prisma.projectAgentRouting.upsert({
+      where: { projectId },
+      create: {
+        projectId,
+        defaultProvider: payload.defaultProvider,
+        defaultModel: payload.defaultModel,
+        agentRoutesJson: toAgentRoutesJson(payload.agentRoutes),
+      },
+      update: {
+        defaultProvider: payload.defaultProvider,
+        defaultModel: payload.defaultModel,
+        agentRoutesJson: toAgentRoutesJson(payload.agentRoutes),
+      },
+    });
+
+    return this.getProjectAgentRouting(projectId);
+  }
+
+  public async clearProjectAgentRouting(
+    projectId: string,
+  ): Promise<ProjectAgentRoutingSettingsResponse> {
+    await this.ensureProjectExists(projectId);
+
+    await this.prisma.projectAgentRouting.deleteMany({
+      where: { projectId },
+    });
+
+    return this.getProjectAgentRouting(projectId);
+  }
+
   public async upsertProjectQueueLimits(
     projectId: string,
     payload: ProjectQueueLimits,
@@ -363,6 +765,63 @@ export class ProjectsService {
     });
 
     return this.getProjectQueueLimits(projectId);
+  }
+
+  public async resolveProjectAgentRoute(
+    projectId: string,
+    agentType: 'inbox' | 'planning' | 'dev' | 'review' | 'release',
+  ) {
+    await this.ensureProjectExists(projectId);
+
+    const [defaults, override] = await Promise.all([
+      this.settingsService.getResolvedSystemAgentRouting(),
+      this.prisma.projectAgentRouting.findUnique({
+        where: { projectId },
+      }),
+    ]);
+    const projectOverride = override ? mapPersistedAgentRouting(override) : null;
+
+    const projectAgentRoute = projectOverride?.agentRoutes[agentType];
+
+    if (projectAgentRoute) {
+      return {
+        projectId,
+        agentType,
+        provider: projectAgentRoute.provider,
+        model: projectAgentRoute.model,
+        source: 'project-agent' as const,
+      };
+    }
+
+    if (projectOverride) {
+      return {
+        projectId,
+        agentType,
+        provider: projectOverride.defaultProvider,
+        model: projectOverride.defaultModel,
+        source: 'project-default' as const,
+      };
+    }
+
+    const defaultAgentRoute = defaults.agentRoutes[agentType];
+
+    if (defaultAgentRoute) {
+      return {
+        projectId,
+        agentType,
+        provider: defaultAgentRoute.provider,
+        model: defaultAgentRoute.model,
+        source: 'system-agent' as const,
+      };
+    }
+
+    return {
+      projectId,
+      agentType,
+      provider: defaults.defaultProvider,
+      model: defaults.defaultModel,
+      source: 'system-default' as const,
+    };
   }
 
   public async startProject(projectId: string): Promise<ProjectStatusResponse> {

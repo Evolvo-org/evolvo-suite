@@ -191,6 +191,7 @@ export type ProjectWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   repository?: Prisma.XOR<Prisma.ProjectRepositoryNullableScalarRelationFilter, Prisma.ProjectRepositoryWhereInput> | null
+  agentRouting?: Prisma.XOR<Prisma.ProjectAgentRoutingNullableScalarRelationFilter, Prisma.ProjectAgentRoutingWhereInput> | null
   productSpec?: Prisma.XOR<Prisma.ProductSpecNullableScalarRelationFilter, Prisma.ProductSpecWhereInput> | null
   developmentPlan?: Prisma.XOR<Prisma.DevelopmentPlanNullableScalarRelationFilter, Prisma.DevelopmentPlanWhereInput> | null
   queueLimits?: Prisma.XOR<Prisma.ProjectQueueLimitsNullableScalarRelationFilter, Prisma.ProjectQueueLimitsWhereInput> | null
@@ -206,6 +207,7 @@ export type ProjectOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   repository?: Prisma.ProjectRepositoryOrderByWithRelationInput
+  agentRouting?: Prisma.ProjectAgentRoutingOrderByWithRelationInput
   productSpec?: Prisma.ProductSpecOrderByWithRelationInput
   developmentPlan?: Prisma.DevelopmentPlanOrderByWithRelationInput
   queueLimits?: Prisma.ProjectQueueLimitsOrderByWithRelationInput
@@ -224,6 +226,7 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   repository?: Prisma.XOR<Prisma.ProjectRepositoryNullableScalarRelationFilter, Prisma.ProjectRepositoryWhereInput> | null
+  agentRouting?: Prisma.XOR<Prisma.ProjectAgentRoutingNullableScalarRelationFilter, Prisma.ProjectAgentRoutingWhereInput> | null
   productSpec?: Prisma.XOR<Prisma.ProductSpecNullableScalarRelationFilter, Prisma.ProductSpecWhereInput> | null
   developmentPlan?: Prisma.XOR<Prisma.DevelopmentPlanNullableScalarRelationFilter, Prisma.DevelopmentPlanWhereInput> | null
   queueLimits?: Prisma.XOR<Prisma.ProjectQueueLimitsNullableScalarRelationFilter, Prisma.ProjectQueueLimitsWhereInput> | null
@@ -263,6 +266,7 @@ export type ProjectCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
+  agentRouting?: Prisma.ProjectAgentRoutingCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
@@ -278,6 +282,7 @@ export type ProjectUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
+  agentRouting?: Prisma.ProjectAgentRoutingUncheckedCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
@@ -293,6 +298,7 @@ export type ProjectUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
+  agentRouting?: Prisma.ProjectAgentRoutingUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
@@ -308,6 +314,7 @@ export type ProjectUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
+  agentRouting?: Prisma.ProjectAgentRoutingUncheckedUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
@@ -406,6 +413,20 @@ export type EnumProjectLifecycleStatusFieldUpdateOperationsInput = {
   set?: $Enums.ProjectLifecycleStatus
 }
 
+export type ProjectCreateNestedOneWithoutAgentRoutingInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutAgentRoutingInput, Prisma.ProjectUncheckedCreateWithoutAgentRoutingInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutAgentRoutingInput
+  connect?: Prisma.ProjectWhereUniqueInput
+}
+
+export type ProjectUpdateOneRequiredWithoutAgentRoutingNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutAgentRoutingInput, Prisma.ProjectUncheckedCreateWithoutAgentRoutingInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutAgentRoutingInput
+  upsert?: Prisma.ProjectUpsertWithoutAgentRoutingInput
+  connect?: Prisma.ProjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutAgentRoutingInput, Prisma.ProjectUpdateWithoutAgentRoutingInput>, Prisma.ProjectUncheckedUpdateWithoutAgentRoutingInput>
+}
+
 export type ProjectCreateNestedOneWithoutRepositoryInput = {
   create?: Prisma.XOR<Prisma.ProjectCreateWithoutRepositoryInput, Prisma.ProjectUncheckedCreateWithoutRepositoryInput>
   connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutRepositoryInput
@@ -470,6 +491,7 @@ export type ProjectCreateWithoutEpicsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
+  agentRouting?: Prisma.ProjectAgentRoutingCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
@@ -484,6 +506,7 @@ export type ProjectUncheckedCreateWithoutEpicsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
+  agentRouting?: Prisma.ProjectAgentRoutingUncheckedCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
@@ -514,6 +537,7 @@ export type ProjectUpdateWithoutEpicsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
+  agentRouting?: Prisma.ProjectAgentRoutingUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
@@ -528,6 +552,7 @@ export type ProjectUncheckedUpdateWithoutEpicsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
+  agentRouting?: Prisma.ProjectAgentRoutingUncheckedUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
@@ -542,6 +567,7 @@ export type ProjectCreateWithoutWorkItemsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
+  agentRouting?: Prisma.ProjectAgentRoutingCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
@@ -556,6 +582,7 @@ export type ProjectUncheckedCreateWithoutWorkItemsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
+  agentRouting?: Prisma.ProjectAgentRoutingUncheckedCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
@@ -586,6 +613,7 @@ export type ProjectUpdateWithoutWorkItemsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
+  agentRouting?: Prisma.ProjectAgentRoutingUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
@@ -600,10 +628,87 @@ export type ProjectUncheckedUpdateWithoutWorkItemsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
+  agentRouting?: Prisma.ProjectAgentRoutingUncheckedUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
   epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectCreateWithoutAgentRoutingInput = {
+  id?: string
+  name: string
+  slug: string
+  lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
+  productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
+  developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
+  queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
+  epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
+  workItems?: Prisma.WorkItemCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectUncheckedCreateWithoutAgentRoutingInput = {
+  id?: string
+  name: string
+  slug: string
+  lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
+  productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
+  developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
+  queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
+  epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput
+  workItems?: Prisma.WorkItemUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectCreateOrConnectWithoutAgentRoutingInput = {
+  where: Prisma.ProjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutAgentRoutingInput, Prisma.ProjectUncheckedCreateWithoutAgentRoutingInput>
+}
+
+export type ProjectUpsertWithoutAgentRoutingInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutAgentRoutingInput, Prisma.ProjectUncheckedUpdateWithoutAgentRoutingInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutAgentRoutingInput, Prisma.ProjectUncheckedCreateWithoutAgentRoutingInput>
+  where?: Prisma.ProjectWhereInput
+}
+
+export type ProjectUpdateToOneWithWhereWithoutAgentRoutingInput = {
+  where?: Prisma.ProjectWhereInput
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutAgentRoutingInput, Prisma.ProjectUncheckedUpdateWithoutAgentRoutingInput>
+}
+
+export type ProjectUpdateWithoutAgentRoutingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
+  productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
+  developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
+  queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
+  epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
+  workItems?: Prisma.WorkItemUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectUncheckedUpdateWithoutAgentRoutingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
+  productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
+  developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
+  queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
+  epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
+  workItems?: Prisma.WorkItemUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutRepositoryInput = {
@@ -613,6 +718,7 @@ export type ProjectCreateWithoutRepositoryInput = {
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  agentRouting?: Prisma.ProjectAgentRoutingCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
@@ -627,6 +733,7 @@ export type ProjectUncheckedCreateWithoutRepositoryInput = {
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  agentRouting?: Prisma.ProjectAgentRoutingUncheckedCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
@@ -657,6 +764,7 @@ export type ProjectUpdateWithoutRepositoryInput = {
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRouting?: Prisma.ProjectAgentRoutingUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
@@ -671,6 +779,7 @@ export type ProjectUncheckedUpdateWithoutRepositoryInput = {
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRouting?: Prisma.ProjectAgentRoutingUncheckedUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
@@ -686,6 +795,7 @@ export type ProjectCreateWithoutQueueLimitsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
+  agentRouting?: Prisma.ProjectAgentRoutingCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
   epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
@@ -700,6 +810,7 @@ export type ProjectUncheckedCreateWithoutQueueLimitsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
+  agentRouting?: Prisma.ProjectAgentRoutingUncheckedCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
   epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput
@@ -730,6 +841,7 @@ export type ProjectUpdateWithoutQueueLimitsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
+  agentRouting?: Prisma.ProjectAgentRoutingUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
   epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
@@ -744,6 +856,7 @@ export type ProjectUncheckedUpdateWithoutQueueLimitsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
+  agentRouting?: Prisma.ProjectAgentRoutingUncheckedUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
   epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
@@ -758,6 +871,7 @@ export type ProjectCreateWithoutProductSpecInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
+  agentRouting?: Prisma.ProjectAgentRoutingCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
   epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
@@ -772,6 +886,7 @@ export type ProjectUncheckedCreateWithoutProductSpecInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
+  agentRouting?: Prisma.ProjectAgentRoutingUncheckedCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
   epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput
@@ -802,6 +917,7 @@ export type ProjectUpdateWithoutProductSpecInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
+  agentRouting?: Prisma.ProjectAgentRoutingUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
   epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
@@ -816,6 +932,7 @@ export type ProjectUncheckedUpdateWithoutProductSpecInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
+  agentRouting?: Prisma.ProjectAgentRoutingUncheckedUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
   epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
@@ -830,6 +947,7 @@ export type ProjectCreateWithoutDevelopmentPlanInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
+  agentRouting?: Prisma.ProjectAgentRoutingCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
   epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
@@ -844,6 +962,7 @@ export type ProjectUncheckedCreateWithoutDevelopmentPlanInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
+  agentRouting?: Prisma.ProjectAgentRoutingUncheckedCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
   epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput
@@ -874,6 +993,7 @@ export type ProjectUpdateWithoutDevelopmentPlanInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
+  agentRouting?: Prisma.ProjectAgentRoutingUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
   epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
@@ -888,6 +1008,7 @@ export type ProjectUncheckedUpdateWithoutDevelopmentPlanInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
+  agentRouting?: Prisma.ProjectAgentRoutingUncheckedUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
   epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
@@ -942,6 +1063,7 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   createdAt?: boolean
   updatedAt?: boolean
   repository?: boolean | Prisma.Project$repositoryArgs<ExtArgs>
+  agentRouting?: boolean | Prisma.Project$agentRoutingArgs<ExtArgs>
   productSpec?: boolean | Prisma.Project$productSpecArgs<ExtArgs>
   developmentPlan?: boolean | Prisma.Project$developmentPlanArgs<ExtArgs>
   queueLimits?: boolean | Prisma.Project$queueLimitsArgs<ExtArgs>
@@ -980,6 +1102,7 @@ export type ProjectSelectScalar = {
 export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "lifecycleStatus" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
 export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   repository?: boolean | Prisma.Project$repositoryArgs<ExtArgs>
+  agentRouting?: boolean | Prisma.Project$agentRoutingArgs<ExtArgs>
   productSpec?: boolean | Prisma.Project$productSpecArgs<ExtArgs>
   developmentPlan?: boolean | Prisma.Project$developmentPlanArgs<ExtArgs>
   queueLimits?: boolean | Prisma.Project$queueLimitsArgs<ExtArgs>
@@ -994,6 +1117,7 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   name: "Project"
   objects: {
     repository: Prisma.$ProjectRepositoryPayload<ExtArgs> | null
+    agentRouting: Prisma.$ProjectAgentRoutingPayload<ExtArgs> | null
     productSpec: Prisma.$ProductSpecPayload<ExtArgs> | null
     developmentPlan: Prisma.$DevelopmentPlanPayload<ExtArgs> | null
     queueLimits: Prisma.$ProjectQueueLimitsPayload<ExtArgs> | null
@@ -1402,6 +1526,7 @@ readonly fields: ProjectFieldRefs;
 export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   repository<T extends Prisma.Project$repositoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$repositoryArgs<ExtArgs>>): Prisma.Prisma__ProjectRepositoryClient<runtime.Types.Result.GetResult<Prisma.$ProjectRepositoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  agentRouting<T extends Prisma.Project$agentRoutingArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$agentRoutingArgs<ExtArgs>>): Prisma.Prisma__ProjectAgentRoutingClient<runtime.Types.Result.GetResult<Prisma.$ProjectAgentRoutingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   productSpec<T extends Prisma.Project$productSpecArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$productSpecArgs<ExtArgs>>): Prisma.Prisma__ProductSpecClient<runtime.Types.Result.GetResult<Prisma.$ProductSpecPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   developmentPlan<T extends Prisma.Project$developmentPlanArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$developmentPlanArgs<ExtArgs>>): Prisma.Prisma__DevelopmentPlanClient<runtime.Types.Result.GetResult<Prisma.$DevelopmentPlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   queueLimits<T extends Prisma.Project$queueLimitsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$queueLimitsArgs<ExtArgs>>): Prisma.Prisma__ProjectQueueLimitsClient<runtime.Types.Result.GetResult<Prisma.$ProjectQueueLimitsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -1846,6 +1971,25 @@ export type Project$repositoryArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   include?: Prisma.ProjectRepositoryInclude<ExtArgs> | null
   where?: Prisma.ProjectRepositoryWhereInput
+}
+
+/**
+ * Project.agentRouting
+ */
+export type Project$agentRoutingArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProjectAgentRouting
+   */
+  select?: Prisma.ProjectAgentRoutingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProjectAgentRouting
+   */
+  omit?: Prisma.ProjectAgentRoutingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectAgentRoutingInclude<ExtArgs> | null
+  where?: Prisma.ProjectAgentRoutingWhereInput
 }
 
 /**

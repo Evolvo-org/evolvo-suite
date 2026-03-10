@@ -1,4 +1,6 @@
 import type { WorkItemPriority, WorkItemKind } from './planning-hierarchy';
+import type { AgentRunStatus } from './agents';
+import type { ReviewGateOverallStatus } from './review-gates';
 import type { WorkItemState } from './workflow';
 
 export type WorkItemCommentActorType = 'human' | 'agent' | 'system';
@@ -27,7 +29,7 @@ export interface CreateWorkItemCommentRequest {
 
 export interface WorkItemAuditEvent {
   id: string;
-  type: 'comment' | 'transition';
+  type: 'comment' | 'transition' | 'agentRun' | 'reviewGate';
   createdAt: string;
   summary: string;
   actorName: string;
@@ -38,6 +40,20 @@ export interface WorkItemAuditEvent {
     reason?: string | null;
     isOperatorOverride?: boolean;
     commentId?: string;
+    agentRunId?: string;
+    agentType?: string;
+    agentRunStatus?: AgentRunStatus;
+    completedAt?: string | null;
+    decisionCount?: number;
+    artifactCount?: number;
+    failureMessage?: string | null;
+    reviewGateResultId?: string;
+    reviewGateOverallStatus?: ReviewGateOverallStatus;
+    reviewGatePassedChecks?: number;
+    reviewGateFailedChecks?: number;
+    reviewGateSkippedChecks?: number;
+    reviewGateTotalChecks?: number;
+    relatedAgentRunId?: string | null;
   };
 }
 

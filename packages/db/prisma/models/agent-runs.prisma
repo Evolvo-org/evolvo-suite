@@ -1,0 +1,87 @@
+enum AgentRunStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum AgentArtifactType {
+  LOG
+  PATCH
+  REPORT
+  PLAN
+  OTHER
+}
+
+model AgentRun {
+  id               String              @id @default(cuid())
+  projectId        String
+  workItemId       String
+  runtimeId        String?
+  leaseId          String?
+  agentType        String
+  status           AgentRunStatus      @default(RUNNING)
+  startedAt        DateTime            @default(now())
+  completedAt      DateTime?
+  summary          String?             @db.Text
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  workItem         WorkItem            @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+  runtime          RuntimeInstance?    @relation(fields: [runtimeId], references: [id], onDelete: SetNull)
+  lease            WorkItemLease?      @relation(fields: [leaseId], references: [id], onDelete: SetNull)
+  decisions        AgentDecision[]
+  failure          AgentFailure?
+  promptSnapshot   PromptSnapshot?
+  artifacts        AgentRunArtifact[]
+  reviewGateResults ReviewGateResult[]
+  usageEvents      UsageEvent[]
+
+  @@index([projectId, createdAt])
+  @@index([workItemId, createdAt])
+  @@index([runtimeId, createdAt])
+  @@index([leaseId, createdAt])
+}
+
+model AgentDecision {
+  id          String    @id @default(cuid())
+  agentRunId  String
+  decision    String    @db.Text
+  rationale   String?   @db.Text
+  createdAt   DateTime  @default(now())
+  agentRun    AgentRun  @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
+
+  @@index([agentRunId, createdAt])
+}
+
+model AgentFailure {
+  id           String    @id @default(cuid())
+  agentRunId   String    @unique
+  errorMessage String    @db.Text
+  details      String?   @db.Text
+  createdAt    DateTime  @default(now())
+  agentRun     AgentRun  @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
+}
+
+model PromptSnapshot {
+  id           String    @id @default(cuid())
+  agentRunId   String    @unique
+  systemPrompt String?   @db.Text
+  userPrompt   String?   @db.Text
+  messagesJson String?   @db.Text
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  agentRun     AgentRun  @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
+}
+
+model AgentRunArtifact {
+  id           String            @id @default(cuid())
+  agentRunId   String
+  artifactType AgentArtifactType
+  label        String
+  content      String?           @db.Text
+  url          String?
+  createdAt    DateTime          @default(now())
+  agentRun     AgentRun          @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
+
+  @@index([agentRunId, createdAt])
+}

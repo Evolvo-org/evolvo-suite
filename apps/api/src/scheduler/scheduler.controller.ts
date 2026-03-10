@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post, Query } from '@nestjs/common';
 import type {
   AcquireSchedulerLeaseRequest,
   RecoverSchedulerLeasesRequest,
@@ -8,6 +8,7 @@ import {
   acquireSchedulerLeaseSchema,
   recoverSchedulerLeasesSchema,
   renewSchedulerLeaseSchema,
+  schedulerStateQuerySchema,
 } from '@repo/validation';
 
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe.js';
@@ -20,6 +21,14 @@ export class SchedulerController {
     @Inject(SchedulerService)
     private readonly schedulerService: SchedulerService,
   ) {}
+
+  @Get('state')
+  public getSchedulerState(
+    @Query(new ZodValidationPipe(schedulerStateQuerySchema))
+    query: { projectId?: string },
+  ) {
+    return this.schedulerService.getSchedulerState(query.projectId);
+  }
 
   @Post('leases/acquire')
   public async acquireLease(

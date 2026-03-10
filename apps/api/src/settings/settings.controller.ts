@@ -1,6 +1,9 @@
 import { Body, Controller, Get, Inject, Put } from '@nestjs/common';
-import type { ProjectQueueLimits } from '@repo/shared';
-import { updateSystemQueueLimitsSchema } from '@repo/validation';
+import type { AgentRoutingConfig, ProjectQueueLimits } from '@repo/shared';
+import {
+  updateSystemAgentRoutingSchema,
+  updateSystemQueueLimitsSchema,
+} from '@repo/validation';
 
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe.js';
 
@@ -28,6 +31,25 @@ export class SettingsController {
     return {
       success: true as const,
       message: 'System queue limits updated successfully.',
+      data: settings,
+    };
+  }
+
+  @Get('agent-routing/defaults')
+  public getSystemAgentRouting() {
+    return this.settingsService.getSystemAgentRouting();
+  }
+
+  @Put('agent-routing/defaults')
+  public async updateSystemAgentRouting(
+    @Body(new ZodValidationPipe(updateSystemAgentRoutingSchema))
+    body: AgentRoutingConfig,
+  ) {
+    const settings = await this.settingsService.updateSystemAgentRouting(body);
+
+    return {
+      success: true as const,
+      message: 'System agent routing updated successfully.',
       data: settings,
     };
   }

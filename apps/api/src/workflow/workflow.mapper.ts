@@ -1,4 +1,10 @@
 import type {
+  AgentDecision,
+  AgentFailure,
+  AgentRun,
+  AgentRunArtifact,
+  ReviewGateCheck,
+  ReviewGateResult,
   WorkItem,
   WorkItemComment,
   WorkItemStateTransition,
@@ -136,6 +142,40 @@ const mapCommentActorType = (
   }
 };
 
+const mapAgentRunStatus = (
+  value: AgentRun['status'],
+): 'running' | 'completed' | 'failed' | 'cancelled' => {
+  switch (value) {
+    case 'COMPLETED':
+      return 'completed';
+    case 'FAILED':
+      return 'failed';
+    case 'CANCELLED':
+      return 'cancelled';
+    default:
+      return 'running';
+  }
+};
+
+const mapReviewGateOverallStatus = (
+  value: ReviewGateResult['overallStatus'],
+): 'passed' | 'failed' => {
+  switch (value) {
+    case 'FAILED':
+      return 'failed';
+    default:
+      return 'passed';
+  }
+};
+
+const formatAgentTypeLabel = (value: string): string => {
+  return value
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/[-_]+/g, ' ')
+    .replace(/^./, (character) => character.toUpperCase())
+    .trim();
+};
+
 export const mapWorkItemCommentsResponse = (
   projectId: string,
   workItemId: string,
@@ -227,15 +267,92 @@ const mapCommentAuditEvent = (comment: WorkItemComment): WorkItemAuditEvent => (
   },
 });
 
+const mapAgentRunAuditEvent = (
+  run: AgentRun & {
+    decisions: AgentDecision[];
+    failure: AgentFailure | null;
+    artifacts: AgentRunArtifact[];
+  },
+): WorkItemAuditEvent => {
+  const status = mapAgentRunStatus(run.status);
+  const summaryPrefix = `${formatAgentTypeLabel(run.agentType)} run ${status}`;
+
+  return {
+    id: run.id,
+    type: 'agentRun',
+    createdAt: run.startedAt.toISOString(),
+    summary: run.summary ? `${summaryPrefix}: ${run.summary}` : summaryPrefix,
+    actorName: `${formatAgentTypeLabel(run.agentType)} agent`,
+    actorType: 'agent',
+    metadata: {
+      agentRunId: run.id,
+      agentType: run.agentType,
+      agentRunStatus: status,
+      completedAt: run.completedAt?.toISOString() ?? null,
+      decisionCount: run.decisions.length,
+      artifactCount: run.artifacts.length,
+      failureMessage: run.failure?.errorMessage ?? null,
+    },
+  };
+};
+
+const mapReviewGateAuditEvent = (
+  result: ReviewGateResult & {
+    checks: ReviewGateCheck[];
+  },
+): WorkItemAuditEvent => {
+  const overallStatus = mapReviewGateOverallStatus(result.overallStatus);
+  const passedChecks = result.checks.filter((check) => check.status === 'PASSED').length;
+  const failedChecks = result.checks.filter((check) => check.status === 'FAILED').length;
+  const skippedChecks = result.checks.filter((check) => check.status === 'SKIPPED').length;
+  const totalChecks = result.checks.length;
+  const summaryPrefix = `Review gates ${overallStatus}`;
+
+  return {
+    id: result.id,
+    type: 'reviewGate',
+    createdAt: result.createdAt.toISOString(),
+    summary: result.summary ? `${summaryPrefix}: ${result.summary}` : summaryPrefix,
+    actorName: 'Review gate engine',
+    actorType: 'workflow',
+    metadata: {
+      reviewGateResultId: result.id,
+      reviewGateOverallStatus: overallStatus,
+      reviewGatePassedChecks: passedChecks,
+      reviewGateFailedChecks: failedChecks,
+      reviewGateSkippedChecks: skippedChecks,
+      reviewGateTotalChecks: totalChecks,
+      relatedAgentRunId: result.agentRunId,
+    },
+  };
+};
+
 export const mapWorkItemAuditTrail = (
   projectId: string,
   workItemId: string,
   comments: WorkItemComment[],
   transitions: WorkItemStateTransition[],
+  agentRuns: Array<
+    AgentRun & {
+      decisions: AgentDecision[];
+      failure: AgentFailure | null;
+      artifacts: AgentRunArtifact[];
+    }
+  >,
+  reviewGateResults: Array<
+    ReviewGateResult & {
+      checks: ReviewGateCheck[];
+    }
+  >,
 ): WorkItemAuditTrailResponse => ({
   projectId,
   workItemId,
-  items: [...comments.map(mapCommentAuditEvent), ...transitions.map(mapTransitionAuditEvent)].sort(
+  items: [
+    ...comments.map(mapCommentAuditEvent),
+    ...transitions.map(mapTransitionAuditEvent),
+    ...agentRuns.map(mapAgentRunAuditEvent),
+    ...reviewGateResults.map(mapReviewGateAuditEvent),
+  ].sort(
     (left, right) =>
       new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime(),
   ),

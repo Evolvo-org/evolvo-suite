@@ -1,5 +1,6 @@
 import type {
   Project,
+  ProjectAgentRouting,
   ProjectQueueLimits,
   ProjectRepository,
   ProductSpec,
@@ -7,7 +8,9 @@ import type {
   PlanVersion,
 } from '@repo/db/client';
 import type {
+  AgentRoutingConfig,
   ProjectQueueLimits as SharedProjectQueueLimits,
+  ProjectAgentRoutingSettingsResponse,
   ProjectQueueLimitsSettingsResponse,
   KanbanBoardCounts,
   ProjectDetail,
@@ -50,6 +53,14 @@ const mapPersistedQueueLimits = (
   maxMergeConflictRetries: queueLimits.maxMergeConflictRetries,
   maxRuntimeRetries: queueLimits.maxRuntimeRetries,
   maxAmbiguityRetries: queueLimits.maxAmbiguityRetries,
+});
+
+export const mapPersistedAgentRouting = (
+  routing: Pick<ProjectAgentRouting, 'defaultProvider' | 'defaultModel' | 'agentRoutesJson'>,
+): AgentRoutingConfig => ({
+  defaultProvider: routing.defaultProvider as AgentRoutingConfig['defaultProvider'],
+  defaultModel: routing.defaultModel,
+  agentRoutes: (routing.agentRoutesJson as AgentRoutingConfig['agentRoutes'] | null) ?? {},
 });
 
 const mapLifecycleStatus = (value: Project['lifecycleStatus']) => {
@@ -163,5 +174,17 @@ export const mapProjectQueueLimitsSettings = (
   defaults,
   overrides: overrides ? mapPersistedQueueLimits(overrides) : null,
   effective: overrides ? mapPersistedQueueLimits(overrides) : defaults,
+  updatedAt: overrides?.updatedAt.toISOString() ?? null,
+});
+
+export const mapProjectAgentRoutingSettings = (
+  projectId: string,
+  defaults: AgentRoutingConfig,
+  overrides: ProjectAgentRouting | null,
+): ProjectAgentRoutingSettingsResponse => ({
+  projectId,
+  defaults,
+  overrides: overrides ? mapPersistedAgentRouting(overrides) : null,
+  effective: overrides ? mapPersistedAgentRouting(overrides) : defaults,
   updatedAt: overrides?.updatedAt.toISOString() ?? null,
 });

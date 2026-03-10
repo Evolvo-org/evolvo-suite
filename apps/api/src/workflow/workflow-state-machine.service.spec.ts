@@ -53,4 +53,13 @@ describe('WorkflowStateMachineService', () => {
       }),
     ).toThrow('Transition reason required.');
   });
+
+  it('merges base and override transitions without duplicates', () => {
+    expect(service.getAllowedTransitions('inReview', true)).toEqual([
+      'readyForDev',
+      'readyForRelease',
+      'requiresHumanIntervention',
+      'readyForReview',
+    ]);
+  });
 });

@@ -1,0 +1,25 @@
+enum HumanInterventionStatus {
+  OPEN
+  RESOLVED
+}
+
+model HumanInterventionCase {
+  id              String                  @id @default(cuid())
+  projectId       String
+  workItemId      String
+  status          HumanInterventionStatus @default(OPEN)
+  summary         String
+  reason          String                  @db.Text
+  attemptsMade    String?                 @db.Text
+  evidence        String?                 @db.Text
+  suggestedAction String?                 @db.Text
+  resolutionNotes String?                 @db.Text
+  retryCount      Int                     @default(0)
+  createdAt       DateTime                @default(now())
+  resolvedAt      DateTime?
+  updatedAt       DateTime                @updatedAt
+  workItem        WorkItem                @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, status, createdAt])
+  @@index([workItemId, createdAt])
+}

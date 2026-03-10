@@ -1,8 +1,11 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import {
   getDevelopmentPlan,
+  listHumanInterventions,
   getProductSpec,
   getProjectDetail,
+  getReleaseHistory,
+  getRuntimeDashboard,
   listDevelopmentPlanVersions,
   projectQueryKeys,
 } from '@repo/api-client';
@@ -23,6 +26,18 @@ export default async function ProjectOverviewPage({
     prefetchQuerySafely(queryClient, {
       queryKey: projectQueryKeys.detail(projectId),
       queryFn: () => getProjectDetail(projectId),
+    }),
+    prefetchQuerySafely(queryClient, {
+      queryKey: projectQueryKeys.runtimeDashboard(projectId),
+      queryFn: () => getRuntimeDashboard(projectId),
+    }),
+    prefetchQuerySafely(queryClient, {
+      queryKey: projectQueryKeys.releases(projectId),
+      queryFn: () => getReleaseHistory(projectId),
+    }),
+    prefetchQuerySafely(queryClient, {
+      queryKey: projectQueryKeys.interventions(projectId),
+      queryFn: () => listHumanInterventions(projectId),
     }),
     prefetchQuerySafely(queryClient, {
       queryKey: projectQueryKeys.productSpec(projectId),

@@ -1,0 +1,72 @@
+enum ReviewGateOverallStatus {
+  PASSED
+  FAILED
+}
+
+enum ReviewGateCheckName {
+  BUILD
+  LINT
+  TYPECHECK
+  TEST
+  ACCEPTANCE_CRITERIA
+  REVIEW_FEEDBACK
+}
+
+enum ReviewGateCheckStatus {
+  PASSED
+  FAILED
+  SKIPPED
+}
+
+model ReviewGateResult {
+  id                  String                   @id @default(cuid())
+  projectId           String
+  workItemId          String
+  runtimeId           String?
+  leaseId             String?
+  agentRunId          String?
+  overallStatus       ReviewGateOverallStatus
+  summary             String?                  @db.Text
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  workItem            WorkItem                 @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+  runtime             RuntimeInstance?         @relation(fields: [runtimeId], references: [id], onDelete: SetNull)
+  lease               WorkItemLease?           @relation(fields: [leaseId], references: [id], onDelete: SetNull)
+  agentRun            AgentRun?                @relation(fields: [agentRunId], references: [id], onDelete: SetNull)
+  checks              ReviewGateCheck[]
+  criteriaEvaluations ReviewCriterionEvaluation[]
+
+  @@index([projectId, workItemId, createdAt])
+  @@index([runtimeId, createdAt])
+  @@index([leaseId, createdAt])
+  @@index([agentRunId, createdAt])
+}
+
+model ReviewGateCheck {
+  id                 String                @id @default(cuid())
+  reviewGateResultId String
+  name               ReviewGateCheckName
+  status             ReviewGateCheckStatus
+  details            String?               @db.Text
+  createdAt          DateTime              @default(now())
+  reviewGateResult   ReviewGateResult      @relation(fields: [reviewGateResultId], references: [id], onDelete: Cascade)
+
+  @@unique([reviewGateResultId, name])
+  @@index([reviewGateResultId, createdAt])
+}
+
+model ReviewCriterionEvaluation {
+  id                 String                @id @default(cuid())
+  reviewGateResultId String
+  criterionId        String?
+  text               String                @db.Text
+  status             ReviewGateCheckStatus
+  details            String?               @db.Text
+  sortOrder          Int                   @default(0)
+  createdAt          DateTime              @default(now())
+  reviewGateResult   ReviewGateResult      @relation(fields: [reviewGateResultId], references: [id], onDelete: Cascade)
+  criterion          AcceptanceCriterion?  @relation(fields: [criterionId], references: [id], onDelete: SetNull)
+
+  @@index([reviewGateResultId, sortOrder])
+  @@index([criterionId])
+}

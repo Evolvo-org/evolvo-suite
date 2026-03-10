@@ -218,6 +218,12 @@ export type RuntimeInstanceWhereInput = {
   lastSeenAt?: Prisma.DateTimeFilter<"RuntimeInstance"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"RuntimeInstance"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RuntimeInstance"> | Date | string
+  agentRuns?: Prisma.AgentRunListRelationFilter
+  artifacts?: Prisma.RuntimeArtifactListRelationFilter
+  releaseRuns?: Prisma.ReleaseRunListRelationFilter
+  reviewGateResults?: Prisma.ReviewGateResultListRelationFilter
+  usageEvents?: Prisma.UsageEventListRelationFilter
+  worktrees?: Prisma.WorktreeListRelationFilter
 }
 
 export type RuntimeInstanceOrderByWithRelationInput = {
@@ -231,6 +237,12 @@ export type RuntimeInstanceOrderByWithRelationInput = {
   lastSeenAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  agentRuns?: Prisma.AgentRunOrderByRelationAggregateInput
+  artifacts?: Prisma.RuntimeArtifactOrderByRelationAggregateInput
+  releaseRuns?: Prisma.ReleaseRunOrderByRelationAggregateInput
+  reviewGateResults?: Prisma.ReviewGateResultOrderByRelationAggregateInput
+  usageEvents?: Prisma.UsageEventOrderByRelationAggregateInput
+  worktrees?: Prisma.WorktreeOrderByRelationAggregateInput
 }
 
 export type RuntimeInstanceWhereUniqueInput = Prisma.AtLeast<{
@@ -247,6 +259,12 @@ export type RuntimeInstanceWhereUniqueInput = Prisma.AtLeast<{
   lastSeenAt?: Prisma.DateTimeFilter<"RuntimeInstance"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"RuntimeInstance"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RuntimeInstance"> | Date | string
+  agentRuns?: Prisma.AgentRunListRelationFilter
+  artifacts?: Prisma.RuntimeArtifactListRelationFilter
+  releaseRuns?: Prisma.ReleaseRunListRelationFilter
+  reviewGateResults?: Prisma.ReviewGateResultListRelationFilter
+  usageEvents?: Prisma.UsageEventListRelationFilter
+  worktrees?: Prisma.WorktreeListRelationFilter
 }, "id">
 
 export type RuntimeInstanceOrderByWithAggregationInput = {
@@ -292,6 +310,12 @@ export type RuntimeInstanceCreateInput = {
   lastSeenAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutRuntimeInput
+  artifacts?: Prisma.RuntimeArtifactCreateNestedManyWithoutRuntimeInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutRuntimeInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutRuntimeInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutRuntimeInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutRuntimeInput
 }
 
 export type RuntimeInstanceUncheckedCreateInput = {
@@ -305,6 +329,12 @@ export type RuntimeInstanceUncheckedCreateInput = {
   lastSeenAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutRuntimeInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedCreateNestedManyWithoutRuntimeInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutRuntimeInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutRuntimeInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutRuntimeInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutRuntimeInput
 }
 
 export type RuntimeInstanceUpdateInput = {
@@ -318,6 +348,12 @@ export type RuntimeInstanceUpdateInput = {
   lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutRuntimeNestedInput
+  artifacts?: Prisma.RuntimeArtifactUpdateManyWithoutRuntimeNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutRuntimeNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutRuntimeNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutRuntimeNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutRuntimeNestedInput
 }
 
 export type RuntimeInstanceUncheckedUpdateInput = {
@@ -331,6 +367,12 @@ export type RuntimeInstanceUncheckedUpdateInput = {
   lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutRuntimeNestedInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedUpdateManyWithoutRuntimeNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutRuntimeNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutRuntimeNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutRuntimeNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutRuntimeNestedInput
 }
 
 export type RuntimeInstanceCreateManyInput = {
@@ -370,6 +412,11 @@ export type RuntimeInstanceUncheckedUpdateManyInput = {
   lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type RuntimeInstanceNullableScalarRelationFilter = {
+  is?: Prisma.RuntimeInstanceWhereInput | null
+  isNot?: Prisma.RuntimeInstanceWhereInput | null
 }
 
 export type StringNullableListFilter<$PrismaModel = never> = {
@@ -417,6 +464,59 @@ export type RuntimeInstanceMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type RuntimeInstanceScalarRelationFilter = {
+  is?: Prisma.RuntimeInstanceWhereInput
+  isNot?: Prisma.RuntimeInstanceWhereInput
+}
+
+export type RuntimeInstanceCreateNestedOneWithoutAgentRunsInput = {
+  create?: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutAgentRunsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutAgentRunsInput>
+  connectOrCreate?: Prisma.RuntimeInstanceCreateOrConnectWithoutAgentRunsInput
+  connect?: Prisma.RuntimeInstanceWhereUniqueInput
+}
+
+export type RuntimeInstanceUpdateOneWithoutAgentRunsNestedInput = {
+  create?: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutAgentRunsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutAgentRunsInput>
+  connectOrCreate?: Prisma.RuntimeInstanceCreateOrConnectWithoutAgentRunsInput
+  upsert?: Prisma.RuntimeInstanceUpsertWithoutAgentRunsInput
+  disconnect?: Prisma.RuntimeInstanceWhereInput | boolean
+  delete?: Prisma.RuntimeInstanceWhereInput | boolean
+  connect?: Prisma.RuntimeInstanceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RuntimeInstanceUpdateToOneWithWhereWithoutAgentRunsInput, Prisma.RuntimeInstanceUpdateWithoutAgentRunsInput>, Prisma.RuntimeInstanceUncheckedUpdateWithoutAgentRunsInput>
+}
+
+export type RuntimeInstanceCreateNestedOneWithoutReleaseRunsInput = {
+  create?: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutReleaseRunsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutReleaseRunsInput>
+  connectOrCreate?: Prisma.RuntimeInstanceCreateOrConnectWithoutReleaseRunsInput
+  connect?: Prisma.RuntimeInstanceWhereUniqueInput
+}
+
+export type RuntimeInstanceUpdateOneWithoutReleaseRunsNestedInput = {
+  create?: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutReleaseRunsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutReleaseRunsInput>
+  connectOrCreate?: Prisma.RuntimeInstanceCreateOrConnectWithoutReleaseRunsInput
+  upsert?: Prisma.RuntimeInstanceUpsertWithoutReleaseRunsInput
+  disconnect?: Prisma.RuntimeInstanceWhereInput | boolean
+  delete?: Prisma.RuntimeInstanceWhereInput | boolean
+  connect?: Prisma.RuntimeInstanceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RuntimeInstanceUpdateToOneWithWhereWithoutReleaseRunsInput, Prisma.RuntimeInstanceUpdateWithoutReleaseRunsInput>, Prisma.RuntimeInstanceUncheckedUpdateWithoutReleaseRunsInput>
+}
+
+export type RuntimeInstanceCreateNestedOneWithoutReviewGateResultsInput = {
+  create?: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutReviewGateResultsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutReviewGateResultsInput>
+  connectOrCreate?: Prisma.RuntimeInstanceCreateOrConnectWithoutReviewGateResultsInput
+  connect?: Prisma.RuntimeInstanceWhereUniqueInput
+}
+
+export type RuntimeInstanceUpdateOneWithoutReviewGateResultsNestedInput = {
+  create?: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutReviewGateResultsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutReviewGateResultsInput>
+  connectOrCreate?: Prisma.RuntimeInstanceCreateOrConnectWithoutReviewGateResultsInput
+  upsert?: Prisma.RuntimeInstanceUpsertWithoutReviewGateResultsInput
+  disconnect?: Prisma.RuntimeInstanceWhereInput | boolean
+  delete?: Prisma.RuntimeInstanceWhereInput | boolean
+  connect?: Prisma.RuntimeInstanceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RuntimeInstanceUpdateToOneWithWhereWithoutReviewGateResultsInput, Prisma.RuntimeInstanceUpdateWithoutReviewGateResultsInput>, Prisma.RuntimeInstanceUncheckedUpdateWithoutReviewGateResultsInput>
+}
+
 export type RuntimeInstanceCreatecapabilitiesInput = {
   set: string[]
 }
@@ -430,6 +530,654 @@ export type RuntimeInstanceUpdatecapabilitiesInput = {
   push?: string | string[]
 }
 
+export type RuntimeInstanceCreateNestedOneWithoutArtifactsInput = {
+  create?: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutArtifactsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutArtifactsInput>
+  connectOrCreate?: Prisma.RuntimeInstanceCreateOrConnectWithoutArtifactsInput
+  connect?: Prisma.RuntimeInstanceWhereUniqueInput
+}
+
+export type RuntimeInstanceUpdateOneRequiredWithoutArtifactsNestedInput = {
+  create?: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutArtifactsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutArtifactsInput>
+  connectOrCreate?: Prisma.RuntimeInstanceCreateOrConnectWithoutArtifactsInput
+  upsert?: Prisma.RuntimeInstanceUpsertWithoutArtifactsInput
+  connect?: Prisma.RuntimeInstanceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RuntimeInstanceUpdateToOneWithWhereWithoutArtifactsInput, Prisma.RuntimeInstanceUpdateWithoutArtifactsInput>, Prisma.RuntimeInstanceUncheckedUpdateWithoutArtifactsInput>
+}
+
+export type RuntimeInstanceCreateNestedOneWithoutUsageEventsInput = {
+  create?: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutUsageEventsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutUsageEventsInput>
+  connectOrCreate?: Prisma.RuntimeInstanceCreateOrConnectWithoutUsageEventsInput
+  connect?: Prisma.RuntimeInstanceWhereUniqueInput
+}
+
+export type RuntimeInstanceUpdateOneWithoutUsageEventsNestedInput = {
+  create?: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutUsageEventsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutUsageEventsInput>
+  connectOrCreate?: Prisma.RuntimeInstanceCreateOrConnectWithoutUsageEventsInput
+  upsert?: Prisma.RuntimeInstanceUpsertWithoutUsageEventsInput
+  disconnect?: Prisma.RuntimeInstanceWhereInput | boolean
+  delete?: Prisma.RuntimeInstanceWhereInput | boolean
+  connect?: Prisma.RuntimeInstanceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RuntimeInstanceUpdateToOneWithWhereWithoutUsageEventsInput, Prisma.RuntimeInstanceUpdateWithoutUsageEventsInput>, Prisma.RuntimeInstanceUncheckedUpdateWithoutUsageEventsInput>
+}
+
+export type RuntimeInstanceCreateNestedOneWithoutWorktreesInput = {
+  create?: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutWorktreesInput, Prisma.RuntimeInstanceUncheckedCreateWithoutWorktreesInput>
+  connectOrCreate?: Prisma.RuntimeInstanceCreateOrConnectWithoutWorktreesInput
+  connect?: Prisma.RuntimeInstanceWhereUniqueInput
+}
+
+export type RuntimeInstanceUpdateOneWithoutWorktreesNestedInput = {
+  create?: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutWorktreesInput, Prisma.RuntimeInstanceUncheckedCreateWithoutWorktreesInput>
+  connectOrCreate?: Prisma.RuntimeInstanceCreateOrConnectWithoutWorktreesInput
+  upsert?: Prisma.RuntimeInstanceUpsertWithoutWorktreesInput
+  disconnect?: Prisma.RuntimeInstanceWhereInput | boolean
+  delete?: Prisma.RuntimeInstanceWhereInput | boolean
+  connect?: Prisma.RuntimeInstanceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RuntimeInstanceUpdateToOneWithWhereWithoutWorktreesInput, Prisma.RuntimeInstanceUpdateWithoutWorktreesInput>, Prisma.RuntimeInstanceUncheckedUpdateWithoutWorktreesInput>
+}
+
+export type RuntimeInstanceCreateWithoutAgentRunsInput = {
+  id: string
+  displayName: string
+  status?: $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceCreatecapabilitiesInput | string[]
+  activeJobSummary?: string | null
+  lastAction?: string | null
+  lastError?: string | null
+  lastSeenAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  artifacts?: Prisma.RuntimeArtifactCreateNestedManyWithoutRuntimeInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutRuntimeInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutRuntimeInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutRuntimeInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutRuntimeInput
+}
+
+export type RuntimeInstanceUncheckedCreateWithoutAgentRunsInput = {
+  id: string
+  displayName: string
+  status?: $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceCreatecapabilitiesInput | string[]
+  activeJobSummary?: string | null
+  lastAction?: string | null
+  lastError?: string | null
+  lastSeenAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  artifacts?: Prisma.RuntimeArtifactUncheckedCreateNestedManyWithoutRuntimeInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutRuntimeInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutRuntimeInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutRuntimeInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutRuntimeInput
+}
+
+export type RuntimeInstanceCreateOrConnectWithoutAgentRunsInput = {
+  where: Prisma.RuntimeInstanceWhereUniqueInput
+  create: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutAgentRunsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutAgentRunsInput>
+}
+
+export type RuntimeInstanceUpsertWithoutAgentRunsInput = {
+  update: Prisma.XOR<Prisma.RuntimeInstanceUpdateWithoutAgentRunsInput, Prisma.RuntimeInstanceUncheckedUpdateWithoutAgentRunsInput>
+  create: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutAgentRunsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutAgentRunsInput>
+  where?: Prisma.RuntimeInstanceWhereInput
+}
+
+export type RuntimeInstanceUpdateToOneWithWhereWithoutAgentRunsInput = {
+  where?: Prisma.RuntimeInstanceWhereInput
+  data: Prisma.XOR<Prisma.RuntimeInstanceUpdateWithoutAgentRunsInput, Prisma.RuntimeInstanceUncheckedUpdateWithoutAgentRunsInput>
+}
+
+export type RuntimeInstanceUpdateWithoutAgentRunsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRuntimeStatusFieldUpdateOperationsInput | $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceUpdatecapabilitiesInput | string[]
+  activeJobSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artifacts?: Prisma.RuntimeArtifactUpdateManyWithoutRuntimeNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutRuntimeNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutRuntimeNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutRuntimeNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutRuntimeNestedInput
+}
+
+export type RuntimeInstanceUncheckedUpdateWithoutAgentRunsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRuntimeStatusFieldUpdateOperationsInput | $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceUpdatecapabilitiesInput | string[]
+  activeJobSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artifacts?: Prisma.RuntimeArtifactUncheckedUpdateManyWithoutRuntimeNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutRuntimeNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutRuntimeNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutRuntimeNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutRuntimeNestedInput
+}
+
+export type RuntimeInstanceCreateWithoutReleaseRunsInput = {
+  id: string
+  displayName: string
+  status?: $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceCreatecapabilitiesInput | string[]
+  activeJobSummary?: string | null
+  lastAction?: string | null
+  lastError?: string | null
+  lastSeenAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutRuntimeInput
+  artifacts?: Prisma.RuntimeArtifactCreateNestedManyWithoutRuntimeInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutRuntimeInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutRuntimeInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutRuntimeInput
+}
+
+export type RuntimeInstanceUncheckedCreateWithoutReleaseRunsInput = {
+  id: string
+  displayName: string
+  status?: $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceCreatecapabilitiesInput | string[]
+  activeJobSummary?: string | null
+  lastAction?: string | null
+  lastError?: string | null
+  lastSeenAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutRuntimeInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedCreateNestedManyWithoutRuntimeInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutRuntimeInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutRuntimeInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutRuntimeInput
+}
+
+export type RuntimeInstanceCreateOrConnectWithoutReleaseRunsInput = {
+  where: Prisma.RuntimeInstanceWhereUniqueInput
+  create: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutReleaseRunsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutReleaseRunsInput>
+}
+
+export type RuntimeInstanceUpsertWithoutReleaseRunsInput = {
+  update: Prisma.XOR<Prisma.RuntimeInstanceUpdateWithoutReleaseRunsInput, Prisma.RuntimeInstanceUncheckedUpdateWithoutReleaseRunsInput>
+  create: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutReleaseRunsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutReleaseRunsInput>
+  where?: Prisma.RuntimeInstanceWhereInput
+}
+
+export type RuntimeInstanceUpdateToOneWithWhereWithoutReleaseRunsInput = {
+  where?: Prisma.RuntimeInstanceWhereInput
+  data: Prisma.XOR<Prisma.RuntimeInstanceUpdateWithoutReleaseRunsInput, Prisma.RuntimeInstanceUncheckedUpdateWithoutReleaseRunsInput>
+}
+
+export type RuntimeInstanceUpdateWithoutReleaseRunsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRuntimeStatusFieldUpdateOperationsInput | $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceUpdatecapabilitiesInput | string[]
+  activeJobSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutRuntimeNestedInput
+  artifacts?: Prisma.RuntimeArtifactUpdateManyWithoutRuntimeNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutRuntimeNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutRuntimeNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutRuntimeNestedInput
+}
+
+export type RuntimeInstanceUncheckedUpdateWithoutReleaseRunsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRuntimeStatusFieldUpdateOperationsInput | $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceUpdatecapabilitiesInput | string[]
+  activeJobSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutRuntimeNestedInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedUpdateManyWithoutRuntimeNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutRuntimeNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutRuntimeNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutRuntimeNestedInput
+}
+
+export type RuntimeInstanceCreateWithoutReviewGateResultsInput = {
+  id: string
+  displayName: string
+  status?: $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceCreatecapabilitiesInput | string[]
+  activeJobSummary?: string | null
+  lastAction?: string | null
+  lastError?: string | null
+  lastSeenAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutRuntimeInput
+  artifacts?: Prisma.RuntimeArtifactCreateNestedManyWithoutRuntimeInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutRuntimeInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutRuntimeInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutRuntimeInput
+}
+
+export type RuntimeInstanceUncheckedCreateWithoutReviewGateResultsInput = {
+  id: string
+  displayName: string
+  status?: $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceCreatecapabilitiesInput | string[]
+  activeJobSummary?: string | null
+  lastAction?: string | null
+  lastError?: string | null
+  lastSeenAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutRuntimeInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedCreateNestedManyWithoutRuntimeInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutRuntimeInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutRuntimeInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutRuntimeInput
+}
+
+export type RuntimeInstanceCreateOrConnectWithoutReviewGateResultsInput = {
+  where: Prisma.RuntimeInstanceWhereUniqueInput
+  create: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutReviewGateResultsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutReviewGateResultsInput>
+}
+
+export type RuntimeInstanceUpsertWithoutReviewGateResultsInput = {
+  update: Prisma.XOR<Prisma.RuntimeInstanceUpdateWithoutReviewGateResultsInput, Prisma.RuntimeInstanceUncheckedUpdateWithoutReviewGateResultsInput>
+  create: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutReviewGateResultsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutReviewGateResultsInput>
+  where?: Prisma.RuntimeInstanceWhereInput
+}
+
+export type RuntimeInstanceUpdateToOneWithWhereWithoutReviewGateResultsInput = {
+  where?: Prisma.RuntimeInstanceWhereInput
+  data: Prisma.XOR<Prisma.RuntimeInstanceUpdateWithoutReviewGateResultsInput, Prisma.RuntimeInstanceUncheckedUpdateWithoutReviewGateResultsInput>
+}
+
+export type RuntimeInstanceUpdateWithoutReviewGateResultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRuntimeStatusFieldUpdateOperationsInput | $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceUpdatecapabilitiesInput | string[]
+  activeJobSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutRuntimeNestedInput
+  artifacts?: Prisma.RuntimeArtifactUpdateManyWithoutRuntimeNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutRuntimeNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutRuntimeNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutRuntimeNestedInput
+}
+
+export type RuntimeInstanceUncheckedUpdateWithoutReviewGateResultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRuntimeStatusFieldUpdateOperationsInput | $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceUpdatecapabilitiesInput | string[]
+  activeJobSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutRuntimeNestedInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedUpdateManyWithoutRuntimeNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutRuntimeNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutRuntimeNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutRuntimeNestedInput
+}
+
+export type RuntimeInstanceCreateWithoutArtifactsInput = {
+  id: string
+  displayName: string
+  status?: $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceCreatecapabilitiesInput | string[]
+  activeJobSummary?: string | null
+  lastAction?: string | null
+  lastError?: string | null
+  lastSeenAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutRuntimeInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutRuntimeInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutRuntimeInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutRuntimeInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutRuntimeInput
+}
+
+export type RuntimeInstanceUncheckedCreateWithoutArtifactsInput = {
+  id: string
+  displayName: string
+  status?: $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceCreatecapabilitiesInput | string[]
+  activeJobSummary?: string | null
+  lastAction?: string | null
+  lastError?: string | null
+  lastSeenAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutRuntimeInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutRuntimeInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutRuntimeInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutRuntimeInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutRuntimeInput
+}
+
+export type RuntimeInstanceCreateOrConnectWithoutArtifactsInput = {
+  where: Prisma.RuntimeInstanceWhereUniqueInput
+  create: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutArtifactsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutArtifactsInput>
+}
+
+export type RuntimeInstanceUpsertWithoutArtifactsInput = {
+  update: Prisma.XOR<Prisma.RuntimeInstanceUpdateWithoutArtifactsInput, Prisma.RuntimeInstanceUncheckedUpdateWithoutArtifactsInput>
+  create: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutArtifactsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutArtifactsInput>
+  where?: Prisma.RuntimeInstanceWhereInput
+}
+
+export type RuntimeInstanceUpdateToOneWithWhereWithoutArtifactsInput = {
+  where?: Prisma.RuntimeInstanceWhereInput
+  data: Prisma.XOR<Prisma.RuntimeInstanceUpdateWithoutArtifactsInput, Prisma.RuntimeInstanceUncheckedUpdateWithoutArtifactsInput>
+}
+
+export type RuntimeInstanceUpdateWithoutArtifactsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRuntimeStatusFieldUpdateOperationsInput | $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceUpdatecapabilitiesInput | string[]
+  activeJobSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutRuntimeNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutRuntimeNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutRuntimeNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutRuntimeNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutRuntimeNestedInput
+}
+
+export type RuntimeInstanceUncheckedUpdateWithoutArtifactsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRuntimeStatusFieldUpdateOperationsInput | $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceUpdatecapabilitiesInput | string[]
+  activeJobSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutRuntimeNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutRuntimeNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutRuntimeNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutRuntimeNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutRuntimeNestedInput
+}
+
+export type RuntimeInstanceCreateWithoutUsageEventsInput = {
+  id: string
+  displayName: string
+  status?: $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceCreatecapabilitiesInput | string[]
+  activeJobSummary?: string | null
+  lastAction?: string | null
+  lastError?: string | null
+  lastSeenAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutRuntimeInput
+  artifacts?: Prisma.RuntimeArtifactCreateNestedManyWithoutRuntimeInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutRuntimeInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutRuntimeInput
+  worktrees?: Prisma.WorktreeCreateNestedManyWithoutRuntimeInput
+}
+
+export type RuntimeInstanceUncheckedCreateWithoutUsageEventsInput = {
+  id: string
+  displayName: string
+  status?: $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceCreatecapabilitiesInput | string[]
+  activeJobSummary?: string | null
+  lastAction?: string | null
+  lastError?: string | null
+  lastSeenAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutRuntimeInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedCreateNestedManyWithoutRuntimeInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutRuntimeInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutRuntimeInput
+  worktrees?: Prisma.WorktreeUncheckedCreateNestedManyWithoutRuntimeInput
+}
+
+export type RuntimeInstanceCreateOrConnectWithoutUsageEventsInput = {
+  where: Prisma.RuntimeInstanceWhereUniqueInput
+  create: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutUsageEventsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutUsageEventsInput>
+}
+
+export type RuntimeInstanceUpsertWithoutUsageEventsInput = {
+  update: Prisma.XOR<Prisma.RuntimeInstanceUpdateWithoutUsageEventsInput, Prisma.RuntimeInstanceUncheckedUpdateWithoutUsageEventsInput>
+  create: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutUsageEventsInput, Prisma.RuntimeInstanceUncheckedCreateWithoutUsageEventsInput>
+  where?: Prisma.RuntimeInstanceWhereInput
+}
+
+export type RuntimeInstanceUpdateToOneWithWhereWithoutUsageEventsInput = {
+  where?: Prisma.RuntimeInstanceWhereInput
+  data: Prisma.XOR<Prisma.RuntimeInstanceUpdateWithoutUsageEventsInput, Prisma.RuntimeInstanceUncheckedUpdateWithoutUsageEventsInput>
+}
+
+export type RuntimeInstanceUpdateWithoutUsageEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRuntimeStatusFieldUpdateOperationsInput | $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceUpdatecapabilitiesInput | string[]
+  activeJobSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutRuntimeNestedInput
+  artifacts?: Prisma.RuntimeArtifactUpdateManyWithoutRuntimeNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutRuntimeNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutRuntimeNestedInput
+  worktrees?: Prisma.WorktreeUpdateManyWithoutRuntimeNestedInput
+}
+
+export type RuntimeInstanceUncheckedUpdateWithoutUsageEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRuntimeStatusFieldUpdateOperationsInput | $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceUpdatecapabilitiesInput | string[]
+  activeJobSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutRuntimeNestedInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedUpdateManyWithoutRuntimeNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutRuntimeNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutRuntimeNestedInput
+  worktrees?: Prisma.WorktreeUncheckedUpdateManyWithoutRuntimeNestedInput
+}
+
+export type RuntimeInstanceCreateWithoutWorktreesInput = {
+  id: string
+  displayName: string
+  status?: $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceCreatecapabilitiesInput | string[]
+  activeJobSummary?: string | null
+  lastAction?: string | null
+  lastError?: string | null
+  lastSeenAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutRuntimeInput
+  artifacts?: Prisma.RuntimeArtifactCreateNestedManyWithoutRuntimeInput
+  releaseRuns?: Prisma.ReleaseRunCreateNestedManyWithoutRuntimeInput
+  reviewGateResults?: Prisma.ReviewGateResultCreateNestedManyWithoutRuntimeInput
+  usageEvents?: Prisma.UsageEventCreateNestedManyWithoutRuntimeInput
+}
+
+export type RuntimeInstanceUncheckedCreateWithoutWorktreesInput = {
+  id: string
+  displayName: string
+  status?: $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceCreatecapabilitiesInput | string[]
+  activeJobSummary?: string | null
+  lastAction?: string | null
+  lastError?: string | null
+  lastSeenAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutRuntimeInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedCreateNestedManyWithoutRuntimeInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedCreateNestedManyWithoutRuntimeInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedCreateNestedManyWithoutRuntimeInput
+  usageEvents?: Prisma.UsageEventUncheckedCreateNestedManyWithoutRuntimeInput
+}
+
+export type RuntimeInstanceCreateOrConnectWithoutWorktreesInput = {
+  where: Prisma.RuntimeInstanceWhereUniqueInput
+  create: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutWorktreesInput, Prisma.RuntimeInstanceUncheckedCreateWithoutWorktreesInput>
+}
+
+export type RuntimeInstanceUpsertWithoutWorktreesInput = {
+  update: Prisma.XOR<Prisma.RuntimeInstanceUpdateWithoutWorktreesInput, Prisma.RuntimeInstanceUncheckedUpdateWithoutWorktreesInput>
+  create: Prisma.XOR<Prisma.RuntimeInstanceCreateWithoutWorktreesInput, Prisma.RuntimeInstanceUncheckedCreateWithoutWorktreesInput>
+  where?: Prisma.RuntimeInstanceWhereInput
+}
+
+export type RuntimeInstanceUpdateToOneWithWhereWithoutWorktreesInput = {
+  where?: Prisma.RuntimeInstanceWhereInput
+  data: Prisma.XOR<Prisma.RuntimeInstanceUpdateWithoutWorktreesInput, Prisma.RuntimeInstanceUncheckedUpdateWithoutWorktreesInput>
+}
+
+export type RuntimeInstanceUpdateWithoutWorktreesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRuntimeStatusFieldUpdateOperationsInput | $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceUpdatecapabilitiesInput | string[]
+  activeJobSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutRuntimeNestedInput
+  artifacts?: Prisma.RuntimeArtifactUpdateManyWithoutRuntimeNestedInput
+  releaseRuns?: Prisma.ReleaseRunUpdateManyWithoutRuntimeNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUpdateManyWithoutRuntimeNestedInput
+  usageEvents?: Prisma.UsageEventUpdateManyWithoutRuntimeNestedInput
+}
+
+export type RuntimeInstanceUncheckedUpdateWithoutWorktreesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRuntimeStatusFieldUpdateOperationsInput | $Enums.RuntimeStatus
+  capabilities?: Prisma.RuntimeInstanceUpdatecapabilitiesInput | string[]
+  activeJobSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutRuntimeNestedInput
+  artifacts?: Prisma.RuntimeArtifactUncheckedUpdateManyWithoutRuntimeNestedInput
+  releaseRuns?: Prisma.ReleaseRunUncheckedUpdateManyWithoutRuntimeNestedInput
+  reviewGateResults?: Prisma.ReviewGateResultUncheckedUpdateManyWithoutRuntimeNestedInput
+  usageEvents?: Prisma.UsageEventUncheckedUpdateManyWithoutRuntimeNestedInput
+}
+
+
+/**
+ * Count Type RuntimeInstanceCountOutputType
+ */
+
+export type RuntimeInstanceCountOutputType = {
+  agentRuns: number
+  artifacts: number
+  releaseRuns: number
+  reviewGateResults: number
+  usageEvents: number
+  worktrees: number
+}
+
+export type RuntimeInstanceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  agentRuns?: boolean | RuntimeInstanceCountOutputTypeCountAgentRunsArgs
+  artifacts?: boolean | RuntimeInstanceCountOutputTypeCountArtifactsArgs
+  releaseRuns?: boolean | RuntimeInstanceCountOutputTypeCountReleaseRunsArgs
+  reviewGateResults?: boolean | RuntimeInstanceCountOutputTypeCountReviewGateResultsArgs
+  usageEvents?: boolean | RuntimeInstanceCountOutputTypeCountUsageEventsArgs
+  worktrees?: boolean | RuntimeInstanceCountOutputTypeCountWorktreesArgs
+}
+
+/**
+ * RuntimeInstanceCountOutputType without action
+ */
+export type RuntimeInstanceCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RuntimeInstanceCountOutputType
+   */
+  select?: Prisma.RuntimeInstanceCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * RuntimeInstanceCountOutputType without action
+ */
+export type RuntimeInstanceCountOutputTypeCountAgentRunsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AgentRunWhereInput
+}
+
+/**
+ * RuntimeInstanceCountOutputType without action
+ */
+export type RuntimeInstanceCountOutputTypeCountArtifactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RuntimeArtifactWhereInput
+}
+
+/**
+ * RuntimeInstanceCountOutputType without action
+ */
+export type RuntimeInstanceCountOutputTypeCountReleaseRunsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReleaseRunWhereInput
+}
+
+/**
+ * RuntimeInstanceCountOutputType without action
+ */
+export type RuntimeInstanceCountOutputTypeCountReviewGateResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReviewGateResultWhereInput
+}
+
+/**
+ * RuntimeInstanceCountOutputType without action
+ */
+export type RuntimeInstanceCountOutputTypeCountUsageEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UsageEventWhereInput
+}
+
+/**
+ * RuntimeInstanceCountOutputType without action
+ */
+export type RuntimeInstanceCountOutputTypeCountWorktreesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WorktreeWhereInput
+}
 
 
 export type RuntimeInstanceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -443,6 +1191,13 @@ export type RuntimeInstanceSelect<ExtArgs extends runtime.Types.Extensions.Inter
   lastSeenAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  agentRuns?: boolean | Prisma.RuntimeInstance$agentRunsArgs<ExtArgs>
+  artifacts?: boolean | Prisma.RuntimeInstance$artifactsArgs<ExtArgs>
+  releaseRuns?: boolean | Prisma.RuntimeInstance$releaseRunsArgs<ExtArgs>
+  reviewGateResults?: boolean | Prisma.RuntimeInstance$reviewGateResultsArgs<ExtArgs>
+  usageEvents?: boolean | Prisma.RuntimeInstance$usageEventsArgs<ExtArgs>
+  worktrees?: boolean | Prisma.RuntimeInstance$worktreesArgs<ExtArgs>
+  _count?: boolean | Prisma.RuntimeInstanceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["runtimeInstance"]>
 
 export type RuntimeInstanceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -485,10 +1240,28 @@ export type RuntimeInstanceSelectScalar = {
 }
 
 export type RuntimeInstanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "displayName" | "status" | "capabilities" | "activeJobSummary" | "lastAction" | "lastError" | "lastSeenAt" | "createdAt" | "updatedAt", ExtArgs["result"]["runtimeInstance"]>
+export type RuntimeInstanceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  agentRuns?: boolean | Prisma.RuntimeInstance$agentRunsArgs<ExtArgs>
+  artifacts?: boolean | Prisma.RuntimeInstance$artifactsArgs<ExtArgs>
+  releaseRuns?: boolean | Prisma.RuntimeInstance$releaseRunsArgs<ExtArgs>
+  reviewGateResults?: boolean | Prisma.RuntimeInstance$reviewGateResultsArgs<ExtArgs>
+  usageEvents?: boolean | Prisma.RuntimeInstance$usageEventsArgs<ExtArgs>
+  worktrees?: boolean | Prisma.RuntimeInstance$worktreesArgs<ExtArgs>
+  _count?: boolean | Prisma.RuntimeInstanceCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type RuntimeInstanceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type RuntimeInstanceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $RuntimeInstancePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "RuntimeInstance"
-  objects: {}
+  objects: {
+    agentRuns: Prisma.$AgentRunPayload<ExtArgs>[]
+    artifacts: Prisma.$RuntimeArtifactPayload<ExtArgs>[]
+    releaseRuns: Prisma.$ReleaseRunPayload<ExtArgs>[]
+    reviewGateResults: Prisma.$ReviewGateResultPayload<ExtArgs>[]
+    usageEvents: Prisma.$UsageEventPayload<ExtArgs>[]
+    worktrees: Prisma.$WorktreePayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     displayName: string
@@ -894,6 +1667,12 @@ readonly fields: RuntimeInstanceFieldRefs;
  */
 export interface Prisma__RuntimeInstanceClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  agentRuns<T extends Prisma.RuntimeInstance$agentRunsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RuntimeInstance$agentRunsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgentRunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  artifacts<T extends Prisma.RuntimeInstance$artifactsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RuntimeInstance$artifactsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RuntimeArtifactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  releaseRuns<T extends Prisma.RuntimeInstance$releaseRunsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RuntimeInstance$releaseRunsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReleaseRunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reviewGateResults<T extends Prisma.RuntimeInstance$reviewGateResultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RuntimeInstance$reviewGateResultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReviewGateResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  usageEvents<T extends Prisma.RuntimeInstance$usageEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RuntimeInstance$usageEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UsageEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  worktrees<T extends Prisma.RuntimeInstance$worktreesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RuntimeInstance$worktreesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorktreePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -950,6 +1729,10 @@ export type RuntimeInstanceFindUniqueArgs<ExtArgs extends runtime.Types.Extensio
    */
   omit?: Prisma.RuntimeInstanceOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RuntimeInstanceInclude<ExtArgs> | null
+  /**
    * Filter, which RuntimeInstance to fetch.
    */
   where: Prisma.RuntimeInstanceWhereUniqueInput
@@ -968,6 +1751,10 @@ export type RuntimeInstanceFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.E
    */
   omit?: Prisma.RuntimeInstanceOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RuntimeInstanceInclude<ExtArgs> | null
+  /**
    * Filter, which RuntimeInstance to fetch.
    */
   where: Prisma.RuntimeInstanceWhereUniqueInput
@@ -985,6 +1772,10 @@ export type RuntimeInstanceFindFirstArgs<ExtArgs extends runtime.Types.Extension
    * Omit specific fields from the RuntimeInstance
    */
   omit?: Prisma.RuntimeInstanceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RuntimeInstanceInclude<ExtArgs> | null
   /**
    * Filter, which RuntimeInstance to fetch.
    */
@@ -1034,6 +1825,10 @@ export type RuntimeInstanceFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Ex
    */
   omit?: Prisma.RuntimeInstanceOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RuntimeInstanceInclude<ExtArgs> | null
+  /**
    * Filter, which RuntimeInstance to fetch.
    */
   where?: Prisma.RuntimeInstanceWhereInput
@@ -1082,6 +1877,10 @@ export type RuntimeInstanceFindManyArgs<ExtArgs extends runtime.Types.Extensions
    */
   omit?: Prisma.RuntimeInstanceOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RuntimeInstanceInclude<ExtArgs> | null
+  /**
    * Filter, which RuntimeInstances to fetch.
    */
   where?: Prisma.RuntimeInstanceWhereInput
@@ -1124,6 +1923,10 @@ export type RuntimeInstanceCreateArgs<ExtArgs extends runtime.Types.Extensions.I
    * Omit specific fields from the RuntimeInstance
    */
   omit?: Prisma.RuntimeInstanceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RuntimeInstanceInclude<ExtArgs> | null
   /**
    * The data needed to create a RuntimeInstance.
    */
@@ -1172,6 +1975,10 @@ export type RuntimeInstanceUpdateArgs<ExtArgs extends runtime.Types.Extensions.I
    * Omit specific fields from the RuntimeInstance
    */
   omit?: Prisma.RuntimeInstanceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RuntimeInstanceInclude<ExtArgs> | null
   /**
    * The data needed to update a RuntimeInstance.
    */
@@ -1239,6 +2046,10 @@ export type RuntimeInstanceUpsertArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.RuntimeInstanceOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RuntimeInstanceInclude<ExtArgs> | null
+  /**
    * The filter to search for the RuntimeInstance to update in case it exists.
    */
   where: Prisma.RuntimeInstanceWhereUniqueInput
@@ -1265,6 +2076,10 @@ export type RuntimeInstanceDeleteArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.RuntimeInstanceOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RuntimeInstanceInclude<ExtArgs> | null
+  /**
    * Filter which RuntimeInstance to delete.
    */
   where: Prisma.RuntimeInstanceWhereUniqueInput
@@ -1285,6 +2100,150 @@ export type RuntimeInstanceDeleteManyArgs<ExtArgs extends runtime.Types.Extensio
 }
 
 /**
+ * RuntimeInstance.agentRuns
+ */
+export type RuntimeInstance$agentRunsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AgentRun
+   */
+  select?: Prisma.AgentRunSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AgentRun
+   */
+  omit?: Prisma.AgentRunOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AgentRunInclude<ExtArgs> | null
+  where?: Prisma.AgentRunWhereInput
+  orderBy?: Prisma.AgentRunOrderByWithRelationInput | Prisma.AgentRunOrderByWithRelationInput[]
+  cursor?: Prisma.AgentRunWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AgentRunScalarFieldEnum | Prisma.AgentRunScalarFieldEnum[]
+}
+
+/**
+ * RuntimeInstance.artifacts
+ */
+export type RuntimeInstance$artifactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RuntimeArtifact
+   */
+  select?: Prisma.RuntimeArtifactSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RuntimeArtifact
+   */
+  omit?: Prisma.RuntimeArtifactOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RuntimeArtifactInclude<ExtArgs> | null
+  where?: Prisma.RuntimeArtifactWhereInput
+  orderBy?: Prisma.RuntimeArtifactOrderByWithRelationInput | Prisma.RuntimeArtifactOrderByWithRelationInput[]
+  cursor?: Prisma.RuntimeArtifactWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RuntimeArtifactScalarFieldEnum | Prisma.RuntimeArtifactScalarFieldEnum[]
+}
+
+/**
+ * RuntimeInstance.releaseRuns
+ */
+export type RuntimeInstance$releaseRunsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReleaseRun
+   */
+  select?: Prisma.ReleaseRunSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReleaseRun
+   */
+  omit?: Prisma.ReleaseRunOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReleaseRunInclude<ExtArgs> | null
+  where?: Prisma.ReleaseRunWhereInput
+  orderBy?: Prisma.ReleaseRunOrderByWithRelationInput | Prisma.ReleaseRunOrderByWithRelationInput[]
+  cursor?: Prisma.ReleaseRunWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReleaseRunScalarFieldEnum | Prisma.ReleaseRunScalarFieldEnum[]
+}
+
+/**
+ * RuntimeInstance.reviewGateResults
+ */
+export type RuntimeInstance$reviewGateResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReviewGateResult
+   */
+  select?: Prisma.ReviewGateResultSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReviewGateResult
+   */
+  omit?: Prisma.ReviewGateResultOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReviewGateResultInclude<ExtArgs> | null
+  where?: Prisma.ReviewGateResultWhereInput
+  orderBy?: Prisma.ReviewGateResultOrderByWithRelationInput | Prisma.ReviewGateResultOrderByWithRelationInput[]
+  cursor?: Prisma.ReviewGateResultWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReviewGateResultScalarFieldEnum | Prisma.ReviewGateResultScalarFieldEnum[]
+}
+
+/**
+ * RuntimeInstance.usageEvents
+ */
+export type RuntimeInstance$usageEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UsageEvent
+   */
+  select?: Prisma.UsageEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UsageEvent
+   */
+  omit?: Prisma.UsageEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UsageEventInclude<ExtArgs> | null
+  where?: Prisma.UsageEventWhereInput
+  orderBy?: Prisma.UsageEventOrderByWithRelationInput | Prisma.UsageEventOrderByWithRelationInput[]
+  cursor?: Prisma.UsageEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UsageEventScalarFieldEnum | Prisma.UsageEventScalarFieldEnum[]
+}
+
+/**
+ * RuntimeInstance.worktrees
+ */
+export type RuntimeInstance$worktreesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Worktree
+   */
+  select?: Prisma.WorktreeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Worktree
+   */
+  omit?: Prisma.WorktreeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WorktreeInclude<ExtArgs> | null
+  where?: Prisma.WorktreeWhereInput
+  orderBy?: Prisma.WorktreeOrderByWithRelationInput | Prisma.WorktreeOrderByWithRelationInput[]
+  cursor?: Prisma.WorktreeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WorktreeScalarFieldEnum | Prisma.WorktreeScalarFieldEnum[]
+}
+
+/**
  * RuntimeInstance without action
  */
 export type RuntimeInstanceDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1296,4 +2255,8 @@ export type RuntimeInstanceDefaultArgs<ExtArgs extends runtime.Types.Extensions.
    * Omit specific fields from the RuntimeInstance
    */
   omit?: Prisma.RuntimeInstanceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RuntimeInstanceInclude<ExtArgs> | null
 }

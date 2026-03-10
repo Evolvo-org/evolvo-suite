@@ -4,6 +4,15 @@ enum RuntimeStatus {
   DEGRADED
 }
 
+enum RuntimeArtifactType {
+  LOG
+  PATCH
+  TEST_REPORT
+  BUILD_OUTPUT
+  RELEASE_NOTE
+  OTHER
+}
+
 model RuntimeInstance {
   id               String        @id
   displayName      String
@@ -15,4 +24,28 @@ model RuntimeInstance {
   lastSeenAt       DateTime      @default(now())
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
+  agentRuns        AgentRun[]
+  artifacts        RuntimeArtifact[]
+  releaseRuns      ReleaseRun[]
+  reviewGateResults ReviewGateResult[]
+  usageEvents      UsageEvent[]
+  worktrees        Worktree[]
+}
+
+model RuntimeArtifact {
+  id          String              @id @default(cuid())
+  runtimeId   String
+  leaseId     String
+  artifactType RuntimeArtifactType
+  fileName    String
+  contentType String?
+  sizeBytes   Int?
+  storageKey  String              @unique
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  runtime     RuntimeInstance     @relation(fields: [runtimeId], references: [id], onDelete: Cascade)
+  lease       WorkItemLease       @relation(fields: [leaseId], references: [id], onDelete: Cascade)
+
+  @@index([runtimeId, createdAt])
+  @@index([leaseId, createdAt])
 }

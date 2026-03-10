@@ -2,11 +2,14 @@ import { Logger } from '@nestjs/common';
 import type { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { pathToFileURL } from 'node:url';
 
 import { AppModule } from './app/app.module.js';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
 import { RequestLoggingInterceptor } from './common/interceptors/request-logging.interceptor.js';
 import type { ApplicationEnvironment } from './config/environment.js';
+import { LogsService } from './logs/logs.service.js';
+import { RequestContextService } from './logs/request-context.service.js';
 
 export const configureApiApp = (
   app: INestApplication,
@@ -14,27 +17,34 @@ export const configureApiApp = (
 ): void => {
   const apiPrefix = configService.get('apiPrefix', { infer: true });
   const corsOrigin = configService.get('corsOrigin', { infer: true });
+  const logsService = app.get(LogsService);
+  const requestContextService = app.get(RequestContextService);
 
   app.enableCors({
     origin: corsOrigin === '*' ? true : corsOrigin,
     credentials: true,
   });
   app.setGlobalPrefix(apiPrefix);
-  app.useGlobalFilters(new HttpExceptionFilter());
-  app.useGlobalInterceptors(new RequestLoggingInterceptor());
+  app.use((request, response, next) => {
+    requestContextService.run(request, response, next);
+  });
+  app.useGlobalFilters(
+    new HttpExceptionFilter(logsService, requestContextService),
+  );
+  app.useGlobalInterceptors(
+    new RequestLoggingInterceptor(logsService, requestContextService),
+  );
 };
 
-async function bootstrap() {
+export async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   });
-
   const logger = new Logger('Bootstrap');
   const configService =
     app.get<ConfigService<ApplicationEnvironment, true>>(ConfigService);
-
   const apiPrefix = configService.get('apiPrefix', { infer: true });
-  const port = Number(process.env.PORT ?? configService.get('port', { infer: true }) ?? 3000);
+  const port = configService.get('port', { infer: true });
 
   configureApiApp(app, configService);
 
@@ -42,4 +52,11 @@ async function bootstrap() {
   logger.log(`API listening on http://localhost:${port}/${apiPrefix}`);
 }
 
-void bootstrap();
+const entrypointPath = process.argv[1];
+const isDirectExecution =
+  entrypointPath !== undefined &&
+  import.meta.url === pathToFileURL(entrypointPath).href;
+
+if (isDirectExecution) {
+  void bootstrap();
+}

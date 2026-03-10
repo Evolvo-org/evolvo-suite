@@ -5,16 +5,19 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { AgentsModule } from '../agents/agents.module.js';
+import { AutomationModule } from '../automation/automation.module.js';
 import { AuthModule } from '../auth/auth.module.js';
 import { BillingModule } from '../billing/billing.module.js';
 import { validateEnvironment } from '../config/environment.js';
 import { HealthModule } from '../health/health.module.js';
+import { InterventionsModule } from '../interventions/interventions.module.js';
 import { LogsModule } from '../logs/logs.module.js';
 import { PlanningModule } from '../planning/planning.module.js';
 import { PrismaModule } from '../prisma/prisma.module.js';
 import { ProjectsModule } from '../projects/projects.module.js';
 import { RealtimeModule } from '../realtime/realtime.module.js';
 import { ReleasesModule } from '../releases/releases.module.js';
+import { ReviewGatesModule } from '../review-gates/review-gates.module.js';
 import { RuntimeModule } from '../runtime/runtime.module.js';
 import { SchedulerModule } from '../scheduler/scheduler.module.js';
 import { SettingsModule } from '../settings/settings.module.js';
@@ -38,6 +41,7 @@ const environmentFilePath = existsSync(rootEnvironmentFilePath)
       validate: validateEnvironment,
     }),
     PrismaModule,
+    AutomationModule,
     AuthModule,
     UsersModule,
     HealthModule,
@@ -49,6 +53,8 @@ const environmentFilePath = existsSync(rootEnvironmentFilePath)
     RuntimeModule,
     WorktreesModule,
     AgentsModule,
+    InterventionsModule,
+    ReviewGatesModule,
     ReleasesModule,
     UsageModule,
     BillingModule,

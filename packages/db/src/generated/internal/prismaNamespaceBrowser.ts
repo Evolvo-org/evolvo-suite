@@ -51,6 +51,16 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  AgentRun: 'AgentRun',
+  AgentDecision: 'AgentDecision',
+  AgentFailure: 'AgentFailure',
+  PromptSnapshot: 'PromptSnapshot',
+  AgentRunArtifact: 'AgentRunArtifact',
+  StripeCustomer: 'StripeCustomer',
+  Subscription: 'Subscription',
+  BillingWebhookEvent: 'BillingWebhookEvent',
+  HumanInterventionCase: 'HumanInterventionCase',
+  StructuredLogEntry: 'StructuredLogEntry',
   Epic: 'Epic',
   WorkItem: 'WorkItem',
   WorkItemComment: 'WorkItemComment',
@@ -58,14 +68,27 @@ export const ModelName = {
   WorkItemDependency: 'WorkItemDependency',
   WorkItemStateTransition: 'WorkItemStateTransition',
   Project: 'Project',
+  ProjectAgentRouting: 'ProjectAgentRouting',
   ProjectRepository: 'ProjectRepository',
   ProjectQueueLimits: 'ProjectQueueLimits',
   SystemQueueLimits: 'SystemQueueLimits',
+  SystemAgentRouting: 'SystemAgentRouting',
   ProductSpec: 'ProductSpec',
   DevelopmentPlan: 'DevelopmentPlan',
   PlanVersion: 'PlanVersion',
+  ReleaseRun: 'ReleaseRun',
+  ReleaseVersion: 'ReleaseVersion',
+  ReleaseNote: 'ReleaseNote',
+  ReviewGateResult: 'ReviewGateResult',
+  ReviewGateCheck: 'ReviewGateCheck',
+  ReviewCriterionEvaluation: 'ReviewCriterionEvaluation',
   RuntimeInstance: 'RuntimeInstance',
-  WorkItemLease: 'WorkItemLease'
+  RuntimeArtifact: 'RuntimeArtifact',
+  SchedulerLaneCursor: 'SchedulerLaneCursor',
+  WorkItemRetryState: 'WorkItemRetryState',
+  WorkItemLease: 'WorkItemLease',
+  UsageEvent: 'UsageEvent',
+  Worktree: 'Worktree'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -82,6 +105,157 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const AgentRunScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  workItemId: 'workItemId',
+  runtimeId: 'runtimeId',
+  leaseId: 'leaseId',
+  agentType: 'agentType',
+  status: 'status',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  summary: 'summary',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AgentRunScalarFieldEnum = (typeof AgentRunScalarFieldEnum)[keyof typeof AgentRunScalarFieldEnum]
+
+
+export const AgentDecisionScalarFieldEnum = {
+  id: 'id',
+  agentRunId: 'agentRunId',
+  decision: 'decision',
+  rationale: 'rationale',
+  createdAt: 'createdAt'
+} as const
+
+export type AgentDecisionScalarFieldEnum = (typeof AgentDecisionScalarFieldEnum)[keyof typeof AgentDecisionScalarFieldEnum]
+
+
+export const AgentFailureScalarFieldEnum = {
+  id: 'id',
+  agentRunId: 'agentRunId',
+  errorMessage: 'errorMessage',
+  details: 'details',
+  createdAt: 'createdAt'
+} as const
+
+export type AgentFailureScalarFieldEnum = (typeof AgentFailureScalarFieldEnum)[keyof typeof AgentFailureScalarFieldEnum]
+
+
+export const PromptSnapshotScalarFieldEnum = {
+  id: 'id',
+  agentRunId: 'agentRunId',
+  systemPrompt: 'systemPrompt',
+  userPrompt: 'userPrompt',
+  messagesJson: 'messagesJson',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PromptSnapshotScalarFieldEnum = (typeof PromptSnapshotScalarFieldEnum)[keyof typeof PromptSnapshotScalarFieldEnum]
+
+
+export const AgentRunArtifactScalarFieldEnum = {
+  id: 'id',
+  agentRunId: 'agentRunId',
+  artifactType: 'artifactType',
+  label: 'label',
+  content: 'content',
+  url: 'url',
+  createdAt: 'createdAt'
+} as const
+
+export type AgentRunArtifactScalarFieldEnum = (typeof AgentRunArtifactScalarFieldEnum)[keyof typeof AgentRunArtifactScalarFieldEnum]
+
+
+export const StripeCustomerScalarFieldEnum = {
+  id: 'id',
+  workspaceKey: 'workspaceKey',
+  stripeCustomerId: 'stripeCustomerId',
+  email: 'email',
+  displayName: 'displayName',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StripeCustomerScalarFieldEnum = (typeof StripeCustomerScalarFieldEnum)[keyof typeof StripeCustomerScalarFieldEnum]
+
+
+export const SubscriptionScalarFieldEnum = {
+  id: 'id',
+  workspaceKey: 'workspaceKey',
+  stripeCustomerId: 'stripeCustomerId',
+  stripeSubscriptionId: 'stripeSubscriptionId',
+  status: 'status',
+  planKey: 'planKey',
+  currentPeriodEnd: 'currentPeriodEnd',
+  cancelAtPeriodEnd: 'cancelAtPeriodEnd',
+  adminBypassActive: 'adminBypassActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
+
+
+export const BillingWebhookEventScalarFieldEnum = {
+  id: 'id',
+  workspaceKey: 'workspaceKey',
+  stripeCustomerId: 'stripeCustomerId',
+  providerEventId: 'providerEventId',
+  eventType: 'eventType',
+  payloadJson: 'payloadJson',
+  receivedAt: 'receivedAt',
+  processedAt: 'processedAt'
+} as const
+
+export type BillingWebhookEventScalarFieldEnum = (typeof BillingWebhookEventScalarFieldEnum)[keyof typeof BillingWebhookEventScalarFieldEnum]
+
+
+export const HumanInterventionCaseScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  workItemId: 'workItemId',
+  status: 'status',
+  summary: 'summary',
+  reason: 'reason',
+  attemptsMade: 'attemptsMade',
+  evidence: 'evidence',
+  suggestedAction: 'suggestedAction',
+  resolutionNotes: 'resolutionNotes',
+  retryCount: 'retryCount',
+  createdAt: 'createdAt',
+  resolvedAt: 'resolvedAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HumanInterventionCaseScalarFieldEnum = (typeof HumanInterventionCaseScalarFieldEnum)[keyof typeof HumanInterventionCaseScalarFieldEnum]
+
+
+export const StructuredLogEntryScalarFieldEnum = {
+  id: 'id',
+  level: 'level',
+  source: 'source',
+  projectId: 'projectId',
+  workItemId: 'workItemId',
+  agentRunId: 'agentRunId',
+  runtimeId: 'runtimeId',
+  userId: 'userId',
+  agentType: 'agentType',
+  eventType: 'eventType',
+  message: 'message',
+  correlationId: 'correlationId',
+  payload: 'payload',
+  occurredAt: 'occurredAt',
+  createdAt: 'createdAt'
+} as const
+
+export type StructuredLogEntryScalarFieldEnum = (typeof StructuredLogEntryScalarFieldEnum)[keyof typeof StructuredLogEntryScalarFieldEnum]
 
 
 export const EpicScalarFieldEnum = {
@@ -180,6 +354,19 @@ export const ProjectScalarFieldEnum = {
 export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
 
 
+export const ProjectAgentRoutingScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  defaultProvider: 'defaultProvider',
+  defaultModel: 'defaultModel',
+  agentRoutesJson: 'agentRoutesJson',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectAgentRoutingScalarFieldEnum = (typeof ProjectAgentRoutingScalarFieldEnum)[keyof typeof ProjectAgentRoutingScalarFieldEnum]
+
+
 export const ProjectRepositoryScalarFieldEnum = {
   id: 'id',
   projectId: 'projectId',
@@ -235,6 +422,18 @@ export const SystemQueueLimitsScalarFieldEnum = {
 export type SystemQueueLimitsScalarFieldEnum = (typeof SystemQueueLimitsScalarFieldEnum)[keyof typeof SystemQueueLimitsScalarFieldEnum]
 
 
+export const SystemAgentRoutingScalarFieldEnum = {
+  id: 'id',
+  defaultProvider: 'defaultProvider',
+  defaultModel: 'defaultModel',
+  agentRoutesJson: 'agentRoutesJson',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SystemAgentRoutingScalarFieldEnum = (typeof SystemAgentRoutingScalarFieldEnum)[keyof typeof SystemAgentRoutingScalarFieldEnum]
+
+
 export const ProductSpecScalarFieldEnum = {
   id: 'id',
   projectId: 'projectId',
@@ -272,6 +471,96 @@ export const PlanVersionScalarFieldEnum = {
 export type PlanVersionScalarFieldEnum = (typeof PlanVersionScalarFieldEnum)[keyof typeof PlanVersionScalarFieldEnum]
 
 
+export const ReleaseRunScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  workItemId: 'workItemId',
+  runtimeId: 'runtimeId',
+  leaseId: 'leaseId',
+  worktreeId: 'worktreeId',
+  status: 'status',
+  summary: 'summary',
+  errorMessage: 'errorMessage',
+  mergeCommitSha: 'mergeCommitSha',
+  releaseUrl: 'releaseUrl',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReleaseRunScalarFieldEnum = (typeof ReleaseRunScalarFieldEnum)[keyof typeof ReleaseRunScalarFieldEnum]
+
+
+export const ReleaseVersionScalarFieldEnum = {
+  id: 'id',
+  releaseRunId: 'releaseRunId',
+  version: 'version',
+  tagName: 'tagName',
+  targetBranch: 'targetBranch',
+  commitSha: 'commitSha',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReleaseVersionScalarFieldEnum = (typeof ReleaseVersionScalarFieldEnum)[keyof typeof ReleaseVersionScalarFieldEnum]
+
+
+export const ReleaseNoteScalarFieldEnum = {
+  id: 'id',
+  releaseRunId: 'releaseRunId',
+  title: 'title',
+  content: 'content',
+  format: 'format',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReleaseNoteScalarFieldEnum = (typeof ReleaseNoteScalarFieldEnum)[keyof typeof ReleaseNoteScalarFieldEnum]
+
+
+export const ReviewGateResultScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  workItemId: 'workItemId',
+  runtimeId: 'runtimeId',
+  leaseId: 'leaseId',
+  agentRunId: 'agentRunId',
+  overallStatus: 'overallStatus',
+  summary: 'summary',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReviewGateResultScalarFieldEnum = (typeof ReviewGateResultScalarFieldEnum)[keyof typeof ReviewGateResultScalarFieldEnum]
+
+
+export const ReviewGateCheckScalarFieldEnum = {
+  id: 'id',
+  reviewGateResultId: 'reviewGateResultId',
+  name: 'name',
+  status: 'status',
+  details: 'details',
+  createdAt: 'createdAt'
+} as const
+
+export type ReviewGateCheckScalarFieldEnum = (typeof ReviewGateCheckScalarFieldEnum)[keyof typeof ReviewGateCheckScalarFieldEnum]
+
+
+export const ReviewCriterionEvaluationScalarFieldEnum = {
+  id: 'id',
+  reviewGateResultId: 'reviewGateResultId',
+  criterionId: 'criterionId',
+  text: 'text',
+  status: 'status',
+  details: 'details',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type ReviewCriterionEvaluationScalarFieldEnum = (typeof ReviewCriterionEvaluationScalarFieldEnum)[keyof typeof ReviewCriterionEvaluationScalarFieldEnum]
+
+
 export const RuntimeInstanceScalarFieldEnum = {
   id: 'id',
   displayName: 'displayName',
@@ -286,6 +575,51 @@ export const RuntimeInstanceScalarFieldEnum = {
 } as const
 
 export type RuntimeInstanceScalarFieldEnum = (typeof RuntimeInstanceScalarFieldEnum)[keyof typeof RuntimeInstanceScalarFieldEnum]
+
+
+export const RuntimeArtifactScalarFieldEnum = {
+  id: 'id',
+  runtimeId: 'runtimeId',
+  leaseId: 'leaseId',
+  artifactType: 'artifactType',
+  fileName: 'fileName',
+  contentType: 'contentType',
+  sizeBytes: 'sizeBytes',
+  storageKey: 'storageKey',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RuntimeArtifactScalarFieldEnum = (typeof RuntimeArtifactScalarFieldEnum)[keyof typeof RuntimeArtifactScalarFieldEnum]
+
+
+export const SchedulerLaneCursorScalarFieldEnum = {
+  lane: 'lane',
+  lastProjectId: 'lastProjectId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SchedulerLaneCursorScalarFieldEnum = (typeof SchedulerLaneCursorScalarFieldEnum)[keyof typeof SchedulerLaneCursorScalarFieldEnum]
+
+
+export const WorkItemRetryStateScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  workItemId: 'workItemId',
+  reviewFailureCount: 'reviewFailureCount',
+  mergeConflictFailureCount: 'mergeConflictFailureCount',
+  runtimeFailureCount: 'runtimeFailureCount',
+  ambiguityFailureCount: 'ambiguityFailureCount',
+  lastFailureCategory: 'lastFailureCategory',
+  lastFailureMessage: 'lastFailureMessage',
+  lastFailureAt: 'lastFailureAt',
+  nextRetryAt: 'nextRetryAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WorkItemRetryStateScalarFieldEnum = (typeof WorkItemRetryStateScalarFieldEnum)[keyof typeof WorkItemRetryStateScalarFieldEnum]
 
 
 export const WorkItemLeaseScalarFieldEnum = {
@@ -309,12 +643,65 @@ export const WorkItemLeaseScalarFieldEnum = {
 export type WorkItemLeaseScalarFieldEnum = (typeof WorkItemLeaseScalarFieldEnum)[keyof typeof WorkItemLeaseScalarFieldEnum]
 
 
+export const UsageEventScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  workItemId: 'workItemId',
+  agentRunId: 'agentRunId',
+  runtimeId: 'runtimeId',
+  userId: 'userId',
+  agentType: 'agentType',
+  provider: 'provider',
+  model: 'model',
+  inputTokens: 'inputTokens',
+  outputTokens: 'outputTokens',
+  totalTokens: 'totalTokens',
+  estimatedCostUsd: 'estimatedCostUsd',
+  occurredAt: 'occurredAt',
+  createdAt: 'createdAt'
+} as const
+
+export type UsageEventScalarFieldEnum = (typeof UsageEventScalarFieldEnum)[keyof typeof UsageEventScalarFieldEnum]
+
+
+export const WorktreeScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  workItemId: 'workItemId',
+  runtimeId: 'runtimeId',
+  leaseId: 'leaseId',
+  status: 'status',
+  path: 'path',
+  branchName: 'branchName',
+  baseBranch: 'baseBranch',
+  headSha: 'headSha',
+  pullRequestUrl: 'pullRequestUrl',
+  isDirty: 'isDirty',
+  details: 'details',
+  lastSeenAt: 'lastSeenAt',
+  cleanupRequestedAt: 'cleanupRequestedAt',
+  cleanupCompletedAt: 'cleanupCompletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WorktreeScalarFieldEnum = (typeof WorktreeScalarFieldEnum)[keyof typeof WorktreeScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {
@@ -331,4 +718,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

@@ -1,0 +1,40 @@
+enum WorktreeStatus {
+  PENDING
+  ACTIVE
+  LOCKED_BY_DEV
+  LOCKED_BY_REVIEW
+  LOCKED_BY_RELEASE
+  STALE
+  CLEANUP_PENDING
+  ARCHIVED
+  FAILED
+}
+
+model Worktree {
+  id                 String         @id @default(cuid())
+  projectId          String
+  workItemId         String         @unique
+  runtimeId          String?
+  leaseId            String?
+  status             WorktreeStatus @default(PENDING)
+  path               String
+  branchName         String
+  baseBranch         String
+  headSha            String?
+  pullRequestUrl     String?
+  isDirty            Boolean        @default(false)
+  details            String?        @db.Text
+  lastSeenAt         DateTime       @default(now())
+  cleanupRequestedAt DateTime?
+  cleanupCompletedAt DateTime?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  workItem           WorkItem       @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+  runtime            RuntimeInstance? @relation(fields: [runtimeId], references: [id], onDelete: SetNull)
+  lease              WorkItemLease? @relation(fields: [leaseId], references: [id], onDelete: SetNull)
+  releaseRuns        ReleaseRun[]
+
+  @@index([projectId, status, updatedAt])
+  @@index([runtimeId, updatedAt])
+  @@index([leaseId, updatedAt])
+}
