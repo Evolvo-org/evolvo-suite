@@ -15,6 +15,7 @@ import { WorkflowService } from '../workflow/workflow.service.js';
 import { WorktreesService } from '../worktrees/worktrees.service.js';
 import { AgentsService } from './agents.service.js';
 import { UsageService } from '../usage/usage.service.js';
+import { LogsService } from '../logs/logs.service.js';
 
 const createSlug = (value: string): string => {
   return value
@@ -40,6 +41,8 @@ export class DevAgentService {
     private readonly agentsService: AgentsService,
     @Inject(UsageService)
     private readonly usageService: UsageService,
+    @Inject(LogsService)
+    private readonly logsService: LogsService,
   ) {}
 
   public async executeTask(
@@ -95,6 +98,25 @@ export class DevAgentService {
     const input = this.buildInput(projectId, workItemId, project, workItem, route, payload);
     const prompt = this.buildPrompt(project.name, workItem);
     const usagePayload = this.buildUsagePayload(route.provider, route.model, prompt);
+
+    await this.logsService.writeLog({
+      level: 'info',
+      source: 'agent',
+      projectId,
+      workItemId,
+      runtimeId: payload.runtimeId,
+      agentType: 'dev',
+      eventType: 'agent.dev.execution.started',
+      message: `Dev agent started ${workItem.title}.`,
+      payload: {
+        runtimeId: payload.runtimeId,
+        leaseId: payload.leaseId ?? null,
+        provider: route.provider,
+        model: route.model,
+        epicTitle: workItem.epic.title,
+      },
+    });
+
     const run = await this.agentsService.createAgentRun(projectId, workItemId, {
       agentType: 'dev',
       runtimeId: payload.runtimeId,
@@ -139,6 +161,26 @@ export class DevAgentService {
       details: `Dev agent is implementing ${workItem.title}.`,
     });
 
+    await this.logsService.writeLog({
+      level: 'info',
+      source: 'agent',
+      projectId,
+      workItemId,
+      agentRunId: run.id,
+      runtimeId: payload.runtimeId,
+      agentType: 'dev',
+      eventType: 'agent.dev.worktree.locked',
+      message: `Dev agent locked worktree ${lockedWorktree.branchName} for ${workItem.title}.`,
+      payload: {
+        runtimeId: payload.runtimeId,
+        leaseId: payload.leaseId ?? null,
+        worktreeId: lockedWorktree.id,
+        path: lockedWorktree.path,
+        branchName: lockedWorktree.branchName,
+        baseBranch,
+      },
+    });
+
     const checks = this.buildChecks(workItem.title);
     const patchArtifactLabel = 'Implementation patch';
     const reportArtifactLabel = 'Execution checks';
@@ -166,6 +208,24 @@ export class DevAgentService {
       artifactType: 'report',
       label: reportArtifactLabel,
       content: reportContent,
+    });
+
+    await this.logsService.writeLog({
+      level: 'info',
+      source: 'agent',
+      projectId,
+      workItemId,
+      agentRunId: run.id,
+      runtimeId: payload.runtimeId,
+      agentType: 'dev',
+      eventType: 'agent.dev.artifacts.recorded',
+      message: `Dev agent recorded artifacts and checks for ${workItem.title}.`,
+      payload: {
+        runtimeId: payload.runtimeId,
+        leaseId: payload.leaseId ?? null,
+        artifactLabels: [patchArtifactLabel, reportArtifactLabel],
+        checks,
+      },
     });
 
     const worktree = await this.worktreesService.upsertWorktree(projectId, {
@@ -198,6 +258,26 @@ export class DevAgentService {
       runtimeId: payload.runtimeId,
       workItemId,
       agentRunId: run.id,
+    });
+
+    await this.logsService.writeLog({
+      level: 'info',
+      source: 'agent',
+      projectId,
+      workItemId,
+      agentRunId: run.id,
+      runtimeId: payload.runtimeId,
+      agentType: 'dev',
+      eventType: 'agent.dev.execution.completed',
+      message: `Dev agent completed ${workItem.title} and moved it to review.`,
+      payload: {
+        runtimeId: payload.runtimeId,
+        leaseId: payload.leaseId ?? null,
+        branchName: worktree.branchName,
+        worktreePath: worktree.path,
+        nextState: 'readyForReview',
+        usageEventId: usageEvent.id,
+      },
     });
 
     return {

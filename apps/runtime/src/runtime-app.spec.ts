@@ -63,6 +63,7 @@ describe('RuntimeApp', () => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }),
+      sendLeaseProgress: vi.fn().mockResolvedValue({}),
       requestWork: vi.fn(),
       requestWorktreeCleanup: vi.fn(),
       markWorktreeStale: vi.fn(),
@@ -125,6 +126,7 @@ describe('RuntimeApp', () => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }),
+      sendLeaseProgress: vi.fn().mockResolvedValue({}),
       requestWork: vi.fn(),
       requestWorktreeCleanup: vi.fn(),
       markWorktreeStale: vi.fn(),
@@ -159,6 +161,7 @@ describe('RuntimeApp', () => {
         .fn()
         .mockRejectedValue(new ApiClientError('Bad request.', 400)),
       sendHeartbeat: vi.fn(),
+      sendLeaseProgress: vi.fn().mockResolvedValue({}),
       requestWork: vi.fn(),
       requestWorktreeCleanup: vi.fn(),
       markWorktreeStale: vi.fn(),
@@ -191,6 +194,7 @@ describe('RuntimeApp', () => {
     const runtimeApiClient = {
       registerRuntime: vi.fn(),
       sendHeartbeat: vi.fn(),
+      sendLeaseProgress: vi.fn().mockResolvedValue({}),
       requestWork: vi.fn(),
       requestWorktreeCleanup: vi.fn(),
       markWorktreeStale: vi.fn(),
@@ -243,6 +247,7 @@ describe('RuntimeApp', () => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }),
+      sendLeaseProgress: vi.fn().mockResolvedValue({}),
       requestWork: vi.fn(),
       requestWorktreeCleanup: vi.fn(),
       markWorktreeStale: vi.fn(),
@@ -273,6 +278,7 @@ describe('RuntimeApp', () => {
     const runtimeApiClient = {
       registerRuntime: vi.fn(),
       sendHeartbeat: vi.fn(),
+      sendLeaseProgress: vi.fn().mockResolvedValue({}),
       requestWork: vi.fn(),
       requestWorktreeCleanup: vi.fn(),
       markWorktreeStale: vi.fn(),
@@ -478,6 +484,7 @@ describe('RuntimeApp', () => {
     const runtimeApiClient = {
       registerRuntime: vi.fn(),
       sendHeartbeat: vi.fn(),
+      sendLeaseProgress: vi.fn().mockResolvedValue({}),
       requestWork: vi.fn(),
       requestWorktreeCleanup: vi.fn(),
       markWorktreeStale: vi.fn(),
@@ -659,6 +666,7 @@ describe('RuntimeApp', () => {
     const runtimeApiClient = {
       registerRuntime: vi.fn(),
       sendHeartbeat: vi.fn(),
+      sendLeaseProgress: vi.fn().mockResolvedValue({}),
       getSchedulerState: vi.fn().mockResolvedValue({
         projectId: null,
         generatedAt: new Date().toISOString(),
@@ -833,6 +841,7 @@ describe('RuntimeApp', () => {
     const runtimeApiClient = {
       registerRuntime: vi.fn(),
       sendHeartbeat: vi.fn(),
+      sendLeaseProgress: vi.fn().mockResolvedValue({}),
       requestWork: vi.fn(),
       requestWorktreeCleanup: vi.fn(),
       markWorktreeStale: vi.fn(),
@@ -970,6 +979,7 @@ describe('RuntimeApp', () => {
     const runtimeApiClient = {
       registerRuntime: vi.fn(),
       sendHeartbeat: vi.fn(),
+      sendLeaseProgress: vi.fn().mockResolvedValue({}),
       requestWork: vi.fn(),
       requestWorktreeCleanup: vi.fn(),
       markWorktreeStale: vi.fn(),

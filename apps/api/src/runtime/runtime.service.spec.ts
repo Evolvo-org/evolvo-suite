@@ -30,6 +30,9 @@ describe('RuntimeService', () => {
     recordFailure: ReturnType<typeof vi.fn>;
     clearFailureState: ReturnType<typeof vi.fn>;
   };
+  let schedulerService: {
+    renewLease: ReturnType<typeof vi.fn>;
+  };
   let interventionsService: {
     getMissingConfigInterventionPayload: ReturnType<typeof vi.fn>;
     getRetryThresholdInterventionPayload: ReturnType<typeof vi.fn>;
@@ -110,6 +113,21 @@ describe('RuntimeService', () => {
       recordFailure: vi.fn().mockResolvedValue(undefined),
       clearFailureState: vi.fn().mockResolvedValue(undefined),
     };
+    schedulerService = {
+      renewLease: vi.fn().mockResolvedValue({
+        id: 'lease-1',
+        projectId: 'project-1',
+        workItemId: 'work-1',
+        runtimeId: 'runtime-1',
+        lane: 'dev',
+        status: 'active',
+        leaseToken: 'lease-token',
+        leasedAt: now.toISOString(),
+        expiresAt: new Date('2026-03-09T12:15:00.000Z').toISOString(),
+        renewedAt: now.toISOString(),
+        releasedAt: null,
+      }),
+    };
     interventionsService = {
       getMissingConfigInterventionPayload: vi.fn().mockReturnValue(null),
       getRetryThresholdInterventionPayload: vi.fn().mockImplementation((decision, errorMessage, summary) => {
@@ -139,7 +157,7 @@ describe('RuntimeService', () => {
       prisma as never,
       interventionsService as never,
       {} as never,
-      {} as never,
+      schedulerService as never,
       retryPolicyService as never,
       logsService as never,
       { assertTransition: vi.fn() } as never,
@@ -262,6 +280,49 @@ describe('RuntimeService', () => {
     expect(logsService.writeLog).toHaveBeenCalledWith(
       expect.objectContaining({
         eventType: 'runtime.job.failed',
+      }),
+    );
+  });
+
+  it('persists structured progress logs for active leases', async () => {
+    prisma.workItemLease.update.mockResolvedValueOnce({
+      id: 'lease-1',
+      projectId: 'project-1',
+      workItemId: 'work-1',
+      runtimeId: 'runtime-1',
+      lane: 'DEV',
+      status: 'ACTIVE',
+      leaseToken: 'lease-token',
+      leasedAt: now,
+      expiresAt: new Date('2026-03-09T12:15:00.000Z'),
+      renewedAt: now,
+      releasedAt: null,
+      recoveredAt: null,
+      recoveryReason: null,
+      workItem: {
+        title: 'Runtime task',
+      },
+    });
+
+    await service.recordProgress('runtime-1', 'lease-1', {
+      leaseToken: 'lease-token',
+      activeJobSummary: 'Preparing repository',
+      lastAction: 'Repository sync finished.',
+      progressPercent: 20,
+    });
+
+    expect(logsService.writeLog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventType: 'runtime.progress.recorded',
+        projectId: 'project-1',
+        workItemId: 'work-1',
+        runtimeId: 'runtime-1',
+        payload: expect.objectContaining({
+          lane: 'dev',
+          activeJobSummary: 'Preparing repository',
+          lastAction: 'Repository sync finished.',
+          progressPercent: 20,
+        }),
       }),
     );
   });

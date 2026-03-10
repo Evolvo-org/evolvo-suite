@@ -27,6 +27,9 @@ describe('DevAgentService', () => {
   let usageService: {
     createUsageEvent: ReturnType<typeof vi.fn>;
   };
+  let logsService: {
+    writeLog: ReturnType<typeof vi.fn>;
+  };
   let service: DevAgentService;
 
   beforeEach(() => {
@@ -101,6 +104,9 @@ describe('DevAgentService', () => {
     usageService = {
       createUsageEvent: vi.fn().mockResolvedValue({ id: 'usage-1' }),
     };
+    logsService = {
+      writeLog: vi.fn().mockResolvedValue(undefined),
+    };
 
     service = new DevAgentService(
       prisma as never,
@@ -109,6 +115,7 @@ describe('DevAgentService', () => {
       worktreesService as never,
       agentsService as never,
       usageService as never,
+      logsService as never,
     );
   });
 
@@ -124,6 +131,22 @@ describe('DevAgentService', () => {
     expect(worktreesService.upsertWorktree).toHaveBeenCalledTimes(2);
     expect(agentsService.createArtifact).toHaveBeenCalledTimes(2);
     expect(usageService.createUsageEvent).toHaveBeenCalledOnce();
+    expect(logsService.writeLog).toHaveBeenCalledTimes(4);
+    expect(logsService.writeLog).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        eventType: 'agent.dev.execution.started',
+        projectId: 'project-1',
+        workItemId: 'work-1',
+      }),
+    );
+    expect(logsService.writeLog).toHaveBeenNthCalledWith(
+      4,
+      expect.objectContaining({
+        eventType: 'agent.dev.execution.completed',
+        agentRunId: 'run-1',
+      }),
+    );
   });
 
   it('uses runtime-provided worktree context when execution already prepared one', async () => {

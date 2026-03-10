@@ -391,6 +391,28 @@ export class RuntimeService {
       },
     });
 
+    await this.logsService.writeLog({
+      level: 'info',
+      source: 'runtime',
+      projectId: lease.projectId,
+      workItemId: lease.workItemId,
+      runtimeId,
+      eventType: 'runtime.progress.recorded',
+      message: `Runtime ${runtimeId} reported progress for ${lease.workItem.title}.`,
+      payload: {
+        runtimeId,
+        leaseId,
+        lane: normalizeLeaseLane(lease.lane),
+        activeJobSummary:
+          payload.activeJobSummary?.trim() ??
+          `Working on ${lease.workItem.title}${progressSuffix}`,
+        lastAction:
+          payload.lastAction?.trim() ??
+          `Progress update recorded for ${lease.workItem.title}${progressSuffix}.`,
+        progressPercent: payload.progressPercent ?? null,
+      },
+    });
+
     return renewedLease;
   }
 

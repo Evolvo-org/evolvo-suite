@@ -344,11 +344,18 @@ export class RuntimeApp {
       receivedAt: new Date().toISOString(),
     };
 
+    await this.reportLeaseStage({
+      activeJobSummary: `Leased ${dispatch.workItem.title} for ${dispatch.lease.lane}`,
+      lastAction: `Lease ${dispatch.lease.id} acquired for ${dispatch.workItem.title}.`,
+    });
+
     try {
       if (dispatch.lease.lane === 'planning') {
         this.startLeaseProgressLoop();
-        this.activeJobSummary = `Planning ${dispatch.workItem.title}`;
-        this.lastAction = `Executing planning for work item ${dispatch.workItem.id}.`;
+        await this.reportLeaseStage({
+          activeJobSummary: `Planning ${dispatch.workItem.title}`,
+          lastAction: `Executing planning for work item ${dispatch.workItem.id}.`,
+        });
 
         const planningExecution = await this.planningExecutionService.execute({
           dispatch,
@@ -420,6 +427,12 @@ export class RuntimeApp {
         repository: dispatch.project.repository,
       });
 
+      await this.reportLeaseStage({
+        activeJobSummary: `Preparing repository for ${dispatch.workItem.title}`,
+        lastAction: `Repository synced for ${dispatch.workItem.id} at ${repoRegistration.localPath}.`,
+        progressPercent: 20,
+      });
+
       const resolvedRepository =
         repoRegistration.repository ?? dispatch.project.repository;
       const branchName = this.branchManager.createBranchName({
@@ -473,11 +486,18 @@ export class RuntimeApp {
       };
 
       this.startLeaseProgressLoop();
-      this.lastAction = `Lease ${dispatch.lease.id} acquired and branch ${branchName} prepared at ${repoRegistration.localPath}.`;
+      await this.reportLeaseStage({
+        activeJobSummary: `Prepared worktree for ${dispatch.workItem.title}`,
+        lastAction: `Lease ${dispatch.lease.id} acquired and branch ${branchName} prepared at ${repoRegistration.localPath}.`,
+        progressPercent: 45,
+      });
 
       if (dispatch.lease.lane === 'dev') {
-        this.activeJobSummary = `Executing ${dispatch.workItem.title} in ${preparedWorktree.branchName}`;
-        this.lastAction = `Executing dev work item ${dispatch.workItem.id} in ${preparedWorktree.path}.`;
+        await this.reportLeaseStage({
+          activeJobSummary: `Executing ${dispatch.workItem.title} in ${preparedWorktree.branchName}`,
+          lastAction: `Executing dev work item ${dispatch.workItem.id} in ${preparedWorktree.path}.`,
+          progressPercent: 65,
+        });
 
         const execution = await this.runtimeApiClient.executeDevTask({
           projectId: dispatch.project.id,
@@ -697,7 +717,10 @@ export class RuntimeApp {
         return null;
       }
 
+      this.currentStatus = 'busy';
+      this.activeJobSummary = `Selecting next ready-for-dev task from ${candidates.length} candidates`;
       this.lastAction = `Selecting next ready-for-dev task via AI: ${selected.workItemId}.`;
+      await this.flushHeartbeat(this.lastAction, true);
 
       const dispatch = await this.runtimeApiClient.requestWork(
         this.environment.runtimeId,
@@ -795,6 +818,30 @@ export class RuntimeApp {
           this.activeJobSummary ??
           `Working on ${this.activeLeaseContext.lease.workItemTitle}`,
         lastAction: this.lastAction,
+      },
+    );
+  }
+
+  private async reportLeaseStage(input: {
+    activeJobSummary: string;
+    lastAction: string;
+    progressPercent?: number;
+  }): Promise<void> {
+    this.activeJobSummary = input.activeJobSummary;
+    this.lastAction = input.lastAction;
+
+    if (!this.activeLeaseContext) {
+      return;
+    }
+
+    await this.runtimeApiClient.sendLeaseProgress(
+      this.environment.runtimeId,
+      this.activeLeaseContext.lease.id,
+      {
+        leaseToken: this.activeLeaseContext.lease.leaseToken,
+        activeJobSummary: input.activeJobSummary,
+        lastAction: input.lastAction,
+        progressPercent: input.progressPercent,
       },
     );
   }

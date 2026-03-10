@@ -87,6 +87,8 @@ const formatPlanningApprovalTimestamp = (timestamp: string | null): string | nul
   return new Date(timestamp).toLocaleString();
 };
 
+const runtimeRefreshIntervalMs = 5_000;
+
 export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -109,6 +111,7 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
   const runtimeDashboardQuery = useQuery({
     queryKey: projectQueryKeys.runtimeDashboard(projectId),
     queryFn: () => getRuntimeDashboard(projectId),
+    refetchInterval: runtimeRefreshIntervalMs,
   });
 
   const releaseHistoryQuery = useQuery({

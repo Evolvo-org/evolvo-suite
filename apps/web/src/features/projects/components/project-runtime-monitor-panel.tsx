@@ -60,6 +60,8 @@ const stringifyPayload = (value: unknown): string | null => {
   }
 };
 
+const runtimeRefreshIntervalMs = 5_000;
+
 export const ProjectRuntimeMonitorPanel = ({
   projectId,
 }: {
@@ -70,10 +72,12 @@ export const ProjectRuntimeMonitorPanel = ({
   const projectQuery = useQuery({
     queryKey: projectQueryKeys.detail(projectId),
     queryFn: () => getProjectDetail(projectId),
+    refetchInterval: runtimeRefreshIntervalMs,
   });
   const runtimeDashboardQuery = useQuery({
     queryKey: projectQueryKeys.runtimeDashboard(projectId),
     queryFn: () => getRuntimeDashboard(projectId),
+    refetchInterval: runtimeRefreshIntervalMs,
   });
 
   const logFilters = useMemo(
@@ -87,6 +91,7 @@ export const ProjectRuntimeMonitorPanel = ({
   const logsQuery = useQuery({
     queryKey: projectQueryKeys.logs(projectId, logFilters),
     queryFn: () => getProjectLogs(projectId, logFilters),
+    refetchInterval: runtimeRefreshIntervalMs,
   });
 
   if (projectQuery.isLoading) {
