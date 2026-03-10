@@ -27,6 +27,16 @@ import { z } from 'zod';
 const workItemKinds = ['task', 'subtask'] as const;
 const workItemPriorities = ['low', 'medium', 'high', 'urgent'] as const;
 const completedReleaseRunStatuses = ['succeeded', 'failed', 'cancelled'] as const;
+const optionalNonEmptyString = z.preprocess(
+  (value) => {
+    if (typeof value !== 'string') {
+      return value;
+    }
+
+    return value.trim().length === 0 ? undefined : value;
+  },
+  z.string().trim().min(1).optional(),
+);
 
 const inboxIdeaCandidateSchema = z.object({
   title: z.string().trim().min(1).max(200),
@@ -627,7 +637,7 @@ export const runtimeEnvironmentSchema = z.object({
   RUNTIME_DISPLAY_NAME: z.string().trim().min(1).max(160).optional(),
   RUNTIME_CAPABILITIES: z.string().trim().default('git,leases,heartbeats'),
   API_BASE_URL: z.string().trim().url().default('http://localhost:3000/api/v1'),
-  API_AUTH_TOKEN: z.string().trim().min(1).optional(),
+  API_AUTH_TOKEN: optionalNonEmptyString,
   API_RETRY_MAX_ATTEMPTS: z.coerce.number().int().min(1).max(10).default(3),
   API_RETRY_BASE_DELAY_MS: z.coerce.number().int().positive().default(500),
   REPOSITORIES_ROOT: z.string().trim().min(1).default('./.runtime/repos'),
