@@ -188,12 +188,12 @@ export class AuthService {
 
   private verifyToken(token: string): SessionTokenPayload {
     const parts = token.split('.');
+    const encodedPayload = parts[0];
+    const encodedSignature = parts[1];
 
-    if (parts.length !== 2) {
+    if (parts.length !== 2 || !encodedPayload || !encodedSignature) {
       throw new UnauthorizedException('Invalid bearer token.');
     }
-
-    const [encodedPayload, encodedSignature] = parts;
     const expectedSignature = createHmac(
       'sha256',
       this.configService.get('authSessionSecret', { infer: true }),

@@ -20,3 +20,5 @@ Local worker shell for Evolvo v2.
 - `LEASE_PROGRESS_INTERVAL_MS` - lease renewal and progress update cadence while a task is active
 
 This shell intentionally has no orchestration state. The API remains the source of truth.
+
+On startup, runtime registration now keeps retrying while the API is still booting or temporarily unavailable. Non-retryable API responses such as 4xx validation failures still fail fast.

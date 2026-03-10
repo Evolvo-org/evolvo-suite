@@ -1,4 +1,5 @@
 import { mkdir } from 'node:fs/promises';
+import { ApiClientError } from '@repo/api-client';
 import type {
   RuntimeDetailResponse,
   RuntimeHealthStatus,
@@ -19,6 +20,12 @@ import {
   RuntimeIdentityStore,
 } from './runtime-identity-store';
 import { WorktreeManager } from './worktree-manager';
+
+const sleep = async (durationMs: number): Promise<void> => {
+  await new Promise((resolve) => {
+    setTimeout(resolve, durationMs);
+  });
+};
 
 export class RuntimeApp {
   private isStopping = false;
@@ -138,21 +145,68 @@ export class RuntimeApp {
   }
 
   private async registerRuntime(): Promise<void> {
-    const detail = await this.runtimeApiClient.registerRuntime({
-      runtimeId: this.environment.runtimeId,
-      displayName: this.environment.runtimeDisplayName,
-      capabilities: this.environment.runtimeCapabilities,
-    });
+    let attempt = 0;
+    let lastError: unknown;
 
-    this.registeredIdentity = detail;
-    this.lastAction = 'Runtime registered with API.';
-    this.lastError = detail.lastError;
-    await this.persistIdentity(detail);
-    log('info', 'Runtime registration completed.', {
-      runtimeId: detail.runtimeId,
-      connectionStatus: detail.connectionStatus,
-      capabilities: detail.capabilities,
-    });
+    while (!this.isStopping) {
+      attempt += 1;
+
+      try {
+        const detail = await this.runtimeApiClient.registerRuntime({
+          runtimeId: this.environment.runtimeId,
+          displayName: this.environment.runtimeDisplayName,
+          capabilities: this.environment.runtimeCapabilities,
+        });
+
+        this.registeredIdentity = detail;
+        this.lastAction = 'Runtime registered with API.';
+        this.lastError = detail.lastError;
+        await this.persistIdentity(detail);
+        log('info', 'Runtime registration completed.', {
+          runtimeId: detail.runtimeId,
+          connectionStatus: detail.connectionStatus,
+          capabilities: detail.capabilities,
+        });
+        return;
+      } catch (error) {
+        lastError = error;
+
+        if (!this.isRetryableStartupError(error)) {
+          throw error;
+        }
+
+        const delayMs = Math.min(
+          this.environment.apiRetryBaseDelayMs * 2 ** (attempt - 1),
+          10_000,
+        );
+        const message =
+          error instanceof Error ? error.message : 'Unknown registration error';
+
+        this.currentStatus = 'degraded';
+        this.lastError = message;
+        this.lastAction = 'Waiting for API runtime registration to succeed.';
+
+        log('warn', 'Runtime registration is waiting for API availability.', {
+          runtimeId: this.environment.runtimeId,
+          apiBaseUrl: this.environment.apiBaseUrl,
+          attempt,
+          delayMs,
+          error: message,
+        });
+
+        await sleep(delayMs);
+      }
+    }
+
+    throw lastError ?? new Error('Runtime registration aborted during shutdown.');
+  }
+
+  private isRetryableStartupError(error: unknown): boolean {
+    if (!(error instanceof ApiClientError)) {
+      return true;
+    }
+
+    return error.statusCode === 429 || error.statusCode >= 500;
   }
 
   private startHeartbeatLoop(): void {

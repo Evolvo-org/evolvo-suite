@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { ApiClientError } from '@repo/api-client';
 
 import type { RuntimeEnvironment } from './config';
 import { RuntimeApp } from './runtime-app';
@@ -85,5 +86,94 @@ describe('RuntimeApp', () => {
 
     await app.stop('SIGTERM');
     expect(runtimeApiClient.sendHeartbeat).toHaveBeenCalledTimes(3);
+  });
+
+  it('keeps retrying runtime registration until the API becomes available', async () => {
+    vi.useRealTimers();
+
+    const runtimeApiClient = {
+      registerRuntime: vi
+        .fn()
+        .mockRejectedValueOnce(new Error('fetch failed'))
+        .mockResolvedValue({
+          runtimeId: environment.runtimeId,
+          displayName: environment.runtimeDisplayName,
+          connectionStatus: 'online',
+          reportedStatus: 'idle',
+          capabilities: environment.runtimeCapabilities,
+          activeJobSummary: null,
+          lastAction: null,
+          lastError: null,
+          lastSeenAt: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }),
+      sendHeartbeat: vi.fn().mockResolvedValue({
+        runtimeId: environment.runtimeId,
+        displayName: environment.runtimeDisplayName,
+        connectionStatus: 'online',
+        reportedStatus: 'idle',
+        capabilities: environment.runtimeCapabilities,
+        activeJobSummary: null,
+        lastAction: null,
+        lastError: null,
+        lastSeenAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }),
+      requestWork: vi.fn(),
+      requestWorktreeCleanup: vi.fn(),
+      markWorktreeStale: vi.fn(),
+      upsertWorktree: vi.fn(),
+      listProjectWorktrees: vi.fn().mockResolvedValue({ projectId: 'p1', items: [] }),
+    };
+
+    const app = new RuntimeApp(
+      environment,
+      runtimeApiClient as never,
+      { load: vi.fn().mockResolvedValue(null), save: vi.fn().mockResolvedValue(undefined) } as never,
+      { ensureStorage: vi.fn().mockResolvedValue(undefined), getMetadataFilePath: vi.fn().mockReturnValue('/tmp/registry.json') } as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      { reconcileOnStartup: vi.fn().mockResolvedValue(undefined) } as never,
+    );
+
+    const startPromise = app.start();
+
+    await startPromise;
+
+    expect(runtimeApiClient.registerRuntime).toHaveBeenCalledTimes(2);
+    expect(runtimeApiClient.sendHeartbeat).toHaveBeenCalledOnce();
+
+    await app.stop('SIGTERM');
+  }, 2_000);
+
+  it('fails fast on non-retryable registration errors', async () => {
+    const runtimeApiClient = {
+      registerRuntime: vi
+        .fn()
+        .mockRejectedValue(new ApiClientError('Bad request.', 400)),
+      sendHeartbeat: vi.fn(),
+      requestWork: vi.fn(),
+      requestWorktreeCleanup: vi.fn(),
+      markWorktreeStale: vi.fn(),
+      upsertWorktree: vi.fn(),
+      listProjectWorktrees: vi.fn().mockResolvedValue({ projectId: 'p1', items: [] }),
+    };
+
+    const app = new RuntimeApp(
+      environment,
+      runtimeApiClient as never,
+      { load: vi.fn().mockResolvedValue(null), save: vi.fn().mockResolvedValue(undefined) } as never,
+      { ensureStorage: vi.fn().mockResolvedValue(undefined), getMetadataFilePath: vi.fn().mockReturnValue('/tmp/registry.json') } as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      { reconcileOnStartup: vi.fn().mockResolvedValue(undefined) } as never,
+    );
+
+    await expect(app.start()).rejects.toThrow('Bad request.');
+    expect(runtimeApiClient.registerRuntime).toHaveBeenCalledOnce();
   });
 });

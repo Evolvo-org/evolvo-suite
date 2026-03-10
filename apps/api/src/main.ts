@@ -2,7 +2,6 @@ import { Logger } from '@nestjs/common';
 import type { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { pathToFileURL } from 'node:url';
 
 import { AppModule } from './app/app.module.js';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
@@ -52,11 +51,11 @@ export async function bootstrap() {
   logger.log(`API listening on http://localhost:${port}/${apiPrefix}`);
 }
 
-const entrypointPath = process.argv[1];
-const isDirectExecution =
-  entrypointPath !== undefined &&
-  import.meta.url === pathToFileURL(entrypointPath).href;
-
-if (isDirectExecution) {
-  void bootstrap();
-}
+void bootstrap().catch((error: unknown) => {
+  const logger = new Logger('Bootstrap');
+  logger.error(
+    'API failed during startup.',
+    error instanceof Error ? error.stack : String(error),
+  );
+  process.exit(1);
+});
