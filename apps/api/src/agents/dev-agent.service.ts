@@ -115,12 +115,18 @@ export class DevAgentService {
       reason: 'Dev agent started implementation in a task-scoped worktree.',
     });
 
-    const branchName = `dev/${workItemId}-${createSlug(workItem.title)}`;
-    const worktreePath = `/worktrees/${project.slug}/${branchName}`;
-    const headSha = createHash('sha1')
-      .update(`${projectId}:${workItemId}:${branchName}:${prompt}`)
-      .digest('hex')
-      .slice(0, 12);
+    const branchName =
+      payload.branchName?.trim() ||
+      `dev/${workItemId}-${createSlug(workItem.title)}`;
+    const worktreePath =
+      payload.worktreePath?.trim() || `/worktrees/${project.slug}/${branchName}`;
+    const baseBranch = payload.baseBranch?.trim() || project.repository.baseBranch;
+    const headSha =
+      payload.headSha?.trim() ||
+      createHash('sha1')
+        .update(`${projectId}:${workItemId}:${branchName}:${prompt}`)
+        .digest('hex')
+        .slice(0, 12);
 
     const lockedWorktree = await this.worktreesService.upsertWorktree(projectId, {
       workItemId,
@@ -129,7 +135,7 @@ export class DevAgentService {
       status: 'lockedByDev',
       path: worktreePath,
       branchName,
-      baseBranch: project.repository.baseBranch,
+      baseBranch,
       details: `Dev agent is implementing ${workItem.title}.`,
     });
 
@@ -169,7 +175,7 @@ export class DevAgentService {
       status: 'active',
       path: worktreePath,
       branchName,
-      baseBranch: project.repository.baseBranch,
+      baseBranch,
       headSha,
       isDirty: false,
       details: 'Implementation completed and checks passed.',

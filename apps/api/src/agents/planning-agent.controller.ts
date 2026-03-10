@@ -1,6 +1,6 @@
 import { Body, Controller, Inject, Param, Post } from '@nestjs/common';
-import type { TriageInboxIdeaRequest } from '@repo/shared';
-import { triageInboxIdeaSchema } from '@repo/validation';
+import type { ExecutePlanningRequest } from '@repo/shared';
+import { executePlanningSchema } from '@repo/validation';
 
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe.js';
 
@@ -13,14 +13,14 @@ export class PlanningAgentController {
     private readonly planningAgentService: PlanningAgentService,
   ) {}
 
-  @Post('work-items/:workItemId/triage')
-  public async triageInboxIdea(
+  @Post('work-items/:workItemId/execute')
+  public async executePlanning(
     @Param('projectId') projectId: string,
     @Param('workItemId') workItemId: string,
-    @Body(new ZodValidationPipe(triageInboxIdeaSchema))
-    body: TriageInboxIdeaRequest,
+    @Body(new ZodValidationPipe(executePlanningSchema))
+    body: ExecutePlanningRequest,
   ) {
-    const result = await this.planningAgentService.triageInboxIdea(
+    const result = await this.planningAgentService.executePlanning(
       projectId,
       workItemId,
       body,
@@ -28,7 +28,7 @@ export class PlanningAgentController {
 
     return {
       success: true as const,
-      message: 'Inbox idea triaged successfully.',
+      message: 'Planning executed successfully.',
       data: result,
     };
   }

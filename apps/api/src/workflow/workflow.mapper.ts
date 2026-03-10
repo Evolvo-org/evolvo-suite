@@ -21,7 +21,6 @@ import type {
 } from '@repo/shared';
 
 const workflowLabelMap: Record<WorkItemState, string> = {
-  inbox: 'Inbox',
   planning: 'Planning',
   readyForDev: 'Ready for dev',
   inDev: 'In dev',
@@ -51,7 +50,7 @@ export const mapWorkflowState = (value: WorkItem['state']): WorkItemState => {
     case 'RELEASED':
       return 'released';
     default:
-      return 'inbox';
+      return 'planning';
   }
 };
 
@@ -71,7 +70,6 @@ export const mapWorkflowPriority = (
 };
 
 export const createEmptyBoardCounts = (): KanbanBoardCounts => ({
-  inbox: 0,
   planning: 0,
   readyForDev: 0,
   inDev: 0,

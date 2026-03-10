@@ -31,7 +31,6 @@ describe('Project usage analytics', () => {
       activePlanVersionNumber: 2,
       metrics: {
         kanbanCounts: {
-          inbox: 1,
           planning: 1,
           readyForDev: 2,
           inDev: 1,
@@ -104,7 +103,7 @@ describe('Project usage analytics', () => {
           estimatedCostUsd: 0.109,
         },
         {
-          key: 'anthropic:claude-sonnet-4',
+          key: 'codex:codex-mini-latest',
           totalEvents: 3,
           inputTokens: 2200,
           outputTokens: 900,

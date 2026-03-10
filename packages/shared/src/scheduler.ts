@@ -1,4 +1,4 @@
-export const schedulerLeaseLanes = ['dev', 'review', 'release'] as const;
+export const schedulerLeaseLanes = ['planning', 'dev', 'review', 'release'] as const;
 
 export type SchedulerLeaseLane = (typeof schedulerLeaseLanes)[number];
 
@@ -6,6 +6,7 @@ export const schedulerProjectSkipReasons = [
   'paused',
   'openIntervention',
   'queueCapReached',
+  'missingPlanningContext',
 ] as const;
 
 export type SchedulerProjectSkipReason =

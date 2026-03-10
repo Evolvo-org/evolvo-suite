@@ -5,6 +5,7 @@ import { PlanningAgentService } from './planning-agent.service.js';
 describe('PlanningAgentService', () => {
   let prisma: {
     project: { findUnique: ReturnType<typeof vi.fn> };
+    developmentPlan: { updateMany: ReturnType<typeof vi.fn> };
     workItem: {
       findFirst: ReturnType<typeof vi.fn>;
       update: ReturnType<typeof vi.fn>;
@@ -25,6 +26,9 @@ describe('PlanningAgentService', () => {
     ensureProjectExists: ReturnType<typeof vi.fn>;
     resolveProjectAgentRoute: ReturnType<typeof vi.fn>;
     getProjectQueueLimits: ReturnType<typeof vi.fn>;
+  };
+  let developmentPlansService: {
+    clearPlanningApproval: ReturnType<typeof vi.fn>;
   };
   let workflowService: {
     transitionWorkItem: ReturnType<typeof vi.fn>;
@@ -64,6 +68,9 @@ describe('PlanningAgentService', () => {
           },
         }),
       },
+      developmentPlan: {
+        updateMany: vi.fn().mockResolvedValue({ count: 1 }),
+      },
       workItem: {
         findFirst: vi
           .fn()
@@ -73,7 +80,7 @@ describe('PlanningAgentService', () => {
             title: 'Improve release safety',
             description: 'Add safer release controls and verification.',
             priority: 'HIGH',
-            state: 'INBOX',
+            state: 'PLANNING',
             epic: null,
             acceptanceCriteria: [],
           })
@@ -111,6 +118,9 @@ describe('PlanningAgentService', () => {
         },
       }),
     };
+    developmentPlansService = {
+      clearPlanningApproval: vi.fn().mockResolvedValue(undefined),
+    };
     workflowService = {
       transitionWorkItem: vi.fn().mockResolvedValue(undefined),
       createWorkItemComment: vi.fn().mockResolvedValue(undefined),
@@ -128,22 +138,32 @@ describe('PlanningAgentService', () => {
     service = new PlanningAgentService(
       prisma as never,
       projectsService as never,
+      developmentPlansService as never,
       workflowService as never,
       agentsService as never,
       usageService as never,
     );
   });
 
-  it('accepts an inbox idea, decomposes it, and fills ready-for-dev capacity', async () => {
-    const result = await service.triageInboxIdea('project-1', 'work-1', {
+  it('accepts a planning request and decomposes it into planning work', async () => {
+    const result = await service.executePlanning('project-1', 'work-1', {
       runtimeId: 'runtime-1',
+      leaseId: 'lease-1',
     });
 
     expect(result.accepted).toBe(true);
     expect(result.tasks).toHaveLength(2);
-    expect(result.promotedToReadyForDevIds).toEqual(['sub-1']);
-    expect(workflowService.transitionWorkItem).toHaveBeenCalledTimes(4);
+    expect(result.promotedToReadyForDevIds).toEqual([]);
+    expect(workflowService.transitionWorkItem).not.toHaveBeenCalled();
     expect(agentsService.createArtifact).toHaveBeenCalledOnce();
     expect(usageService.createUsageEvent).toHaveBeenCalledOnce();
+    expect(agentsService.createAgentRun).toHaveBeenCalledWith(
+      'project-1',
+      'work-1',
+      expect.objectContaining({
+        runtimeId: 'runtime-1',
+        leaseId: 'lease-1',
+      }),
+    );
   });
 });

@@ -8,7 +8,6 @@ export const agentRunStatuses = [
 export type AgentRunStatus = (typeof agentRunStatuses)[number];
 
 export const agentTypes = [
-  'inbox',
   'planning',
   'dev',
   'review',
@@ -16,6 +15,15 @@ export const agentTypes = [
 ] as const;
 
 export type AgentType = (typeof agentTypes)[number];
+
+export const activeAiAgentTypes = [
+  'planning',
+  'dev',
+  'review',
+  'release',
+] as const;
+
+export type ActiveAiAgentType = (typeof activeAiAgentTypes)[number];
 
 export const agentFailureCategories = [
   'runtime',

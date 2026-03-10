@@ -234,6 +234,8 @@ export type PlanVersionWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"PlanVersion"> | Date | string
   developmentPlan?: Prisma.XOR<Prisma.DevelopmentPlanScalarRelationFilter, Prisma.DevelopmentPlanWhereInput>
   activatedBy?: Prisma.XOR<Prisma.DevelopmentPlanNullableScalarRelationFilter, Prisma.DevelopmentPlanWhereInput> | null
+  approvedByPlan?: Prisma.XOR<Prisma.DevelopmentPlanNullableScalarRelationFilter, Prisma.DevelopmentPlanWhereInput> | null
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditListRelationFilter
 }
 
 export type PlanVersionOrderByWithRelationInput = {
@@ -246,6 +248,8 @@ export type PlanVersionOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   developmentPlan?: Prisma.DevelopmentPlanOrderByWithRelationInput
   activatedBy?: Prisma.DevelopmentPlanOrderByWithRelationInput
+  approvedByPlan?: Prisma.DevelopmentPlanOrderByWithRelationInput
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditOrderByRelationAggregateInput
 }
 
 export type PlanVersionWhereUniqueInput = Prisma.AtLeast<{
@@ -262,6 +266,8 @@ export type PlanVersionWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"PlanVersion"> | Date | string
   developmentPlan?: Prisma.XOR<Prisma.DevelopmentPlanScalarRelationFilter, Prisma.DevelopmentPlanWhereInput>
   activatedBy?: Prisma.XOR<Prisma.DevelopmentPlanNullableScalarRelationFilter, Prisma.DevelopmentPlanWhereInput> | null
+  approvedByPlan?: Prisma.XOR<Prisma.DevelopmentPlanNullableScalarRelationFilter, Prisma.DevelopmentPlanWhereInput> | null
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditListRelationFilter
 }, "id" | "developmentPlanId_versionNumber">
 
 export type PlanVersionOrderByWithAggregationInput = {
@@ -301,6 +307,8 @@ export type PlanVersionCreateInput = {
   createdAt?: Date | string
   developmentPlan: Prisma.DevelopmentPlanCreateNestedOneWithoutVersionsInput
   activatedBy?: Prisma.DevelopmentPlanCreateNestedOneWithoutActiveVersionInput
+  approvedByPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutPlanningApprovedVersionInput
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditCreateNestedManyWithoutPlanVersionInput
 }
 
 export type PlanVersionUncheckedCreateInput = {
@@ -312,6 +320,8 @@ export type PlanVersionUncheckedCreateInput = {
   summary?: string | null
   createdAt?: Date | string
   activatedBy?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutActiveVersionInput
+  approvedByPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutPlanningApprovedVersionInput
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditUncheckedCreateNestedManyWithoutPlanVersionInput
 }
 
 export type PlanVersionUpdateInput = {
@@ -323,6 +333,8 @@ export type PlanVersionUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneRequiredWithoutVersionsNestedInput
   activatedBy?: Prisma.DevelopmentPlanUpdateOneWithoutActiveVersionNestedInput
+  approvedByPlan?: Prisma.DevelopmentPlanUpdateOneWithoutPlanningApprovedVersionNestedInput
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditUpdateManyWithoutPlanVersionNestedInput
 }
 
 export type PlanVersionUncheckedUpdateInput = {
@@ -334,6 +346,8 @@ export type PlanVersionUncheckedUpdateInput = {
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activatedBy?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutActiveVersionNestedInput
+  approvedByPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutPlanningApprovedVersionNestedInput
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditUncheckedUpdateManyWithoutPlanVersionNestedInput
 }
 
 export type PlanVersionCreateManyInput = {
@@ -423,9 +437,20 @@ export type PlanVersionSumOrderByAggregateInput = {
   versionNumber?: Prisma.SortOrder
 }
 
+export type PlanVersionScalarRelationFilter = {
+  is?: Prisma.PlanVersionWhereInput
+  isNot?: Prisma.PlanVersionWhereInput
+}
+
 export type PlanVersionCreateNestedOneWithoutActivatedByInput = {
   create?: Prisma.XOR<Prisma.PlanVersionCreateWithoutActivatedByInput, Prisma.PlanVersionUncheckedCreateWithoutActivatedByInput>
   connectOrCreate?: Prisma.PlanVersionCreateOrConnectWithoutActivatedByInput
+  connect?: Prisma.PlanVersionWhereUniqueInput
+}
+
+export type PlanVersionCreateNestedOneWithoutApprovedByPlanInput = {
+  create?: Prisma.XOR<Prisma.PlanVersionCreateWithoutApprovedByPlanInput, Prisma.PlanVersionUncheckedCreateWithoutApprovedByPlanInput>
+  connectOrCreate?: Prisma.PlanVersionCreateOrConnectWithoutApprovedByPlanInput
   connect?: Prisma.PlanVersionWhereUniqueInput
 }
 
@@ -451,6 +476,16 @@ export type PlanVersionUpdateOneWithoutActivatedByNestedInput = {
   delete?: Prisma.PlanVersionWhereInput | boolean
   connect?: Prisma.PlanVersionWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.PlanVersionUpdateToOneWithWhereWithoutActivatedByInput, Prisma.PlanVersionUpdateWithoutActivatedByInput>, Prisma.PlanVersionUncheckedUpdateWithoutActivatedByInput>
+}
+
+export type PlanVersionUpdateOneWithoutApprovedByPlanNestedInput = {
+  create?: Prisma.XOR<Prisma.PlanVersionCreateWithoutApprovedByPlanInput, Prisma.PlanVersionUncheckedCreateWithoutApprovedByPlanInput>
+  connectOrCreate?: Prisma.PlanVersionCreateOrConnectWithoutApprovedByPlanInput
+  upsert?: Prisma.PlanVersionUpsertWithoutApprovedByPlanInput
+  disconnect?: Prisma.PlanVersionWhereInput | boolean
+  delete?: Prisma.PlanVersionWhereInput | boolean
+  connect?: Prisma.PlanVersionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PlanVersionUpdateToOneWithWhereWithoutApprovedByPlanInput, Prisma.PlanVersionUpdateWithoutApprovedByPlanInput>, Prisma.PlanVersionUncheckedUpdateWithoutApprovedByPlanInput>
 }
 
 export type PlanVersionUpdateManyWithoutDevelopmentPlanNestedInput = {
@@ -481,6 +516,20 @@ export type PlanVersionUncheckedUpdateManyWithoutDevelopmentPlanNestedInput = {
   deleteMany?: Prisma.PlanVersionScalarWhereInput | Prisma.PlanVersionScalarWhereInput[]
 }
 
+export type PlanVersionCreateNestedOneWithoutApprovalAuditEventsInput = {
+  create?: Prisma.XOR<Prisma.PlanVersionCreateWithoutApprovalAuditEventsInput, Prisma.PlanVersionUncheckedCreateWithoutApprovalAuditEventsInput>
+  connectOrCreate?: Prisma.PlanVersionCreateOrConnectWithoutApprovalAuditEventsInput
+  connect?: Prisma.PlanVersionWhereUniqueInput
+}
+
+export type PlanVersionUpdateOneRequiredWithoutApprovalAuditEventsNestedInput = {
+  create?: Prisma.XOR<Prisma.PlanVersionCreateWithoutApprovalAuditEventsInput, Prisma.PlanVersionUncheckedCreateWithoutApprovalAuditEventsInput>
+  connectOrCreate?: Prisma.PlanVersionCreateOrConnectWithoutApprovalAuditEventsInput
+  upsert?: Prisma.PlanVersionUpsertWithoutApprovalAuditEventsInput
+  connect?: Prisma.PlanVersionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PlanVersionUpdateToOneWithWhereWithoutApprovalAuditEventsInput, Prisma.PlanVersionUpdateWithoutApprovalAuditEventsInput>, Prisma.PlanVersionUncheckedUpdateWithoutApprovalAuditEventsInput>
+}
+
 export type PlanVersionCreateWithoutActivatedByInput = {
   id?: string
   versionNumber: number
@@ -489,6 +538,8 @@ export type PlanVersionCreateWithoutActivatedByInput = {
   summary?: string | null
   createdAt?: Date | string
   developmentPlan: Prisma.DevelopmentPlanCreateNestedOneWithoutVersionsInput
+  approvedByPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutPlanningApprovedVersionInput
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditCreateNestedManyWithoutPlanVersionInput
 }
 
 export type PlanVersionUncheckedCreateWithoutActivatedByInput = {
@@ -499,11 +550,42 @@ export type PlanVersionUncheckedCreateWithoutActivatedByInput = {
   content: string
   summary?: string | null
   createdAt?: Date | string
+  approvedByPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutPlanningApprovedVersionInput
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditUncheckedCreateNestedManyWithoutPlanVersionInput
 }
 
 export type PlanVersionCreateOrConnectWithoutActivatedByInput = {
   where: Prisma.PlanVersionWhereUniqueInput
   create: Prisma.XOR<Prisma.PlanVersionCreateWithoutActivatedByInput, Prisma.PlanVersionUncheckedCreateWithoutActivatedByInput>
+}
+
+export type PlanVersionCreateWithoutApprovedByPlanInput = {
+  id?: string
+  versionNumber: number
+  title: string
+  content: string
+  summary?: string | null
+  createdAt?: Date | string
+  developmentPlan: Prisma.DevelopmentPlanCreateNestedOneWithoutVersionsInput
+  activatedBy?: Prisma.DevelopmentPlanCreateNestedOneWithoutActiveVersionInput
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditCreateNestedManyWithoutPlanVersionInput
+}
+
+export type PlanVersionUncheckedCreateWithoutApprovedByPlanInput = {
+  id?: string
+  developmentPlanId: string
+  versionNumber: number
+  title: string
+  content: string
+  summary?: string | null
+  createdAt?: Date | string
+  activatedBy?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutActiveVersionInput
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditUncheckedCreateNestedManyWithoutPlanVersionInput
+}
+
+export type PlanVersionCreateOrConnectWithoutApprovedByPlanInput = {
+  where: Prisma.PlanVersionWhereUniqueInput
+  create: Prisma.XOR<Prisma.PlanVersionCreateWithoutApprovedByPlanInput, Prisma.PlanVersionUncheckedCreateWithoutApprovedByPlanInput>
 }
 
 export type PlanVersionCreateWithoutDevelopmentPlanInput = {
@@ -514,6 +596,8 @@ export type PlanVersionCreateWithoutDevelopmentPlanInput = {
   summary?: string | null
   createdAt?: Date | string
   activatedBy?: Prisma.DevelopmentPlanCreateNestedOneWithoutActiveVersionInput
+  approvedByPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutPlanningApprovedVersionInput
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditCreateNestedManyWithoutPlanVersionInput
 }
 
 export type PlanVersionUncheckedCreateWithoutDevelopmentPlanInput = {
@@ -524,6 +608,8 @@ export type PlanVersionUncheckedCreateWithoutDevelopmentPlanInput = {
   summary?: string | null
   createdAt?: Date | string
   activatedBy?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutActiveVersionInput
+  approvedByPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutPlanningApprovedVersionInput
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditUncheckedCreateNestedManyWithoutPlanVersionInput
 }
 
 export type PlanVersionCreateOrConnectWithoutDevelopmentPlanInput = {
@@ -555,6 +641,8 @@ export type PlanVersionUpdateWithoutActivatedByInput = {
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneRequiredWithoutVersionsNestedInput
+  approvedByPlan?: Prisma.DevelopmentPlanUpdateOneWithoutPlanningApprovedVersionNestedInput
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditUpdateManyWithoutPlanVersionNestedInput
 }
 
 export type PlanVersionUncheckedUpdateWithoutActivatedByInput = {
@@ -565,6 +653,43 @@ export type PlanVersionUncheckedUpdateWithoutActivatedByInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approvedByPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutPlanningApprovedVersionNestedInput
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditUncheckedUpdateManyWithoutPlanVersionNestedInput
+}
+
+export type PlanVersionUpsertWithoutApprovedByPlanInput = {
+  update: Prisma.XOR<Prisma.PlanVersionUpdateWithoutApprovedByPlanInput, Prisma.PlanVersionUncheckedUpdateWithoutApprovedByPlanInput>
+  create: Prisma.XOR<Prisma.PlanVersionCreateWithoutApprovedByPlanInput, Prisma.PlanVersionUncheckedCreateWithoutApprovedByPlanInput>
+  where?: Prisma.PlanVersionWhereInput
+}
+
+export type PlanVersionUpdateToOneWithWhereWithoutApprovedByPlanInput = {
+  where?: Prisma.PlanVersionWhereInput
+  data: Prisma.XOR<Prisma.PlanVersionUpdateWithoutApprovedByPlanInput, Prisma.PlanVersionUncheckedUpdateWithoutApprovedByPlanInput>
+}
+
+export type PlanVersionUpdateWithoutApprovedByPlanInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  versionNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  developmentPlan?: Prisma.DevelopmentPlanUpdateOneRequiredWithoutVersionsNestedInput
+  activatedBy?: Prisma.DevelopmentPlanUpdateOneWithoutActiveVersionNestedInput
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditUpdateManyWithoutPlanVersionNestedInput
+}
+
+export type PlanVersionUncheckedUpdateWithoutApprovedByPlanInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  developmentPlanId?: Prisma.StringFieldUpdateOperationsInput | string
+  versionNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  activatedBy?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutActiveVersionNestedInput
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditUncheckedUpdateManyWithoutPlanVersionNestedInput
 }
 
 export type PlanVersionUpsertWithWhereUniqueWithoutDevelopmentPlanInput = {
@@ -596,6 +721,70 @@ export type PlanVersionScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"PlanVersion"> | Date | string
 }
 
+export type PlanVersionCreateWithoutApprovalAuditEventsInput = {
+  id?: string
+  versionNumber: number
+  title: string
+  content: string
+  summary?: string | null
+  createdAt?: Date | string
+  developmentPlan: Prisma.DevelopmentPlanCreateNestedOneWithoutVersionsInput
+  activatedBy?: Prisma.DevelopmentPlanCreateNestedOneWithoutActiveVersionInput
+  approvedByPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutPlanningApprovedVersionInput
+}
+
+export type PlanVersionUncheckedCreateWithoutApprovalAuditEventsInput = {
+  id?: string
+  developmentPlanId: string
+  versionNumber: number
+  title: string
+  content: string
+  summary?: string | null
+  createdAt?: Date | string
+  activatedBy?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutActiveVersionInput
+  approvedByPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutPlanningApprovedVersionInput
+}
+
+export type PlanVersionCreateOrConnectWithoutApprovalAuditEventsInput = {
+  where: Prisma.PlanVersionWhereUniqueInput
+  create: Prisma.XOR<Prisma.PlanVersionCreateWithoutApprovalAuditEventsInput, Prisma.PlanVersionUncheckedCreateWithoutApprovalAuditEventsInput>
+}
+
+export type PlanVersionUpsertWithoutApprovalAuditEventsInput = {
+  update: Prisma.XOR<Prisma.PlanVersionUpdateWithoutApprovalAuditEventsInput, Prisma.PlanVersionUncheckedUpdateWithoutApprovalAuditEventsInput>
+  create: Prisma.XOR<Prisma.PlanVersionCreateWithoutApprovalAuditEventsInput, Prisma.PlanVersionUncheckedCreateWithoutApprovalAuditEventsInput>
+  where?: Prisma.PlanVersionWhereInput
+}
+
+export type PlanVersionUpdateToOneWithWhereWithoutApprovalAuditEventsInput = {
+  where?: Prisma.PlanVersionWhereInput
+  data: Prisma.XOR<Prisma.PlanVersionUpdateWithoutApprovalAuditEventsInput, Prisma.PlanVersionUncheckedUpdateWithoutApprovalAuditEventsInput>
+}
+
+export type PlanVersionUpdateWithoutApprovalAuditEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  versionNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  developmentPlan?: Prisma.DevelopmentPlanUpdateOneRequiredWithoutVersionsNestedInput
+  activatedBy?: Prisma.DevelopmentPlanUpdateOneWithoutActiveVersionNestedInput
+  approvedByPlan?: Prisma.DevelopmentPlanUpdateOneWithoutPlanningApprovedVersionNestedInput
+}
+
+export type PlanVersionUncheckedUpdateWithoutApprovalAuditEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  developmentPlanId?: Prisma.StringFieldUpdateOperationsInput | string
+  versionNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  activatedBy?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutActiveVersionNestedInput
+  approvedByPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutPlanningApprovedVersionNestedInput
+}
+
 export type PlanVersionCreateManyDevelopmentPlanInput = {
   id?: string
   versionNumber: number
@@ -613,6 +802,8 @@ export type PlanVersionUpdateWithoutDevelopmentPlanInput = {
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activatedBy?: Prisma.DevelopmentPlanUpdateOneWithoutActiveVersionNestedInput
+  approvedByPlan?: Prisma.DevelopmentPlanUpdateOneWithoutPlanningApprovedVersionNestedInput
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditUpdateManyWithoutPlanVersionNestedInput
 }
 
 export type PlanVersionUncheckedUpdateWithoutDevelopmentPlanInput = {
@@ -623,6 +814,8 @@ export type PlanVersionUncheckedUpdateWithoutDevelopmentPlanInput = {
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activatedBy?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutActiveVersionNestedInput
+  approvedByPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutPlanningApprovedVersionNestedInput
+  approvalAuditEvents?: Prisma.DevelopmentPlanApprovalAuditUncheckedUpdateManyWithoutPlanVersionNestedInput
 }
 
 export type PlanVersionUncheckedUpdateManyWithoutDevelopmentPlanInput = {
@@ -635,6 +828,35 @@ export type PlanVersionUncheckedUpdateManyWithoutDevelopmentPlanInput = {
 }
 
 
+/**
+ * Count Type PlanVersionCountOutputType
+ */
+
+export type PlanVersionCountOutputType = {
+  approvalAuditEvents: number
+}
+
+export type PlanVersionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  approvalAuditEvents?: boolean | PlanVersionCountOutputTypeCountApprovalAuditEventsArgs
+}
+
+/**
+ * PlanVersionCountOutputType without action
+ */
+export type PlanVersionCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlanVersionCountOutputType
+   */
+  select?: Prisma.PlanVersionCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * PlanVersionCountOutputType without action
+ */
+export type PlanVersionCountOutputTypeCountApprovalAuditEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DevelopmentPlanApprovalAuditWhereInput
+}
+
 
 export type PlanVersionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -646,6 +868,9 @@ export type PlanVersionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   createdAt?: boolean
   developmentPlan?: boolean | Prisma.DevelopmentPlanDefaultArgs<ExtArgs>
   activatedBy?: boolean | Prisma.PlanVersion$activatedByArgs<ExtArgs>
+  approvedByPlan?: boolean | Prisma.PlanVersion$approvedByPlanArgs<ExtArgs>
+  approvalAuditEvents?: boolean | Prisma.PlanVersion$approvalAuditEventsArgs<ExtArgs>
+  _count?: boolean | Prisma.PlanVersionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["planVersion"]>
 
 export type PlanVersionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -684,6 +909,9 @@ export type PlanVersionOmit<ExtArgs extends runtime.Types.Extensions.InternalArg
 export type PlanVersionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   developmentPlan?: boolean | Prisma.DevelopmentPlanDefaultArgs<ExtArgs>
   activatedBy?: boolean | Prisma.PlanVersion$activatedByArgs<ExtArgs>
+  approvedByPlan?: boolean | Prisma.PlanVersion$approvedByPlanArgs<ExtArgs>
+  approvalAuditEvents?: boolean | Prisma.PlanVersion$approvalAuditEventsArgs<ExtArgs>
+  _count?: boolean | Prisma.PlanVersionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PlanVersionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   developmentPlan?: boolean | Prisma.DevelopmentPlanDefaultArgs<ExtArgs>
@@ -697,6 +925,8 @@ export type $PlanVersionPayload<ExtArgs extends runtime.Types.Extensions.Interna
   objects: {
     developmentPlan: Prisma.$DevelopmentPlanPayload<ExtArgs>
     activatedBy: Prisma.$DevelopmentPlanPayload<ExtArgs> | null
+    approvedByPlan: Prisma.$DevelopmentPlanPayload<ExtArgs> | null
+    approvalAuditEvents: Prisma.$DevelopmentPlanApprovalAuditPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1102,6 +1332,8 @@ export interface Prisma__PlanVersionClient<T, Null = never, ExtArgs extends runt
   readonly [Symbol.toStringTag]: "PrismaPromise"
   developmentPlan<T extends Prisma.DevelopmentPlanDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DevelopmentPlanDefaultArgs<ExtArgs>>): Prisma.Prisma__DevelopmentPlanClient<runtime.Types.Result.GetResult<Prisma.$DevelopmentPlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   activatedBy<T extends Prisma.PlanVersion$activatedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlanVersion$activatedByArgs<ExtArgs>>): Prisma.Prisma__DevelopmentPlanClient<runtime.Types.Result.GetResult<Prisma.$DevelopmentPlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  approvedByPlan<T extends Prisma.PlanVersion$approvedByPlanArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlanVersion$approvedByPlanArgs<ExtArgs>>): Prisma.Prisma__DevelopmentPlanClient<runtime.Types.Result.GetResult<Prisma.$DevelopmentPlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  approvalAuditEvents<T extends Prisma.PlanVersion$approvalAuditEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlanVersion$approvalAuditEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DevelopmentPlanApprovalAuditPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1550,6 +1782,49 @@ export type PlanVersion$activatedByArgs<ExtArgs extends runtime.Types.Extensions
    */
   include?: Prisma.DevelopmentPlanInclude<ExtArgs> | null
   where?: Prisma.DevelopmentPlanWhereInput
+}
+
+/**
+ * PlanVersion.approvedByPlan
+ */
+export type PlanVersion$approvedByPlanArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DevelopmentPlan
+   */
+  select?: Prisma.DevelopmentPlanSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DevelopmentPlan
+   */
+  omit?: Prisma.DevelopmentPlanOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DevelopmentPlanInclude<ExtArgs> | null
+  where?: Prisma.DevelopmentPlanWhereInput
+}
+
+/**
+ * PlanVersion.approvalAuditEvents
+ */
+export type PlanVersion$approvalAuditEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DevelopmentPlanApprovalAudit
+   */
+  select?: Prisma.DevelopmentPlanApprovalAuditSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DevelopmentPlanApprovalAudit
+   */
+  omit?: Prisma.DevelopmentPlanApprovalAuditOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DevelopmentPlanApprovalAuditInclude<ExtArgs> | null
+  where?: Prisma.DevelopmentPlanApprovalAuditWhereInput
+  orderBy?: Prisma.DevelopmentPlanApprovalAuditOrderByWithRelationInput | Prisma.DevelopmentPlanApprovalAuditOrderByWithRelationInput[]
+  cursor?: Prisma.DevelopmentPlanApprovalAuditWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DevelopmentPlanApprovalAuditScalarFieldEnum | Prisma.DevelopmentPlanApprovalAuditScalarFieldEnum[]
 }
 
 /**

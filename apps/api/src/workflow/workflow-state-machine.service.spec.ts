@@ -7,8 +7,8 @@ describe('WorkflowStateMachineService', () => {
 
   it('allows documented base transitions', () => {
     expect(() =>
-      service.assertTransition('inbox', {
-        toState: 'planning',
+      service.assertTransition('planning', {
+        toState: 'readyForDev',
       }),
     ).not.toThrow();
 
@@ -21,7 +21,7 @@ describe('WorkflowStateMachineService', () => {
 
   it('rejects invalid transitions without override', () => {
     expect(() =>
-      service.assertTransition('inbox', {
+      service.assertTransition('planning', {
         toState: 'released',
       }),
     ).toThrow('Invalid workflow transition.');

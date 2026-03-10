@@ -59,7 +59,6 @@ describe('Project create flow', () => {
           activePlanVersionNumber: null,
           metrics: {
             kanbanCounts: {
-              inbox: 0,
               planning: 0,
               readyForDev: 0,
               inDev: 0,
@@ -107,7 +106,6 @@ describe('Project create flow', () => {
       activePlanVersionNumber: null,
       metrics: {
         kanbanCounts: {
-          inbox: 0,
           planning: 0,
           readyForDev: 0,
           inDev: 0,

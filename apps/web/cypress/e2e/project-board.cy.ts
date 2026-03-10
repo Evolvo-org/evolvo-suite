@@ -29,7 +29,6 @@ const projectFixture = {
   activePlanVersionNumber: 2,
   metrics: {
     kanbanCounts: {
-      inbox: 1,
       planning: 1,
       readyForDev: 1,
       inDev: 0,
@@ -49,7 +48,6 @@ const projectFixture = {
 const buildBoardResponse = (planningState: 'planning' | 'readyForDev') => ({
   projectId: 'project-1',
   counts: {
-    inbox: 1,
     planning: planningState === 'planning' ? 1 : 0,
     readyForDev: planningState === 'readyForDev' ? 2 : 1,
     inDev: 0,
@@ -60,11 +58,6 @@ const buildBoardResponse = (planningState: 'planning' | 'readyForDev') => ({
     released: 0,
   },
   columns: [
-    {
-      state: 'inbox',
-      label: 'Inbox',
-      items: [],
-    },
     {
       state: 'planning',
       label: 'Planning',

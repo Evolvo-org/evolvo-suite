@@ -5,6 +5,8 @@ export interface RuntimeEnvironment {
   runtimeId: string;
   runtimeDisplayName: string;
   runtimeCapabilities: string[];
+  openAiApiKey: string | null;
+  codexApiKey: string | null;
   apiBaseUrl: string;
   apiAuthToken: string | null;
   apiRetryMaxAttempts: number;
@@ -30,6 +32,8 @@ export const loadRuntimeEnvironment = (
     runtimeCapabilities: parsed.RUNTIME_CAPABILITIES.split(',')
       .map((value) => value.trim())
       .filter((value, index, items) => value.length > 0 && items.indexOf(value) === index),
+    openAiApiKey: parsed.OPENAI_API_KEY ?? null,
+    codexApiKey: parsed.CODEX_API_KEY ?? null,
     apiBaseUrl: parsed.API_BASE_URL,
     apiAuthToken: parsed.API_AUTH_TOKEN ?? null,
     apiRetryMaxAttempts: parsed.API_RETRY_MAX_ATTEMPTS,

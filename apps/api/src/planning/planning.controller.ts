@@ -46,6 +46,17 @@ export class PlanningController {
     return this.planningService.getHierarchy(projectId);
   }
 
+  @Post('expand')
+  public async expandPlan(@Param('projectId') projectId: string) {
+    const result = await this.planningService.expandPlan(projectId);
+
+    return {
+      success: true as const,
+      message: 'Planning expansion queued successfully.',
+      data: result,
+    };
+  }
+
   @Post('epics')
   public async createEpic(
     @Param('projectId') projectId: string,

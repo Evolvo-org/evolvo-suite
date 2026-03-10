@@ -7,6 +7,7 @@ import {
   deleteAcceptanceCriterion,
   deleteEpic,
   deleteWorkItem,
+  expandPlanningHierarchy,
   getPlanningHierarchy,
   getProjectDetail,
   projectQueryKeys,
@@ -18,12 +19,14 @@ import {
 } from '@repo/api-client';
 import type {
   AcceptanceCriterionItem,
+  ExpandPlanningHierarchyResponse,
   EpicNode,
   MutationResponse,
   PlanningHierarchyResponse,
   WorkItemNode,
   WorkItemPriority,
 } from '@repo/shared';
+import { Badge } from '@repo/ui/components/badge/badge';
 import { Button } from '@repo/ui/components/button/button';
 import { Card } from '@repo/ui/components/card/card';
 import { Input } from '@repo/ui/components/input/input';
@@ -82,6 +85,14 @@ const formatPriorityLabel = (priority: WorkItemPriority): string => {
   return priority.charAt(0).toUpperCase() + priority.slice(1);
 };
 
+const formatPlanningApprovalTimestamp = (timestamp: string | null): string | null => {
+  if (!timestamp) {
+    return null;
+  }
+
+  return new Date(timestamp).toLocaleString();
+};
+
 export const PlanningHierarchyPanel = ({
   projectId,
 }: {
@@ -98,6 +109,8 @@ export const PlanningHierarchyPanel = ({
     queryFn: () => getPlanningHierarchy(projectId),
   });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [expansionResult, setExpansionResult] =
+    useState<ExpandPlanningHierarchyResponse | null>(null);
   const [newEpicTitle, setNewEpicTitle] = useState('');
   const [newEpicSummary, setNewEpicSummary] = useState('');
 
@@ -122,6 +135,39 @@ export const PlanningHierarchyPanel = ({
       pushToast({
         description: message,
         title: 'Planning change failed',
+        variant: 'error',
+      });
+    },
+  });
+
+  const planExpansionMutation = useMutation({
+    mutationFn: () => expandPlanningHierarchy(projectId),
+    onSuccess: async (response) => {
+      setErrorMessage(null);
+      setExpansionResult(response.data);
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: projectQueryKeys.detail(projectId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: projectQueryKeys.planningHierarchy(projectId),
+        }),
+      ]);
+      pushToast({
+        description: response.data.summary,
+        title: 'Plan expansion queued',
+        variant: 'success',
+      });
+    },
+    onError: (error) => {
+      const message = getErrorToastMessage(
+        error,
+        'Unable to queue planning expansion.',
+      );
+      setErrorMessage(message);
+      pushToast({
+        description: message,
+        title: 'Planning expansion failed',
         variant: 'error',
       });
     },
@@ -160,6 +206,25 @@ export const PlanningHierarchyPanel = ({
   }
 
   const hierarchy = hierarchyQuery.data;
+  const planningApproval = hierarchy.planningApproval;
+  const approvalTimestamp = formatPlanningApprovalTimestamp(
+    planningApproval.approvedAt,
+  );
+  const hasApprovalDrift =
+    !planningApproval.isApproved && planningApproval.approvedVersionId != null;
+  const approvalTone = planningApproval.isApproved
+    ? 'success'
+    : hasApprovalDrift
+      ? 'warning'
+      : 'neutral';
+  const approvalLabel = planningApproval.isApproved
+    ? 'Approved for execution'
+    : hasApprovalDrift
+      ? 'Approval no longer matches the active plan'
+      : 'Approval required';
+  const canExpandPlan =
+    projectQuery.data.productSpecVersion !== null &&
+    projectQuery.data.activePlanVersionNumber !== null;
 
   return (
     <div className="space-y-6">
@@ -184,6 +249,14 @@ export const PlanningHierarchyPanel = ({
 
       <div className="grid gap-4 xl:grid-cols-3">
         <Card className="space-y-2 p-6" title="Hierarchy summary">
+          <div className="flex flex-wrap items-center gap-3">
+            <Badge tone={approvalTone}>{approvalLabel}</Badge>
+            <span className="text-sm text-zinc-600 dark:text-zinc-400">
+              {projectQuery.data.activePlanVersionNumber
+                ? `Active version v${projectQuery.data.activePlanVersionNumber}`
+                : 'No active plan version'}
+            </span>
+          </div>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Epics: {hierarchy.epics.length}
           </p>
@@ -193,6 +266,48 @@ export const PlanningHierarchyPanel = ({
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Acceptance criteria: {hierarchy.acceptanceCriteriaCount}
           </p>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            {planningApproval.isApproved
+              ? `Approved by ${planningApproval.approvedBy ?? 'Unknown operator'}${approvalTimestamp ? ` on ${approvalTimestamp}` : ''}.`
+              : hasApprovalDrift
+                ? 'Planning changes cleared the previous approval. Re-approve the active plan version before promoting work to ready for dev.'
+                : 'Planning still needs operator approval before execution can begin.'}
+          </p>
+          {planningApproval.summary ? (
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+              {planningApproval.summary}
+            </p>
+          ) : null}
+          <div className="pt-2">
+            <Button
+              disabled={!canExpandPlan || planExpansionMutation.isPending}
+              onClick={() => {
+                void planExpansionMutation.mutateAsync();
+              }}
+            >
+              {planExpansionMutation.isPending
+                ? 'Queueing plan expansion...'
+                : 'Expand active plan'}
+            </Button>
+          </div>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            {canExpandPlan
+              ? 'Queue planning requests from the active product spec and development plan. The runtime planning lane will turn each queued section into an epic as work is processed.'
+              : 'A product specification and an active development plan version are both required before planning expansion can be queued.'}
+          </p>
+          {expansionResult ? (
+            <div className="rounded-2xl border border-zinc-800/10 bg-zinc-50 p-4 dark:border-white/10 dark:bg-zinc-900/70">
+              <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                {expansionResult.summary}
+              </p>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Queued: {expansionResult.queuedItems.length}
+                {expansionResult.skippedTitles.length > 0
+                  ? ` · Skipped existing sections: ${expansionResult.skippedTitles.join(', ')}`
+                  : ''}
+              </p>
+            </div>
+          ) : null}
         </Card>
 
         <Card className="space-y-2 p-6 xl:col-span-2" title="Create epic">

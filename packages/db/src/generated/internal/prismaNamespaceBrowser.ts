@@ -76,6 +76,7 @@ export const ModelName = {
   ProductSpec: 'ProductSpec',
   DevelopmentPlan: 'DevelopmentPlan',
   PlanVersion: 'PlanVersion',
+  DevelopmentPlanApprovalAudit: 'DevelopmentPlanApprovalAudit',
   ReleaseRun: 'ReleaseRun',
   ReleaseVersion: 'ReleaseVersion',
   ReleaseNote: 'ReleaseNote',
@@ -451,6 +452,10 @@ export const DevelopmentPlanScalarFieldEnum = {
   projectId: 'projectId',
   title: 'title',
   activeVersionId: 'activeVersionId',
+  planningApprovedVersionId: 'planningApprovedVersionId',
+  planningApprovedAt: 'planningApprovedAt',
+  planningApprovedBy: 'planningApprovedBy',
+  planningApprovalSummary: 'planningApprovalSummary',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -469,6 +474,19 @@ export const PlanVersionScalarFieldEnum = {
 } as const
 
 export type PlanVersionScalarFieldEnum = (typeof PlanVersionScalarFieldEnum)[keyof typeof PlanVersionScalarFieldEnum]
+
+
+export const DevelopmentPlanApprovalAuditScalarFieldEnum = {
+  id: 'id',
+  developmentPlanId: 'developmentPlanId',
+  planVersionId: 'planVersionId',
+  action: 'action',
+  actorName: 'actorName',
+  summary: 'summary',
+  createdAt: 'createdAt'
+} as const
+
+export type DevelopmentPlanApprovalAuditScalarFieldEnum = (typeof DevelopmentPlanApprovalAuditScalarFieldEnum)[keyof typeof DevelopmentPlanApprovalAuditScalarFieldEnum]
 
 
 export const ReleaseRunScalarFieldEnum = {

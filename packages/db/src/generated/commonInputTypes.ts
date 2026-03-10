@@ -413,6 +413,23 @@ export type EnumProjectRepositoryProviderWithAggregatesFilter<$PrismaModel = nev
   _max?: Prisma.NestedEnumProjectRepositoryProviderFilter<$PrismaModel>
 }
 
+export type EnumPlanningApprovalAuditActionFilter<$PrismaModel = never> = {
+  equals?: $Enums.PlanningApprovalAuditAction | Prisma.EnumPlanningApprovalAuditActionFieldRefInput<$PrismaModel>
+  in?: $Enums.PlanningApprovalAuditAction[] | Prisma.ListEnumPlanningApprovalAuditActionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PlanningApprovalAuditAction[] | Prisma.ListEnumPlanningApprovalAuditActionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPlanningApprovalAuditActionFilter<$PrismaModel> | $Enums.PlanningApprovalAuditAction
+}
+
+export type EnumPlanningApprovalAuditActionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PlanningApprovalAuditAction | Prisma.EnumPlanningApprovalAuditActionFieldRefInput<$PrismaModel>
+  in?: $Enums.PlanningApprovalAuditAction[] | Prisma.ListEnumPlanningApprovalAuditActionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PlanningApprovalAuditAction[] | Prisma.ListEnumPlanningApprovalAuditActionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPlanningApprovalAuditActionWithAggregatesFilter<$PrismaModel> | $Enums.PlanningApprovalAuditAction
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPlanningApprovalAuditActionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPlanningApprovalAuditActionFilter<$PrismaModel>
+}
+
 export type EnumReleaseRunStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.ReleaseRunStatus | Prisma.EnumReleaseRunStatusFieldRefInput<$PrismaModel>
   in?: $Enums.ReleaseRunStatus[] | Prisma.ListEnumReleaseRunStatusFieldRefInput<$PrismaModel>
@@ -1037,6 +1054,23 @@ export type NestedEnumProjectRepositoryProviderWithAggregatesFilter<$PrismaModel
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumProjectRepositoryProviderFilter<$PrismaModel>
   _max?: Prisma.NestedEnumProjectRepositoryProviderFilter<$PrismaModel>
+}
+
+export type NestedEnumPlanningApprovalAuditActionFilter<$PrismaModel = never> = {
+  equals?: $Enums.PlanningApprovalAuditAction | Prisma.EnumPlanningApprovalAuditActionFieldRefInput<$PrismaModel>
+  in?: $Enums.PlanningApprovalAuditAction[] | Prisma.ListEnumPlanningApprovalAuditActionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PlanningApprovalAuditAction[] | Prisma.ListEnumPlanningApprovalAuditActionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPlanningApprovalAuditActionFilter<$PrismaModel> | $Enums.PlanningApprovalAuditAction
+}
+
+export type NestedEnumPlanningApprovalAuditActionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PlanningApprovalAuditAction | Prisma.EnumPlanningApprovalAuditActionFieldRefInput<$PrismaModel>
+  in?: $Enums.PlanningApprovalAuditAction[] | Prisma.ListEnumPlanningApprovalAuditActionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PlanningApprovalAuditAction[] | Prisma.ListEnumPlanningApprovalAuditActionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPlanningApprovalAuditActionWithAggregatesFilter<$PrismaModel> | $Enums.PlanningApprovalAuditAction
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPlanningApprovalAuditActionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPlanningApprovalAuditActionFilter<$PrismaModel>
 }
 
 export type NestedEnumReleaseRunStatusFilter<$PrismaModel = never> = {

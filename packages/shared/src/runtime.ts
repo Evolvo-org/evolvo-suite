@@ -1,4 +1,5 @@
 import type { ProjectQueueLimits } from './project-queue-limits';
+import type { ResolvedAgentRouteResponse } from './agent-routing';
 import type { WorkItemPriority } from './planning-hierarchy';
 import type { RuntimeConnectionStatus } from './project-status';
 import type { ProjectRepositoryInput } from './projects';
@@ -90,11 +91,25 @@ export interface RuntimeDispatchWorkItem {
   lane: SchedulerLeaseLane;
 }
 
+export interface RuntimePlanningContext {
+  route: ResolvedAgentRouteResponse;
+  productSpecId: string | null;
+  productSpecVersion: number | null;
+  productSpecContent: string | null;
+  developmentPlanId: string | null;
+  developmentPlanTitle: string | null;
+  developmentPlanVersionNumber: number | null;
+  developmentPlanContent: string | null;
+  duplicateWorkItemId: string | null;
+  duplicateWorkItemTitle: string | null;
+}
+
 export interface RuntimeWorkDispatchResponse {
   lease: SchedulerLease | null;
   recoveredCount: number;
   project: RuntimeDispatchProject | null;
   workItem: RuntimeDispatchWorkItem | null;
+  planningContext?: RuntimePlanningContext | null;
 }
 
 export interface RuntimeProgressUpdateRequest {

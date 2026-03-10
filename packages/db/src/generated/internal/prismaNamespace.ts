@@ -409,6 +409,7 @@ export const ModelName = {
   ProductSpec: 'ProductSpec',
   DevelopmentPlan: 'DevelopmentPlan',
   PlanVersion: 'PlanVersion',
+  DevelopmentPlanApprovalAudit: 'DevelopmentPlanApprovalAudit',
   ReleaseRun: 'ReleaseRun',
   ReleaseVersion: 'ReleaseVersion',
   ReleaseNote: 'ReleaseNote',
@@ -437,7 +438,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "agentRun" | "agentDecision" | "agentFailure" | "promptSnapshot" | "agentRunArtifact" | "stripeCustomer" | "subscription" | "billingWebhookEvent" | "humanInterventionCase" | "structuredLogEntry" | "epic" | "workItem" | "workItemComment" | "acceptanceCriterion" | "workItemDependency" | "workItemStateTransition" | "project" | "projectAgentRouting" | "projectRepository" | "projectQueueLimits" | "systemQueueLimits" | "systemAgentRouting" | "productSpec" | "developmentPlan" | "planVersion" | "releaseRun" | "releaseVersion" | "releaseNote" | "reviewGateResult" | "reviewGateCheck" | "reviewCriterionEvaluation" | "runtimeInstance" | "runtimeArtifact" | "schedulerLaneCursor" | "workItemRetryState" | "workItemLease" | "usageEvent" | "worktree"
+    modelProps: "agentRun" | "agentDecision" | "agentFailure" | "promptSnapshot" | "agentRunArtifact" | "stripeCustomer" | "subscription" | "billingWebhookEvent" | "humanInterventionCase" | "structuredLogEntry" | "epic" | "workItem" | "workItemComment" | "acceptanceCriterion" | "workItemDependency" | "workItemStateTransition" | "project" | "projectAgentRouting" | "projectRepository" | "projectQueueLimits" | "systemQueueLimits" | "systemAgentRouting" | "productSpec" | "developmentPlan" | "planVersion" | "developmentPlanApprovalAudit" | "releaseRun" | "releaseVersion" | "releaseNote" | "reviewGateResult" | "reviewGateCheck" | "reviewCriterionEvaluation" | "runtimeInstance" | "runtimeArtifact" | "schedulerLaneCursor" | "workItemRetryState" | "workItemLease" | "usageEvent" | "worktree"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2291,6 +2292,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    DevelopmentPlanApprovalAudit: {
+      payload: Prisma.$DevelopmentPlanApprovalAuditPayload<ExtArgs>
+      fields: Prisma.DevelopmentPlanApprovalAuditFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DevelopmentPlanApprovalAuditFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentPlanApprovalAuditPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DevelopmentPlanApprovalAuditFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentPlanApprovalAuditPayload>
+        }
+        findFirst: {
+          args: Prisma.DevelopmentPlanApprovalAuditFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentPlanApprovalAuditPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DevelopmentPlanApprovalAuditFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentPlanApprovalAuditPayload>
+        }
+        findMany: {
+          args: Prisma.DevelopmentPlanApprovalAuditFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentPlanApprovalAuditPayload>[]
+        }
+        create: {
+          args: Prisma.DevelopmentPlanApprovalAuditCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentPlanApprovalAuditPayload>
+        }
+        createMany: {
+          args: Prisma.DevelopmentPlanApprovalAuditCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DevelopmentPlanApprovalAuditCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentPlanApprovalAuditPayload>[]
+        }
+        delete: {
+          args: Prisma.DevelopmentPlanApprovalAuditDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentPlanApprovalAuditPayload>
+        }
+        update: {
+          args: Prisma.DevelopmentPlanApprovalAuditUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentPlanApprovalAuditPayload>
+        }
+        deleteMany: {
+          args: Prisma.DevelopmentPlanApprovalAuditDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DevelopmentPlanApprovalAuditUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DevelopmentPlanApprovalAuditUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentPlanApprovalAuditPayload>[]
+        }
+        upsert: {
+          args: Prisma.DevelopmentPlanApprovalAuditUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentPlanApprovalAuditPayload>
+        }
+        aggregate: {
+          args: Prisma.DevelopmentPlanApprovalAuditAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDevelopmentPlanApprovalAudit>
+        }
+        groupBy: {
+          args: Prisma.DevelopmentPlanApprovalAuditGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DevelopmentPlanApprovalAuditGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DevelopmentPlanApprovalAuditCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DevelopmentPlanApprovalAuditCountAggregateOutputType> | number
+        }
+      }
+    }
     ReleaseRun: {
       payload: Prisma.$ReleaseRunPayload<ExtArgs>
       fields: Prisma.ReleaseRunFieldRefs
@@ -3636,6 +3711,10 @@ export const DevelopmentPlanScalarFieldEnum = {
   projectId: 'projectId',
   title: 'title',
   activeVersionId: 'activeVersionId',
+  planningApprovedVersionId: 'planningApprovedVersionId',
+  planningApprovedAt: 'planningApprovedAt',
+  planningApprovedBy: 'planningApprovedBy',
+  planningApprovalSummary: 'planningApprovalSummary',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -3654,6 +3733,19 @@ export const PlanVersionScalarFieldEnum = {
 } as const
 
 export type PlanVersionScalarFieldEnum = (typeof PlanVersionScalarFieldEnum)[keyof typeof PlanVersionScalarFieldEnum]
+
+
+export const DevelopmentPlanApprovalAuditScalarFieldEnum = {
+  id: 'id',
+  developmentPlanId: 'developmentPlanId',
+  planVersionId: 'planVersionId',
+  action: 'action',
+  actorName: 'actorName',
+  summary: 'summary',
+  createdAt: 'createdAt'
+} as const
+
+export type DevelopmentPlanApprovalAuditScalarFieldEnum = (typeof DevelopmentPlanApprovalAuditScalarFieldEnum)[keyof typeof DevelopmentPlanApprovalAuditScalarFieldEnum]
 
 
 export const ReleaseRunScalarFieldEnum = {
@@ -4138,6 +4230,20 @@ export type ListEnumProjectRepositoryProviderFieldRefInput<$PrismaModel> = Field
 
 
 /**
+ * Reference to a field of type 'PlanningApprovalAuditAction'
+ */
+export type EnumPlanningApprovalAuditActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PlanningApprovalAuditAction'>
+    
+
+
+/**
+ * Reference to a field of type 'PlanningApprovalAuditAction[]'
+ */
+export type ListEnumPlanningApprovalAuditActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PlanningApprovalAuditAction[]'>
+    
+
+
+/**
  * Reference to a field of type 'ReleaseRunStatus'
  */
 export type EnumReleaseRunStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReleaseRunStatus'>
@@ -4438,6 +4544,7 @@ export type GlobalOmitConfig = {
   productSpec?: Prisma.ProductSpecOmit
   developmentPlan?: Prisma.DevelopmentPlanOmit
   planVersion?: Prisma.PlanVersionOmit
+  developmentPlanApprovalAudit?: Prisma.DevelopmentPlanApprovalAuditOmit
   releaseRun?: Prisma.ReleaseRunOmit
   releaseVersion?: Prisma.ReleaseVersionOmit
   releaseNote?: Prisma.ReleaseNoteOmit

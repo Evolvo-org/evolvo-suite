@@ -66,7 +66,7 @@ const mapWorkItemState = (
     case 'RELEASED':
       return 'released';
     default:
-      return 'inbox';
+      return 'planning';
   }
 };
 

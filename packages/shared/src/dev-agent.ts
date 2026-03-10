@@ -4,6 +4,10 @@ import type { AgentInputContract } from './agents';
 export interface ExecuteDevTaskRequest {
   runtimeId?: string;
   leaseId?: string;
+  worktreePath?: string;
+  branchName?: string;
+  baseBranch?: string;
+  headSha?: string;
 }
 
 export interface DevAgentCheckResult {

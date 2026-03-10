@@ -325,6 +325,113 @@ describe('SchedulerService', () => {
     expect(prisma.workItemLease.create).not.toHaveBeenCalled();
   });
 
+  it('does not lease planning work when the project lacks active planning context', async () => {
+    prisma.workItem.findMany.mockResolvedValue([
+      {
+        id: 'work-0',
+        projectId: 'project-1',
+        title: 'Planning request',
+        state: 'PLANNING',
+        priority: 'HIGH',
+        sortOrder: 1,
+        stateUpdatedAt: new Date('2026-03-09T11:30:00.000Z'),
+      },
+    ]);
+    prisma.project.findMany.mockResolvedValue([
+      {
+        id: 'project-1',
+        name: 'Project One',
+        lifecycleStatus: 'ACTIVE',
+        productSpec: null,
+        developmentPlan: null,
+        queueLimits: {
+          maxPlanning: 1,
+          maxInDev: 1,
+          maxInReview: 1,
+          maxReadyForRelease: 1,
+        },
+      },
+    ]);
+    prisma.workItem.groupBy.mockResolvedValue([]);
+    prisma.workItemLease.groupBy.mockResolvedValue([]);
+    prisma.$transaction.mockImplementation(async (callback: (transaction: typeof prisma) => unknown) => {
+      return callback(prisma);
+    });
+
+    const result = await service.acquireLease({
+      runtimeId: 'runtime-1',
+      lanes: ['planning'],
+    });
+
+    expect(result.lease).toBeNull();
+    expect(prisma.workItemLease.create).not.toHaveBeenCalled();
+  });
+
+  it('leases planning work on the planning lane without moving it into an execution state', async () => {
+    prisma.workItem.findMany.mockResolvedValue([
+      {
+        id: 'work-0',
+        projectId: 'project-1',
+        title: 'Plan queue dashboard',
+        state: 'PLANNING',
+        priority: 'HIGH',
+        sortOrder: 0,
+        stateUpdatedAt: new Date('2026-03-09T11:30:00.000Z'),
+      },
+    ]);
+    prisma.project.findMany.mockResolvedValue([
+      {
+        id: 'project-1',
+        productSpec: {
+          id: 'spec-1',
+        },
+        developmentPlan: {
+          id: 'plan-1',
+          activeVersion: {
+            id: 'plan-1-v1',
+          },
+        },
+        queueLimits: {
+          maxPlanning: 1,
+          maxInDev: 3,
+          maxInReview: 2,
+          maxReadyForRelease: 2,
+        },
+      },
+    ]);
+    prisma.workItemLease.findFirst.mockResolvedValue(null);
+    prisma.workItemLease.create.mockResolvedValue({
+      id: 'lease-0',
+      projectId: 'project-1',
+      workItemId: 'work-0',
+      runtimeId: 'runtime-1',
+      lane: 'PLANNING',
+      status: 'ACTIVE',
+      leaseToken: 'token-0',
+      leasedAt: now,
+      expiresAt: new Date('2026-03-09T12:10:00.000Z'),
+      renewedAt: null,
+      releasedAt: null,
+      recoveredAt: null,
+      recoveryReason: null,
+      workItem: {
+        title: 'Plan queue dashboard',
+        state: 'PLANNING',
+      },
+    });
+    prisma.$transaction.mockImplementation(async (callback: (transaction: typeof prisma) => unknown) => {
+      return callback(prisma);
+    });
+
+    const result = await service.acquireLease({
+      runtimeId: 'runtime-1',
+      lanes: ['planning'],
+    });
+
+    expect(result.lease?.lane).toBe('planning');
+    expect(prisma.workItem.update).not.toHaveBeenCalled();
+  });
+
   it('filters blocked items by requiring released dependencies', async () => {
     prisma.$transaction.mockImplementation(async (callback: (transaction: typeof prisma) => unknown) => {
       return callback(prisma);
@@ -634,6 +741,12 @@ describe('SchedulerService', () => {
       },
     ]);
     expect(state.laneSummaries).toEqual([
+      {
+        lane: 'planning',
+        readyCount: 0,
+        inProgressCount: 0,
+        activeLeaseCount: 0,
+      },
       {
         lane: 'dev',
         readyCount: 2,

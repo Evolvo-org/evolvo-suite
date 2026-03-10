@@ -10,11 +10,13 @@ import {
 } from '@nestjs/common';
 import type {
   ActivateDevelopmentPlanVersionRequest,
+  ApproveDevelopmentPlanRequest,
   CreateDevelopmentPlanRequest,
   UpdateDevelopmentPlanRequest,
 } from '@repo/shared';
 import {
   activateDevelopmentPlanVersionSchema,
+  approveDevelopmentPlanSchema,
   createDevelopmentPlanSchema,
   updateDevelopmentPlanSchema,
 } from '@repo/validation';
@@ -76,6 +78,11 @@ export class DevelopmentPlansController {
     return this.developmentPlansService.listPlanVersions(projectId);
   }
 
+  @Get('approvals')
+  public async listApprovalAudit(@Param('projectId') projectId: string) {
+    return this.developmentPlansService.listApprovalAudit(projectId);
+  }
+
   @Post('versions/activate')
   @UsePipes(new ZodValidationPipe(activateDevelopmentPlanVersionSchema))
   public async activateVersion(
@@ -90,6 +97,24 @@ export class DevelopmentPlansController {
     return {
       success: true as const,
       message: 'Development plan version activated successfully.',
+      data: plan,
+    };
+  }
+
+  @Post('approve')
+  @UsePipes(new ZodValidationPipe(approveDevelopmentPlanSchema))
+  public async approveDevelopmentPlan(
+    @Param('projectId') projectId: string,
+    @Body() body: ApproveDevelopmentPlanRequest,
+  ) {
+    const plan = await this.developmentPlansService.approveDevelopmentPlan(
+      projectId,
+      body,
+    );
+
+    return {
+      success: true as const,
+      message: 'Development plan approved successfully.',
       data: plan,
     };
   }

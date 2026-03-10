@@ -33,7 +33,6 @@ describe('Project intervention queue', () => {
       activePlanVersionNumber: 2,
       metrics: {
         kanbanCounts: {
-          inbox: 1,
           planning: 1,
           readyForDev: 2,
           inDev: 1,

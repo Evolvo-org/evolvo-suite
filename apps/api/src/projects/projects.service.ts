@@ -103,7 +103,6 @@ const createSlugBase = (value: string): string => {
 };
 
 const createEmptyKanbanCounts = (): KanbanBoardCounts => ({
-  inbox: 0,
   planning: 0,
   readyForDev: 0,
   inDev: 0,
@@ -769,7 +768,7 @@ export class ProjectsService {
 
   public async resolveProjectAgentRoute(
     projectId: string,
-    agentType: 'inbox' | 'planning' | 'dev' | 'review' | 'release',
+    agentType: 'planning' | 'dev' | 'review' | 'release',
   ) {
     await this.ensureProjectExists(projectId);
 
@@ -1015,9 +1014,6 @@ export class ProjectsService {
           break;
         case 'RELEASED':
           counts.released += 1;
-          break;
-        default:
-          counts.inbox += 1;
           break;
       }
     }

@@ -2,7 +2,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import type { TransitionWorkItemRequest, WorkItemState } from '@repo/shared';
 
 const baseTransitions: Record<WorkItemState, WorkItemState[]> = {
-  inbox: ['planning'],
   planning: ['readyForDev', 'requiresHumanIntervention'],
   readyForDev: ['inDev'],
   inDev: ['readyForReview', 'requiresHumanIntervention'],
@@ -14,8 +13,7 @@ const baseTransitions: Record<WorkItemState, WorkItemState[]> = {
 };
 
 const operatorOverrideTransitions: Record<WorkItemState, WorkItemState[]> = {
-  inbox: [],
-  planning: ['inbox'],
+  planning: [],
   readyForDev: ['planning'],
   inDev: ['readyForDev'],
   readyForReview: ['inDev'],

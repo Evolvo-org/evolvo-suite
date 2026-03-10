@@ -9,5 +9,6 @@ import { DevelopmentPlansService } from './development-plans.service.js';
   imports: [ProjectsModule],
   controllers: [DevelopmentPlansController],
   providers: [DevelopmentPlansService],
+  exports: [DevelopmentPlansService],
 })
 export class DevelopmentPlansModule {}

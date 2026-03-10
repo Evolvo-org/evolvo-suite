@@ -36,8 +36,8 @@ describe('ProjectsService agent routing', () => {
           defaultModel: 'gpt-5.4-mini',
           agentRoutes: {
             review: {
-              provider: 'anthropic',
-              model: 'claude-sonnet-4',
+              provider: 'codex',
+              model: 'codex-mini-latest',
             },
           },
         }),
@@ -50,8 +50,8 @@ describe('ProjectsService agent routing', () => {
     prisma.projectAgentRouting.findUnique.mockResolvedValue({
       id: 'routing-1',
       projectId: 'project-1',
-      defaultProvider: 'anthropic',
-      defaultModel: 'claude-sonnet-4',
+      defaultProvider: 'codex',
+      defaultModel: 'codex-mini-latest',
       agentRoutesJson: {
         dev: {
           provider: 'openai',
@@ -63,7 +63,7 @@ describe('ProjectsService agent routing', () => {
 
     const response = await service.getProjectAgentRouting('project-1');
 
-    expect(response.overrides?.defaultProvider).toBe('anthropic');
+    expect(response.overrides?.defaultProvider).toBe('codex');
     expect(response.effective.agentRoutes.dev?.model).toBe('gpt-5.4');
   });
 
@@ -71,8 +71,8 @@ describe('ProjectsService agent routing', () => {
     prisma.projectAgentRouting.findUnique.mockResolvedValue({
       id: 'routing-1',
       projectId: 'project-1',
-      defaultProvider: 'anthropic',
-      defaultModel: 'claude-sonnet-4',
+      defaultProvider: 'codex',
+      defaultModel: 'codex-mini-latest',
       agentRoutesJson: {
         dev: {
           provider: 'openai',
@@ -92,8 +92,8 @@ describe('ProjectsService agent routing', () => {
   it('falls back to system agent defaults when no project override exists', async () => {
     const response = await service.resolveProjectAgentRoute('project-1', 'review');
 
-    expect(response.provider).toBe('anthropic');
-    expect(response.model).toBe('claude-sonnet-4');
+    expect(response.provider).toBe('codex');
+    expect(response.model).toBe('codex-mini-latest');
     expect(response.source).toBe('system-agent');
   });
 });

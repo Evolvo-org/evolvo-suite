@@ -180,7 +180,7 @@ export class ProjectsController {
   @Get(':projectId/agent-routing/:agentType/resolve')
   public async resolveProjectAgentRoute(
     @Param('projectId') projectId: string,
-    @Param('agentType') agentType: 'inbox' | 'planning' | 'dev' | 'review' | 'release',
+    @Param('agentType') agentType: 'planning' | 'dev' | 'review' | 'release',
   ) {
     return this.projectsService.resolveProjectAgentRoute(projectId, agentType);
   }

@@ -3,6 +3,7 @@ import type {
   AgentRunListResponse,
   AgentRunRecord,
   AgentRoutingConfig,
+  ApproveDevelopmentPlanRequest,
   AutomationActionRecord,
   AcquireSchedulerLeaseRequest,
   AcquireSchedulerLeaseResponse,
@@ -29,16 +30,18 @@ import type {
   StripeCustomerMappingRecord,
   CreateWorkItemCommentRequest,
   CreateWorkItemRequest,
+  DevelopmentPlanApprovalAuditResponse,
   DevelopmentPlanResponse,
   DevelopmentPlanVersionsResponse,
+  ExecutePlanningRequest,
+  ExecutePlanningResponse,
+  ExpandPlanningHierarchyResponse,
   ExecuteDevTaskRequest,
   ExecuteDevTaskResponse,
   ExecuteReleaseRequest,
   ExecuteReleaseResponse,
   ExecuteReviewRequest,
   ExecuteReviewResponse,
-  GenerateInboxIdeasRequest,
-  GenerateInboxIdeasResponse,
   HumanInterventionCaseRecord,
   HumanInterventionListResponse,
   KanbanBoardCounts,
@@ -46,8 +49,6 @@ import type {
   MutationResponse,
   ProjectObservabilityMetricsResponse,
   PaginatedResponse,
-  TriageInboxIdeaRequest,
-  TriageInboxIdeaResponse,
   PlanningHierarchyResponse,
   ProductSpecResponse,
   ProjectAgentRoutingSettingsResponse,
@@ -280,6 +281,8 @@ export const projectQueryKeys = {
     ['projects', projectId, 'development-plan'] as const,
   developmentPlanVersions: (projectId: string) =>
     ['projects', projectId, 'development-plan-versions'] as const,
+  developmentPlanApprovals: (projectId: string) =>
+    ['projects', projectId, 'development-plan-approvals'] as const,
   planningHierarchy: (projectId: string) =>
     ['projects', projectId, 'planning-hierarchy'] as const,
   board: (projectId: string) => ['projects', projectId, 'board'] as const,
@@ -749,26 +752,13 @@ export const createAgentRun = async (
   );
 };
 
-export const generateInboxIdeas = async (
-  projectId: string,
-  payload: GenerateInboxIdeasRequest,
-): Promise<MutationResponse<GenerateInboxIdeasResponse>> => {
-  return fetchJson<MutationResponse<GenerateInboxIdeasResponse>>(
-    `/projects/${projectId}/agents/inbox/generate`,
-    {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    },
-  );
-};
-
-export const triageInboxIdea = async (
+export const executePlanning = async (
   projectId: string,
   workItemId: string,
-  payload: TriageInboxIdeaRequest,
-): Promise<MutationResponse<TriageInboxIdeaResponse>> => {
-  return fetchJson<MutationResponse<TriageInboxIdeaResponse>>(
-    `/projects/${projectId}/agents/planning/work-items/${workItemId}/triage`,
+  payload: ExecutePlanningRequest,
+): Promise<MutationResponse<ExecutePlanningResponse>> => {
+  return fetchJson<MutationResponse<ExecutePlanningResponse>>(
+    `/projects/${projectId}/agents/planning/work-items/${workItemId}/execute`,
     {
       method: 'POST',
       body: JSON.stringify(payload),
@@ -1309,12 +1299,36 @@ export const listDevelopmentPlanVersions = async (
   );
 };
 
+export const listDevelopmentPlanApprovalAudit = async (
+  projectId: string,
+): Promise<DevelopmentPlanApprovalAuditResponse> => {
+  return fetchJson<DevelopmentPlanApprovalAuditResponse>(
+    `/projects/${projectId}/development-plan/approvals`,
+    {
+      method: 'GET',
+    },
+  );
+};
+
 export const activateDevelopmentPlanVersion = async (
   projectId: string,
   payload: ActivateDevelopmentPlanVersionRequest,
 ): Promise<MutationResponse<DevelopmentPlanResponse>> => {
   return fetchJson<MutationResponse<DevelopmentPlanResponse>>(
     `/projects/${projectId}/development-plan/versions/activate`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const approveDevelopmentPlan = async (
+  projectId: string,
+  payload: ApproveDevelopmentPlanRequest,
+): Promise<MutationResponse<DevelopmentPlanResponse>> => {
+  return fetchJson<MutationResponse<DevelopmentPlanResponse>>(
+    `/projects/${projectId}/development-plan/approve`,
     {
       method: 'POST',
       body: JSON.stringify(payload),
@@ -1329,6 +1343,17 @@ export const getPlanningHierarchy = async (
     `/projects/${projectId}/planning/hierarchy`,
     {
       method: 'GET',
+    },
+  );
+};
+
+export const expandPlanningHierarchy = async (
+  projectId: string,
+): Promise<MutationResponse<ExpandPlanningHierarchyResponse>> => {
+  return fetchJson<MutationResponse<ExpandPlanningHierarchyResponse>>(
+    `/projects/${projectId}/planning/expand`,
+    {
+      method: 'POST',
     },
   );
 };

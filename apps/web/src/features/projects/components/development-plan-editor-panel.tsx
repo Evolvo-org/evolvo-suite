@@ -1,15 +1,20 @@
 'use client';
 
 import {
+  approveDevelopmentPlan,
   activateDevelopmentPlanVersion,
+  authQueryKeys,
   createDevelopmentPlan,
   getDevelopmentPlan,
+  getCurrentUser,
   getProductSpec,
   getProjectDetail,
+  listDevelopmentPlanApprovalAudit,
   listDevelopmentPlanVersions,
   projectQueryKeys,
   updateDevelopmentPlan,
 } from '@repo/api-client';
+import { Badge } from '@repo/ui/components/badge/badge';
 import { Button } from '@repo/ui/components/button/button';
 import { Card } from '@repo/ui/components/card/card';
 import { Input } from '@repo/ui/components/input/input';
@@ -28,6 +33,14 @@ import {
   getErrorToastMessage,
   useToast,
 } from '../../feedback/components/toast-provider';
+
+const formatApprovalTimestamp = (timestamp: string | null): string | null => {
+  if (!timestamp) {
+    return null;
+  }
+
+  return new Date(timestamp).toLocaleString();
+};
 
 const generatePlanDraft = (
   projectName: string,
@@ -76,6 +89,8 @@ export const DevelopmentPlanEditorPanel = ({
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [summary, setSummary] = useState('');
+  const [approvalActorName, setApprovalActorName] = useState('');
+  const [approvalSummary, setApprovalSummary] = useState('');
   const [selectedVersionId, setSelectedVersionId] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -87,6 +102,10 @@ export const DevelopmentPlanEditorPanel = ({
     queryKey: projectQueryKeys.productSpec(projectId),
     queryFn: () => getProductSpec(projectId),
   });
+  const currentUserQuery = useQuery({
+    queryKey: authQueryKeys.currentUser,
+    queryFn: () => getCurrentUser(),
+  });
   const planQuery = useQuery({
     queryKey: projectQueryKeys.developmentPlan(projectId),
     queryFn: () => getDevelopmentPlan(projectId),
@@ -94,6 +113,10 @@ export const DevelopmentPlanEditorPanel = ({
   const versionsQuery = useQuery({
     queryKey: projectQueryKeys.developmentPlanVersions(projectId),
     queryFn: () => listDevelopmentPlanVersions(projectId),
+  });
+  const approvalAuditQuery = useQuery({
+    queryKey: projectQueryKeys.developmentPlanApprovals(projectId),
+    queryFn: () => listDevelopmentPlanApprovalAudit(projectId),
   });
 
   const activeVersionId = planQuery.data?.activeVersionId ?? '';
@@ -114,7 +137,29 @@ export const DevelopmentPlanEditorPanel = ({
     setSelectedVersionId(activeVersionId);
   }, [activeVersionId]);
 
+  useEffect(() => {
+    if (approvalActorName.trim().length > 0 || !currentUserQuery.data) {
+      return;
+    }
+
+    setApprovalActorName(
+      currentUserQuery.data.displayName ?? currentUserQuery.data.userId,
+    );
+  }, [approvalActorName, currentUserQuery.data]);
+
   const isDirty = title !== activePlanTitle || content !== activePlanContent;
+  const planningApproval = planQuery.data?.planningApproval;
+  const isApprovedForActiveVersion =
+    Boolean(activeVersionId) &&
+    planningApproval?.isApproved === true &&
+    planningApproval.approvedVersionId === activeVersionId;
+  const hasApprovalDrift =
+    planningApproval?.isApproved === true &&
+    Boolean(activeVersionId) &&
+    planningApproval.approvedVersionId !== activeVersionId;
+  const approvalTimestamp = formatApprovalTimestamp(
+    planningApproval?.approvedAt ?? null,
+  );
 
   const invalidatePlanQueries = async () => {
     await Promise.all([
@@ -126,6 +171,12 @@ export const DevelopmentPlanEditorPanel = ({
       }),
       queryClient.invalidateQueries({
         queryKey: projectQueryKeys.detail(projectId),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: projectQueryKeys.planningHierarchy(projectId),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: projectQueryKeys.developmentPlanApprovals(projectId),
       }),
     ]);
   };
@@ -204,9 +255,69 @@ export const DevelopmentPlanEditorPanel = ({
     },
   });
 
+  const approvePlanMutation = useMutation({
+    mutationFn: () =>
+      approveDevelopmentPlan(projectId, {
+        actorName: approvalActorName.trim(),
+        summary: approvalSummary.trim() || undefined,
+      }),
+    onSuccess: async () => {
+      setErrorMessage(null);
+      setApprovalSummary('');
+      await invalidatePlanQueries();
+    },
+    onError: (error) => {
+      const message = getErrorToastMessage(
+        error,
+        'Unable to approve the active development plan version.',
+      );
+      setErrorMessage(message);
+      pushToast({
+        description: message,
+        title: 'Plan approval failed',
+        variant: 'error',
+      });
+    },
+  });
+
   const selectedVersion = versionsQuery.data?.versions.find(
     (version) => version.id === selectedVersionId,
   );
+  const canApprovePlan =
+    !approvePlanMutation.isPending &&
+    !createPlanMutation.isPending &&
+    !updatePlanMutation.isPending &&
+    !activateVersionMutation.isPending &&
+    Boolean(planQuery.data?.planId) &&
+    Boolean(activeVersionId) &&
+    !isDirty &&
+    approvalActorName.trim().length > 0;
+
+  const approvalStatusTone = isApprovedForActiveVersion
+    ? 'success'
+    : hasApprovalDrift || isDirty
+      ? 'warning'
+      : 'neutral';
+
+  const approvalStatusLabel = isApprovedForActiveVersion
+    ? 'Approved for execution'
+    : hasApprovalDrift
+      ? 'Approval no longer matches the active version'
+      : planQuery.data?.planId && activeVersionId
+        ? 'Approval required'
+        : 'No active version to approve';
+
+  const approvalHelperText = !planQuery.data?.planId
+    ? 'Create a development plan before approval is possible.'
+    : !activeVersionId
+      ? 'Save and activate a version before approval.'
+      : isDirty
+        ? 'Save the current editor changes as a new version before approving the plan.'
+        : hasApprovalDrift
+          ? 'A different version is currently approved. Approve the active version to clear the gate.'
+          : isApprovedForActiveVersion
+            ? 'This active plan version can now move from planning to ready for dev.'
+            : 'The active version must be approved before workflow promotion is allowed.';
 
   const tabs = [
     {
@@ -380,7 +491,8 @@ export const DevelopmentPlanEditorPanel = ({
   if (
     projectQuery.isLoading ||
     planQuery.isLoading ||
-    versionsQuery.isLoading
+    versionsQuery.isLoading ||
+    approvalAuditQuery.isLoading
   ) {
     return (
       <QueryLoadingCard
@@ -399,6 +511,7 @@ export const DevelopmentPlanEditorPanel = ({
           void projectQuery.refetch();
           void planQuery.refetch();
           void versionsQuery.refetch();
+          void approvalAuditQuery.refetch();
           void productSpecQuery.refetch();
         }}
       />
@@ -431,6 +544,140 @@ export const DevelopmentPlanEditorPanel = ({
           specification.
         </p>
         <Tabs items={tabs} defaultValue="editor" />
+      </Card>
+
+      <Card className="space-y-4 p-6" title="Planning approval">
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge tone={approvalStatusTone}>
+            <span data-cy="development-plan-approval-status">
+              {approvalStatusLabel}
+            </span>
+          </Badge>
+          <span className="text-sm text-zinc-600 dark:text-zinc-400">
+            {planQuery.data?.activeVersionNumber
+              ? `Active version v${planQuery.data.activeVersionNumber}`
+              : 'No active plan version yet'}
+          </span>
+        </div>
+
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          {approvalHelperText}
+        </p>
+
+        {planningApproval?.isApproved ? (
+          <div className="rounded-2xl border border-zinc-800/10 p-4 dark:border-white/10">
+            <p className="text-sm font-semibold text-zinc-950 dark:text-zinc-50">
+              Last approval
+            </p>
+            <div className="mt-2 space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
+              <p>
+                Approved by {planningApproval.approvedBy ?? 'Unknown operator'}
+                {approvalTimestamp ? ` on ${approvalTimestamp}` : ''}.
+              </p>
+              <p>
+                Approved version:{' '}
+                {planningApproval.approvedVersionId === activeVersionId
+                  ? 'Current active version'
+                  : planningApproval.approvedVersionId ?? 'Unknown version'}
+              </p>
+              <p>
+                {planningApproval.summary ??
+                  'No approval note was recorded for this version.'}
+              </p>
+            </div>
+          </div>
+        ) : null}
+
+        <div
+          className="grid gap-4 lg:grid-cols-2"
+          data-cy="development-plan-approval-card"
+        >
+          <label
+            htmlFor="approval-actor-name"
+            className="block space-y-2 text-sm font-medium"
+          >
+            <span>Approver name</span>
+            <Input
+              id="approval-actor-name"
+              value={approvalActorName}
+              onChange={(event) => setApprovalActorName(event.target.value)}
+              placeholder="Operator name"
+            />
+          </label>
+
+          <label
+            htmlFor="approval-summary"
+            className="block space-y-2 text-sm font-medium"
+          >
+            <span>Approval note</span>
+            <Input
+              id="approval-summary"
+              value={approvalSummary}
+              onChange={(event) => setApprovalSummary(event.target.value)}
+              placeholder="Optional note about why this plan is approved"
+            />
+          </label>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            type="button"
+            data-cy="development-plan-approve-button"
+            disabled={!canApprovePlan}
+            onClick={() => approvePlanMutation.mutate()}
+          >
+            {approvePlanMutation.isPending
+              ? 'Approving…'
+              : isApprovedForActiveVersion
+                ? 'Re-approve active version'
+                : 'Approve active version'}
+          </Button>
+          <span className="text-sm text-zinc-600 dark:text-zinc-400">
+            Approval writes an audit record and unlocks promotion into ready for dev.
+          </span>
+        </div>
+
+        <div className="rounded-2xl border border-zinc-800/10 p-4 dark:border-white/10">
+          <p className="text-sm font-semibold text-zinc-950 dark:text-zinc-50">
+            Approval history
+          </p>
+          {approvalAuditQuery.data?.items.length ? (
+            <ul className="mt-3 space-y-3">
+              {approvalAuditQuery.data.items.map((item) => (
+                <li
+                  key={item.id}
+                  className="rounded-xl border border-zinc-800/10 p-3 dark:border-white/10"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <p className="text-sm font-medium text-zinc-950 dark:text-zinc-50">
+                      {item.action === 'reset'
+                        ? `Approval reset by ${item.actorName}`
+                        : `Approved by ${item.actorName}`}
+                    </p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      {new Date(item.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                  <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                    {item.planVersionNumber
+                      ? `Version v${item.planVersionNumber}`
+                      : 'Unknown version'}
+                  </p>
+                  <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                    {item.summary ??
+                      (item.action === 'reset'
+                        ? 'No reset note was recorded for this event.'
+                        : 'No approval note was recorded for this event.')}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+              No approval events have been recorded yet.
+            </p>
+          )}
+        </div>
       </Card>
 
       {errorMessage ? (

@@ -42,12 +42,14 @@ const defaultLeaseDurationSeconds = 600;
 const defaultRecoveryLimit = 50;
 
 const laneStateMap: Record<SchedulerLeaseLane, WorkItemState[]> = {
+  planning: ['PLANNING'],
   dev: ['READY_FOR_DEV'],
   review: ['READY_FOR_REVIEW'],
   release: ['READY_FOR_RELEASE'],
 };
 
 const laneLeaseMap: Record<SchedulerLeaseLane, PrismaSchedulerLeaseLane> = {
+  planning: 'PLANNING',
   dev: 'DEV',
   review: 'REVIEW',
   release: 'RELEASE',
@@ -69,13 +71,24 @@ type LeaseWithTitle = WorkItemLease & { workItem: { title: string; state: WorkIt
 
 type EffectiveProjectQueueLimits = Pick<
   ProjectQueueLimits,
-  'maxInDev' | 'maxInReview' | 'maxReadyForRelease'
+  'maxPlanning' | 'maxInDev' | 'maxInReview' | 'maxReadyForRelease'
 >;
 
 type ProjectQueueLimitsRecord = {
+  maxPlanning: number;
   maxInDev: number;
   maxInReview: number;
   maxReadyForRelease: number;
+};
+
+type PlanningContextProjectRecord = {
+  productSpec: { id: string } | null;
+  developmentPlan:
+    | {
+        id: string;
+        activeVersion: { id: string } | null;
+      }
+    | null;
 };
 
 type PersistedSchedulerLaneCursorRecord = {
@@ -89,6 +102,7 @@ const activeStateMap = {
 } as const satisfies Partial<Record<SchedulerLeaseLane, WorkItemState>>;
 
 const queueLimitKeyByLane = {
+  planning: 'maxPlanning',
   dev: 'maxInDev',
   review: 'maxInReview',
   release: 'maxReadyForRelease',
@@ -118,7 +132,7 @@ export class SchedulerService {
     const requestedProjectId = payload.projectId?.trim();
     const lanes: SchedulerLeaseLane[] = payload.lanes?.length
       ? payload.lanes
-      : ['dev', 'review', 'release'];
+      : ['planning', 'dev', 'review', 'release'];
     const leaseDurationSeconds =
       payload.leaseDurationSeconds ?? defaultLeaseDurationSeconds;
 
@@ -274,8 +288,24 @@ export class SchedulerService {
             id: true,
             name: true,
             lifecycleStatus: true,
+            productSpec: {
+              select: {
+                id: true,
+              },
+            },
+            developmentPlan: {
+              select: {
+                id: true,
+                activeVersion: {
+                  select: {
+                    id: true,
+                  },
+                },
+              },
+            },
             queueLimits: {
               select: {
+                maxPlanning: true,
                 maxInDev: true,
                 maxInReview: true,
                 maxReadyForRelease: true,
@@ -289,6 +319,7 @@ export class SchedulerService {
             ...(normalizedProjectId ? { projectId: normalizedProjectId } : {}),
             state: {
               in: [
+                'PLANNING',
                 'READY_FOR_DEV',
                 'IN_DEV',
                 'READY_FOR_REVIEW',
@@ -327,7 +358,7 @@ export class SchedulerService {
         this.prisma.schedulerLaneCursor.findMany({
           where: {
             lane: {
-              in: ['DEV', 'REVIEW', 'RELEASE'],
+              in: ['PLANNING', 'DEV', 'REVIEW', 'RELEASE'],
             },
           },
           orderBy: { lane: 'asc' },
@@ -379,6 +410,7 @@ export class SchedulerService {
         projectName: project.name,
         lifecycleStatus,
         openInterventionCount,
+        hasPlanningContext: this.hasPlanningContext(project),
         laneStates,
       };
     });
@@ -594,6 +626,7 @@ export class SchedulerService {
   private buildProjectLaneStates(
     projectId: string,
     queueLimits: {
+      maxPlanning: number | null;
       maxInDev: number | null;
       maxInReview: number | null;
       maxReadyForRelease: number | null;
@@ -621,6 +654,7 @@ export class SchedulerService {
 
   private getProjectLaneLimit(
     queueLimits: {
+      maxPlanning: number | null;
       maxInDev: number | null;
       maxInReview: number | null;
       maxReadyForRelease: number | null;
@@ -629,6 +663,8 @@ export class SchedulerService {
     lane: SchedulerLeaseLane,
   ): number {
     switch (lane) {
+      case 'planning':
+        return queueLimits?.maxPlanning ?? systemQueueLimits.maxPlanning;
       case 'review':
         return queueLimits?.maxInReview ?? systemQueueLimits.maxInReview;
       case 'release':
@@ -643,6 +679,7 @@ export class SchedulerService {
   private getProjectSkipReasons(project: {
     lifecycleStatus: ProjectLifecycleStatus;
     openInterventionCount: number;
+    hasPlanningContext: boolean;
     laneStates: SchedulerProjectLaneState[];
   }): SchedulerProjectSkipReason[] {
     const reasons = new Set<SchedulerProjectSkipReason>();
@@ -659,7 +696,7 @@ export class SchedulerService {
     if (
       project.laneStates.some((laneState) => {
         const activeCount =
-          laneState.lane === 'release'
+          laneState.lane === 'planning' || laneState.lane === 'release'
             ? laneState.activeLeaseCount
             : laneState.inProgressCount;
 
@@ -667,6 +704,18 @@ export class SchedulerService {
       })
     ) {
       reasons.add('queueCapReached');
+    }
+
+    const planningLaneState = project.laneStates.find(
+      (laneState) => laneState.lane === 'planning',
+    );
+
+    if (
+      planningLaneState &&
+      planningLaneState.readyCount > 0 &&
+      !project.hasPlanningContext
+    ) {
+      reasons.add('missingPlanningContext');
     }
 
     return [...reasons];
@@ -826,8 +875,24 @@ export class SchedulerService {
         },
         select: {
           id: true,
+          productSpec: {
+            select: {
+              id: true,
+            },
+          },
+          developmentPlan: {
+            select: {
+              id: true,
+              activeVersion: {
+                select: {
+                  id: true,
+                },
+              },
+            },
+          },
           queueLimits: {
             select: {
+              maxPlanning: true,
               maxInDev: true,
               maxInReview: true,
               maxReadyForRelease: true,
@@ -870,6 +935,7 @@ export class SchedulerService {
       projects.map((project) => [
         project.id,
         {
+          maxPlanning: project.queueLimits?.maxPlanning ?? systemQueueLimits.maxPlanning,
           maxInDev: project.queueLimits?.maxInDev ?? systemQueueLimits.maxInDev,
           maxInReview: project.queueLimits?.maxInReview ?? systemQueueLimits.maxInReview,
           maxReadyForRelease:
@@ -877,6 +943,9 @@ export class SchedulerService {
             systemQueueLimits.maxReadyForRelease,
         },
       ]),
+    );
+    const projectPlanningContextMap = new Map<string, boolean>(
+      projects.map((project) => [project.id, this.hasPlanningContext(project)]),
     );
 
     const activeStateCountMap = new Map<string, number>(
@@ -905,6 +974,13 @@ export class SchedulerService {
       const queueLimits = projectQueueLimitMap.get(candidate.projectId);
 
       if (!queueLimits) {
+        return false;
+      }
+
+      if (
+        lane === 'planning' &&
+        !(projectPlanningContextMap.get(candidate.projectId) ?? false)
+      ) {
         return false;
       }
 
@@ -1042,8 +1118,12 @@ export class SchedulerService {
     activeStateCountMap: Map<string, number>,
     activeLeaseCountByProjectLaneMap: Map<string, number>,
   ): number {
-    if (lane === 'release') {
-      return activeLeaseCountByProjectLaneMap.get(`${projectId}:RELEASE`) ?? 0;
+    if (lane === 'planning' || lane === 'release') {
+      return (
+        activeLeaseCountByProjectLaneMap.get(
+          `${projectId}:${laneLeaseMap[lane]}`,
+        ) ?? 0
+      );
     }
 
     const state = activeStateMap[lane];
@@ -1105,6 +1185,8 @@ export class SchedulerService {
 
   private getLaneForState(state: WorkItemState): SchedulerLeaseLane {
     switch (state) {
+      case 'PLANNING':
+        return 'planning';
       case 'READY_FOR_REVIEW':
         return 'review';
       case 'READY_FOR_RELEASE':
@@ -1114,11 +1196,19 @@ export class SchedulerService {
     }
   }
 
+  private hasPlanningContext(project: PlanningContextProjectRecord): boolean {
+    return Boolean(project.productSpec && project.developmentPlan?.activeVersion);
+  }
+
   private async moveWorkItemIntoActiveExecution(
     transaction: Prisma.TransactionClient,
     workItem: CandidateWorkItem,
     runtimeId: string,
   ): Promise<void> {
+    if (workItem.state === 'PLANNING') {
+      return;
+    }
+
     if (workItem.state === 'READY_FOR_RELEASE') {
       return;
     }

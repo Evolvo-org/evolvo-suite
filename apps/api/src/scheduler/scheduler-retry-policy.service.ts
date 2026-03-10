@@ -220,6 +220,10 @@ export class SchedulerRetryPolicyService {
     category: SchedulerRetryCategory,
     lane: SchedulerLeaseLane,
   ): WorkItemState {
+    if (lane === 'planning') {
+      return 'planning';
+    }
+
     if (lane === 'release') {
       return 'readyForRelease';
     }

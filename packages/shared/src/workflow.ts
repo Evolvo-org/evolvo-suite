@@ -1,5 +1,4 @@
 export const workflowStates = [
-  'inbox',
   'planning',
   'readyForDev',
   'inDev',
@@ -35,7 +34,6 @@ export interface KanbanBoardColumn {
 }
 
 export interface KanbanBoardCounts {
-  inbox: number;
   planning: number;
   readyForDev: number;
   inDev: number;

@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { RunProjectAutomationRequest, RunProjectAutomationResponse } from '@repo/shared';
 
 import { DevAgentService } from '../agents/dev-agent.service.js';
-import { InboxAgentService } from '../agents/inbox-agent.service.js';
 import { PlanningAgentService } from '../agents/planning-agent.service.js';
 import { ReleaseAgentService } from '../agents/release-agent.service.js';
 import { ReviewAgentService } from '../agents/review-agent.service.js';
@@ -10,7 +9,6 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { ProjectsService } from '../projects/projects.service.js';
 
 const createEmptyCounts = () => ({
-  inbox: 0,
   planning: 0,
   readyForDev: 0,
   inDev: 0,
@@ -28,8 +26,6 @@ export class AutomationService {
     private readonly prisma: PrismaService,
     @Inject(ProjectsService)
     private readonly projectsService: ProjectsService,
-    @Inject(InboxAgentService)
-    private readonly inboxAgentService: InboxAgentService,
     @Inject(PlanningAgentService)
     private readonly planningAgentService: PlanningAgentService,
     @Inject(DevAgentService)
@@ -66,7 +62,7 @@ export class AutomationService {
 
     for (let index = 0; index < maxActions; index += 1) {
       const snapshot = await this.getAutomationSnapshot(projectId, attemptedWorkItemIds);
-      const action = await this.selectNextAction(projectId, snapshot, actions.length === 0);
+      const action = await this.selectNextAction(projectId, snapshot);
 
       if (!action) {
         break;
@@ -94,7 +90,6 @@ export class AutomationService {
   private async selectNextAction(
     projectId: string,
     snapshot: Awaited<ReturnType<AutomationService['getAutomationSnapshot']>>,
-    canGenerateInbox: boolean,
   ) {
     if (snapshot.openInterventions > 0) {
       return null;
@@ -142,30 +137,16 @@ export class AutomationService {
       };
     }
 
-    if (snapshot.inboxWorkItemId) {
-      const workItemId = snapshot.inboxWorkItemId;
+    if (snapshot.planningWorkItemId) {
+      const workItemId = snapshot.planningWorkItemId;
 
       return {
         lane: 'planning' as const,
         workItemId,
         run: async () => {
-          const result = await this.planningAgentService.triageInboxIdea(projectId, workItemId, {});
+          const result = await this.planningAgentService.executePlanning(projectId, workItemId, {});
 
           return result.comment;
-        },
-      };
-    }
-
-    if (canGenerateInbox && snapshot.nonTerminalCount === 0) {
-      return {
-        lane: 'inbox' as const,
-        workItemId: null,
-        run: async () => {
-          const result = await this.inboxAgentService.generateIdeas(projectId, {
-            maxIdeas: 1,
-          });
-
-          return `Generated ${result.items.length} inbox idea(s).`;
         },
       };
     }
@@ -187,7 +168,7 @@ export class AutomationService {
           }
         : {};
 
-    const [counts, openInterventions, inbox, readyForDev, readyForReview, readyForRelease] =
+    const [counts, openInterventions, planning, readyForDev, readyForReview, readyForRelease] =
       await Promise.all([
         this.getBoardCounts(projectId),
         this.prisma.humanInterventionCase.count({
@@ -199,7 +180,7 @@ export class AutomationService {
         this.prisma.workItem.findFirst({
           where: {
             projectId,
-            state: 'INBOX',
+            state: 'PLANNING',
             ...excludedWhere,
           },
           orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'asc' }],
@@ -237,12 +218,11 @@ export class AutomationService {
     return {
       counts,
       openInterventions,
-      inboxWorkItemId: inbox?.id ?? null,
+      planningWorkItemId: planning?.id ?? null,
       readyForDevWorkItemId: readyForDev?.id ?? null,
       readyForReviewWorkItemId: readyForReview?.id ?? null,
       readyForReleaseWorkItemId: readyForRelease?.id ?? null,
       nonTerminalCount:
-        counts.inbox +
         counts.planning +
         counts.readyForDev +
         counts.inDev +
@@ -287,9 +267,6 @@ export class AutomationService {
           break;
         case 'RELEASED':
           counts.released = total;
-          break;
-        default:
-          counts.inbox = total;
           break;
       }
     }

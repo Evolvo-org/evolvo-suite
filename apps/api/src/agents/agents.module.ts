@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { DevelopmentPlansModule } from '../development-plans/development-plans.module.js';
 import { InterventionsModule } from '../interventions/interventions.module.js';
 import { UsageModule } from '../usage/usage.module.js';
 import { ProjectsModule } from '../projects/projects.module.js';
@@ -13,8 +14,6 @@ import { AgentsController } from './agents.controller.js';
 import { AgentsService } from './agents.service.js';
 import { DevAgentController } from './dev-agent.controller.js';
 import { DevAgentService } from './dev-agent.service.js';
-import { InboxAgentController } from './inbox-agent.controller.js';
-import { InboxAgentService } from './inbox-agent.service.js';
 import { PlanningAgentController } from './planning-agent.controller.js';
 import { PlanningAgentService } from './planning-agent.service.js';
 import { ReleaseAgentController } from './release-agent.controller.js';
@@ -24,6 +23,7 @@ import { ReviewAgentService } from './review-agent.service.js';
 
 @Module({
 	imports: [
+		DevelopmentPlansModule,
 		InterventionsModule,
 		ProjectsModule,
 		ReleasesModule,
@@ -36,7 +36,6 @@ import { ReviewAgentService } from './review-agent.service.js';
 	controllers: [
 		AgentsController,
 		DevAgentController,
-		InboxAgentController,
 		PlanningAgentController,
 		ReleaseAgentController,
 		ReviewAgentController,
@@ -44,7 +43,6 @@ import { ReviewAgentService } from './review-agent.service.js';
 	providers: [
 		AgentsService,
 		DevAgentService,
-		InboxAgentService,
 		PlanningAgentService,
 		ReleaseAgentService,
 		ReviewAgentService,
@@ -52,7 +50,6 @@ import { ReviewAgentService } from './review-agent.service.js';
 	exports: [
 		AgentsService,
 		DevAgentService,
-		InboxAgentService,
 		PlanningAgentService,
 		ReleaseAgentService,
 		ReviewAgentService,

@@ -24,7 +24,6 @@ import {
 import { WorkItemDetailPanel } from './work-item-detail-panel';
 
 const stateDescriptions: Record<WorkItemState, string> = {
-  inbox: 'Freshly created work waiting for planning.',
   planning: 'Work being structured and clarified.',
   readyForDev: 'Clear, queued work ready for implementation.',
   inDev: 'Implementation actively in progress.',

@@ -120,6 +120,9 @@ importers:
 
   apps/runtime:
     dependencies:
+      '@openai/codex-sdk':
+        specifier: ^0.113.0
+        version: 0.113.0
       '@repo/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
@@ -132,6 +135,12 @@ importers:
       dotenv:
         specifier: ^16.4.7
         version: 16.6.1
+      openai:
+        specifier: ^6.27.0
+        version: 6.27.0(zod@3.25.76)
+      zod:
+        specifier: ^3.24.2
+        version: 3.25.76
     devDependencies:
       '@repo/typescript-config':
         specifier: workspace:*
@@ -2042,6 +2051,80 @@ packages:
     hasBin: true
     dependencies:
       consola: 3.4.2
+
+  /@openai/codex-sdk@0.113.0:
+    resolution: {integrity: sha512-NwBbQ9zEhmr5fx+JkT1U8/rzAqqWqRiqd0lX3052x8fGCcOQ7T9ai480zGPQuiQTLatpxRORBDKVMt1bYRzO+A==}
+    engines: {node: '>=18'}
+    dependencies:
+      '@openai/codex': 0.113.0
+    dev: false
+
+  /@openai/codex@0.113.0:
+    resolution: {integrity: sha512-tORKkHTWOT8r8prizxpVxDbC706nDfPNmt+IHjrdZV101rXtmqft8v/sxdutIkw9VBMAD5irxm0IuINi/vDZTw==}
+    engines: {node: '>=16'}
+    hasBin: true
+    optionalDependencies:
+      '@openai/codex-darwin-arm64': /@openai/codex@0.113.0-darwin-arm64
+      '@openai/codex-darwin-x64': /@openai/codex@0.113.0-darwin-x64
+      '@openai/codex-linux-arm64': /@openai/codex@0.113.0-linux-arm64
+      '@openai/codex-linux-x64': /@openai/codex@0.113.0-linux-x64
+      '@openai/codex-win32-arm64': /@openai/codex@0.113.0-win32-arm64
+      '@openai/codex-win32-x64': /@openai/codex@0.113.0-win32-x64
+    dev: false
+
+  /@openai/codex@0.113.0-darwin-arm64:
+    resolution: {integrity: sha512-e8cvmmItlluDHCw2h1MHtjuZ2imt8YkchpyQ52jWlsaG8QHmf/+mkRJ2+YeLrO5tfQcGFWpMrCYMlmEdxKB6sQ==}
+    engines: {node: '>=16'}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@openai/codex@0.113.0-darwin-x64:
+    resolution: {integrity: sha512-RXPf2XvbgRofq/sCSB/lQL30JEhtVr/BRH527ggvzH0mdBleOwFJrHkRA4kAMRuawsfhhTYcdM1Jit3TusmCjg==}
+    engines: {node: '>=16'}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@openai/codex@0.113.0-linux-arm64:
+    resolution: {integrity: sha512-i1K9yXjXlYOjKTxvNrdAF5jzi1dOP2puMyPhQThbRHcQQnJjjUxSGTXJDTVAL7VntYPzsxJ2cQJigHb1Ubg9sw==}
+    engines: {node: '>=16'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@openai/codex@0.113.0-linux-x64:
+    resolution: {integrity: sha512-ZWGfrO+xRN9uIqukCkwstEWbnST0S8SUUfK0Dq/QlY9jSdPiNiuYCsue15YkSNvwfW29eqF1icUUqcKc0T5GdA==}
+    engines: {node: '>=16'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@openai/codex@0.113.0-win32-arm64:
+    resolution: {integrity: sha512-lRdmumMGX+y/qauBoKqo2WLTiM96OzZz+0+JNuPieF8VYXsWQ7OFQUeOnKiI1k8Xmdh76R5ErKnBpo80gYRW5w==}
+    engines: {node: '>=16'}
+    cpu: [arm64]
+    os: [win32]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@openai/codex@0.113.0-win32-x64:
+    resolution: {integrity: sha512-JnynD8WlDMgCovj1g5lecg7d+6q5iSgf3xemmDdOpQCQmIkR8bpj4NIGdKU5BnqCb9GfLtPdd0Sl6Zy94SoFRg==}
+    engines: {node: '>=16'}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: false
+    optional: true
 
   /@paralleldrive/cuid2@2.3.1:
     resolution: {integrity: sha512-XO7cAxhnTZl0Yggq6jOgjiOHhbgcO4NqFqwSmQpjK3b6TEE6Uj/jfSk6wzYyemh3+I0sHirKSetjQwn5cZktFw==}
@@ -5359,6 +5442,21 @@ packages:
     dependencies:
       mimic-fn: 2.1.0
     dev: true
+
+  /openai@6.27.0(zod@3.25.76):
+    resolution: {integrity: sha512-osTKySlrdYrLYTt0zjhY8yp0JUBmWDCN+Q+QxsV4xMQnnoVFpylgKGgxwN8sSdTNw0G4y+WUXs4eCMWpyDNWZQ==}
+    hasBin: true
+    peerDependencies:
+      ws: ^8.18.0
+      zod: ^3.25 || ^4.0
+    peerDependenciesMeta:
+      ws:
+        optional: true
+      zod:
+        optional: true
+    dependencies:
+      zod: 3.25.76
+    dev: false
 
   /ora@5.4.1:
     resolution: {integrity: sha512-5b6Y85tPxZZ7QytO+BQzysW31HJku27cRIlkbAXaNx+BdcVi+LlRFmVXzeF6a7JCwJpyw5c4b+YSVImQIrBpuQ==}

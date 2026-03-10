@@ -1,17 +1,21 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import type {
   AgentInputContract,
   CreateUsageEventRequest,
+  ExecutePlanningRequest,
+  ExecutePlanningResponse,
+  PlanningGeneratedResultInput,
   PlanningAgentTaskRecord,
-  TriageInboxIdeaRequest,
-  TriageInboxIdeaResponse,
 } from '@repo/shared';
 
 import { PrismaService } from '../prisma/prisma.service.js';
 import { ProjectsService } from '../projects/projects.service.js';
+import { DevelopmentPlansService } from '../development-plans/development-plans.service.js';
 import { WorkflowService } from '../workflow/workflow.service.js';
 import { AgentsService } from './agents.service.js';
 import { UsageService } from '../usage/usage.service.js';
+
+type PrismaWorkItemPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 
 const planningAcceptanceCriteria = [
   'The decomposed work clearly describes the intended outcome.',
@@ -31,6 +35,17 @@ const toEpicTitle = (title: string): string => {
   return normalized.length > 0 ? normalized : 'Planned work';
 };
 
+const toPrismaPriority = (value: PrismaWorkItemPriority): PrismaWorkItemPriority => {
+  switch (value) {
+    case 'LOW':
+    case 'HIGH':
+    case 'URGENT':
+      return value;
+    default:
+      return 'MEDIUM';
+  }
+};
+
 @Injectable()
 export class PlanningAgentService {
   public constructor(
@@ -38,6 +53,8 @@ export class PlanningAgentService {
     private readonly prisma: PrismaService,
     @Inject(ProjectsService)
     private readonly projectsService: ProjectsService,
+    @Inject(DevelopmentPlansService)
+    private readonly developmentPlansService: DevelopmentPlansService,
     @Inject(WorkflowService)
     private readonly workflowService: WorkflowService,
     @Inject(AgentsService)
@@ -46,14 +63,14 @@ export class PlanningAgentService {
     private readonly usageService: UsageService,
   ) {}
 
-  public async triageInboxIdea(
+  public async executePlanning(
     projectId: string,
     workItemId: string,
-    payload: TriageInboxIdeaRequest,
-  ): Promise<TriageInboxIdeaResponse> {
+    payload: ExecutePlanningRequest,
+  ): Promise<ExecutePlanningResponse> {
     await this.projectsService.ensureProjectExists(projectId);
 
-    const [workItem, project, route, queueLimits] = await Promise.all([
+    const [workItem, project, route] = await Promise.all([
       this.prisma.workItem.findFirst({
         where: { id: workItemId, projectId },
         include: {
@@ -76,11 +93,16 @@ export class PlanningAgentService {
         },
       }),
       this.projectsService.resolveProjectAgentRoute(projectId, 'planning'),
-      this.projectsService.getProjectQueueLimits(projectId),
     ]);
 
     if (!workItem || !project || !project.repository) {
-      throw new NotFoundException('Inbox work item not found.');
+      throw new NotFoundException('Planning work item not found.');
+    }
+
+    if (!project.developmentPlan?.activeVersion) {
+      throw new BadRequestException(
+        'An active development plan version is required before planning can execute.',
+      );
     }
 
     const duplicate = await this.findDuplicatePlannedWork(
@@ -89,49 +111,50 @@ export class PlanningAgentService {
       workItem.title,
     );
 
-    const developmentPlan = duplicate
-      ? project.developmentPlan
-      : await this.ensureDevelopmentPlan(
-          projectId,
-          project.name,
-          workItem.title,
-          workItem.description,
-          project.productSpec?.content,
-          project.developmentPlan,
-        );
-
     const input = this.buildInput(
       projectId,
       workItemId,
       {
         ...project,
-        developmentPlan,
+        developmentPlan: project.developmentPlan,
       },
       route,
       payload.runtimeId,
+      payload.leaseId,
     );
-    const prompt = this.buildPrompt(project.name, workItem.title, workItem.description);
-    const usagePayload = this.buildUsagePayload(route.provider, route.model, prompt);
+    const promptSnapshot = payload.generatedResult
+      ? {
+          systemPrompt: payload.generatedResult.systemPrompt,
+          userPrompt: payload.generatedResult.userPrompt,
+        }
+      : this.buildPromptSnapshot(project.name, workItem.title, workItem.description);
+    const usagePayload = payload.generatedResult
+      ? null
+      : this.buildUsagePayload(route.provider, route.model, promptSnapshot.userPrompt);
     const run = await this.agentsService.createAgentRun(projectId, workItemId, {
       agentType: 'planning',
       runtimeId: payload.runtimeId,
+      leaseId: payload.leaseId,
       status: 'completed',
       completedAt: new Date().toISOString(),
-      summary: duplicate
-        ? `Planning agent rejected duplicate inbox idea: ${workItem.title}`
-        : `Planning agent accepted and decomposed inbox idea: ${workItem.title}`,
+      summary: payload.generatedResult
+        ? payload.generatedResult.accepted
+          ? `Planning agent accepted and decomposed planning request: ${workItem.title}`
+          : `Planning agent rejected planning request: ${workItem.title}`
+        : duplicate
+          ? `Planning agent rejected duplicate planning request: ${workItem.title}`
+          : `Planning agent accepted and decomposed planning request: ${workItem.title}`,
     });
 
     await this.agentsService.upsertPromptSnapshot(projectId, workItemId, run.id, {
-      systemPrompt:
-        'You are the planning agent. Triage inbox ideas, reject duplicates, and decompose accepted work into execution-ready backlog items.',
-      userPrompt: prompt,
+      systemPrompt: promptSnapshot.systemPrompt,
+      userPrompt: promptSnapshot.userPrompt,
     });
 
     if (duplicate) {
-      const comment = `Planning agent rejected this inbox idea because similar planned work already exists: ${duplicate.title}.`;
+      const comment = `Planning agent rejected this planning request because similar planned work already exists: ${duplicate.title}.`;
       await this.agentsService.createDecision(projectId, workItemId, run.id, {
-        decision: 'Reject duplicate inbox idea.',
+        decision: 'Reject duplicate planning request.',
         rationale: comment,
       });
       await this.workflowService.createWorkItemComment(projectId, workItemId, {
@@ -139,13 +162,19 @@ export class PlanningAgentService {
         actorName: 'Planning agent',
         content: comment,
       });
-
-      const usageEvent = await this.usageService.createUsageEvent(projectId, {
-        ...usagePayload,
-        runtimeId: payload.runtimeId,
-        workItemId,
-        agentRunId: run.id,
+      await this.workflowService.transitionWorkItem(projectId, workItemId, {
+        toState: 'requiresHumanIntervention',
+        reason: comment,
       });
+
+      const usageEvent = usagePayload
+        ? await this.usageService.createUsageEvent(projectId, {
+            ...usagePayload,
+            runtimeId: payload.runtimeId,
+            workItemId,
+            agentRunId: run.id,
+          })
+        : null;
 
       return {
         projectId,
@@ -154,7 +183,7 @@ export class PlanningAgentService {
         route,
         input,
         runId: run.id,
-        usageEventId: usageEvent.id,
+        usageEventId: usageEvent?.id ?? null,
         epicId: null,
         epicTitle: null,
         createdTaskIds: [],
@@ -164,9 +193,26 @@ export class PlanningAgentService {
       };
     }
 
+    if (payload.generatedResult) {
+      return this.applyGeneratedPlanningResult({
+        projectId,
+        workItemId,
+        projectName: project.name,
+        workItemTitle: workItem.title,
+        workItemDescription: workItem.description,
+        workItemPriority: workItem.priority,
+        developmentPlanId: project.developmentPlan.id,
+        route,
+        input,
+        runId: run.id,
+        runtimeId: payload.runtimeId,
+        generatedResult: payload.generatedResult,
+      });
+    }
+
     const epic = await this.ensurePlannedEpic(
       projectId,
-      developmentPlan?.id ?? null,
+      project.developmentPlan.id,
       workItem.title,
     );
 
@@ -177,14 +223,11 @@ export class PlanningAgentService {
         title: toCorePhrase(workItem.title),
         description:
           workItem.description ??
-          `Planned from inbox idea for ${project.name}.`,
+          `Planned from planning request for ${project.name}.`,
       },
     });
 
-    await this.workflowService.transitionWorkItem(projectId, workItemId, {
-      toState: 'planning',
-      reason: 'Planning agent accepted the inbox idea and started decomposition.',
-    });
+    await this.clearPlanningApproval(projectId);
 
     await this.ensureAcceptanceCriteria(projectId, workItemId, planningAcceptanceCriteria);
 
@@ -199,15 +242,10 @@ export class PlanningAgentService {
           parentId: workItemId,
           kind: 'SUBTASK',
           title,
-          description: `Generated by the planning agent from inbox idea ${workItem.title}.`,
+          description: `Generated by the planning agent from planning request ${workItem.title}.`,
           priority: workItem.priority,
           sortOrder: index,
         },
-      });
-
-      await this.workflowService.transitionWorkItem(projectId, subtask.id, {
-        toState: 'planning',
-        reason: 'Planning agent decomposed the accepted inbox idea into executable subtask work.',
       });
 
       await this.ensureAcceptanceCriteria(projectId, subtask.id, [
@@ -223,28 +261,13 @@ export class PlanningAgentService {
       });
     }
 
-    const availableReadySlots = await this.getAvailableReadyForDevSlots(
-      projectId,
-      queueLimits.effective.maxReadyForDev,
-    );
     const promotedToReadyForDevIds: string[] = [];
 
-    for (const subtask of createdSubtasks.slice(0, availableReadySlots)) {
-      await this.workflowService.transitionWorkItem(projectId, subtask.workItemId, {
-        toState: 'readyForDev',
-        reason: 'Planning agent filled ready-for-dev capacity with newly decomposed work.',
-      });
-      subtask.state = 'readyForDev';
-      promotedToReadyForDevIds.push(subtask.workItemId);
-    }
-
     const comment =
-      promotedToReadyForDevIds.length > 0
-        ? `Planning agent accepted this idea, created ${createdSubtasks.length} subtasks, and promoted ${promotedToReadyForDevIds.length} item(s) to ready for dev.`
-        : `Planning agent accepted this idea and created ${createdSubtasks.length} subtasks.`;
+      `Planning agent accepted this planning request, created ${createdSubtasks.length} subtasks, and is awaiting operator approval before execution can begin.`;
 
     await this.agentsService.createDecision(projectId, workItemId, run.id, {
-      decision: 'Accept inbox idea and decompose into executable work.',
+      decision: 'Accept planning request and decompose into executable work.',
       rationale: comment,
     });
 
@@ -269,8 +292,19 @@ export class PlanningAgentService {
       content: comment,
     });
 
+    if (!usagePayload) {
+      throw new BadRequestException('Planning usage payload is required for live planning execution.');
+    }
+
     const usageEvent = await this.usageService.createUsageEvent(projectId, {
-      ...usagePayload,
+      agentType: usagePayload.agentType,
+      provider: usagePayload.provider,
+      model: usagePayload.model,
+      inputTokens: usagePayload.inputTokens,
+      outputTokens: usagePayload.outputTokens,
+      totalTokens: usagePayload.totalTokens,
+      estimatedCostUsd: usagePayload.estimatedCostUsd,
+      occurredAt: usagePayload.occurredAt,
       runtimeId: payload.runtimeId,
       workItemId,
       agentRunId: run.id,
@@ -308,20 +342,22 @@ export class PlanningAgentService {
           }
         | null;
     },
-    route: TriageInboxIdeaResponse['route'],
+    route: ExecutePlanningResponse['route'],
     runtimeId?: string,
+    leaseId?: string,
   ): AgentInputContract {
     return {
       agentType: 'planning',
       projectId,
       workItemId,
       runtimeId,
-      goal: `Triage inbox work item ${workItemId} for ${project.name} and decompose accepted work into executable backlog items.`,
+      leaseId,
+      goal: `Expand planning work item ${workItemId} for ${project.name} into executable backlog items.`,
       context: [
         {
           kind: 'workItem',
           id: workItemId,
-          title: 'Inbox idea',
+          title: 'Planning request',
         },
         {
           kind: 'productSpec',
@@ -345,70 +381,16 @@ export class PlanningAgentService {
     };
   }
 
-  private async ensureDevelopmentPlan(
-    projectId: string,
+  private buildPromptSnapshot(
     projectName: string,
-    ideaTitle: string,
-    ideaDescription: string | null,
-    productSpecContent: string | undefined,
-    existingPlan:
-      | {
-          id: string;
-          title: string;
-          activeVersion: { versionNumber: number } | null;
-        }
-      | null,
+    title: string,
+    description: string | null,
   ) {
-    if (existingPlan) {
-      return existingPlan;
-    }
-
-    const title = 'Generated delivery plan';
-    const content = [
-      `Project: ${projectName}`,
-      `Seed idea: ${ideaTitle}`,
-      `Idea description: ${ideaDescription ?? 'No detailed description provided.'}`,
-      'Execution phases:',
-      `1. Define scope and dependencies for ${ideaTitle}.`,
-      `2. Implement and validate ${ideaTitle}.`,
-      productSpecContent ? `Product spec context: ${productSpecContent.slice(0, 400)}` : null,
-    ]
-      .filter((value): value is string => value !== null)
-      .join('\n');
-
-    return this.prisma.$transaction(async (transaction) => {
-      const plan = await transaction.developmentPlan.create({
-        data: {
-          projectId,
-          title,
-        },
-      });
-
-      const version = await transaction.planVersion.create({
-        data: {
-          developmentPlanId: plan.id,
-          versionNumber: 1,
-          title,
-          content,
-          summary: `Generated by the planning agent while triaging ${ideaTitle}.`,
-        },
-      });
-
-      await transaction.developmentPlan.update({
-        where: { id: plan.id },
-        data: {
-          activeVersionId: version.id,
-        },
-      });
-
-      return {
-        id: plan.id,
-        title: plan.title,
-        activeVersion: {
-          versionNumber: version.versionNumber,
-        },
-      };
-    });
+    return {
+      systemPrompt:
+        'You are the planning agent. Evaluate planning requests, reject duplicates, and decompose accepted work into execution-ready backlog items.',
+      userPrompt: this.buildPrompt(projectName, title, description),
+    };
   }
 
   private buildPrompt(
@@ -418,11 +400,180 @@ export class PlanningAgentService {
   ): string {
     return [
       `Project: ${projectName}`,
-      `Inbox idea: ${title}`,
+      `Planning request: ${title}`,
       `Description: ${description ?? 'No detailed description provided.'}`,
-      'Decide whether this idea should be accepted or rejected.',
+      'Decide whether this planning request should be accepted or rejected.',
       'If accepted, break it into actionable subtasks and define validation expectations.',
     ].join('\n');
+  }
+
+  private async applyGeneratedPlanningResult(input: {
+    projectId: string;
+    workItemId: string;
+    projectName: string;
+    workItemTitle: string;
+    workItemDescription: string | null;
+    workItemPriority: PrismaWorkItemPriority;
+    developmentPlanId: string | null;
+    route: ExecutePlanningResponse['route'];
+    generatedResult: PlanningGeneratedResultInput;
+    input: AgentInputContract;
+    runId: string;
+    runtimeId?: string;
+  }): Promise<ExecutePlanningResponse> {
+    const generatedTasks = input.generatedResult.tasks ?? [];
+
+    if (!input.generatedResult.accepted) {
+      const comment = input.generatedResult.decisionSummary.trim();
+
+      await this.agentsService.createDecision(
+        input.projectId,
+        input.workItemId,
+        input.runId,
+        {
+          decision: 'Reject planning request.',
+          rationale: comment,
+        },
+      );
+      await this.workflowService.createWorkItemComment(
+        input.projectId,
+        input.workItemId,
+        {
+          actorType: 'agent',
+          actorName: 'Planning agent',
+          content: comment,
+        },
+      );
+      await this.workflowService.transitionWorkItem(input.projectId, input.workItemId, {
+        toState: 'requiresHumanIntervention',
+        reason: comment,
+      });
+
+      return {
+        projectId: input.projectId,
+        sourceWorkItemId: input.workItemId,
+        accepted: false,
+        route: input.route,
+        input: input.input,
+        runId: input.runId,
+        usageEventId: null,
+        epicId: null,
+        epicTitle: null,
+        createdTaskIds: [],
+        promotedToReadyForDevIds: [],
+        comment,
+        tasks: [],
+      };
+    }
+
+    const epic = await this.ensureEpic(
+      input.projectId,
+      input.developmentPlanId,
+      input.generatedResult.epicTitle?.trim() || toEpicTitle(input.workItemTitle),
+      input.generatedResult.epicSummary?.trim() ||
+        `Generated by the planning agent from planning request ${input.workItemTitle}.`,
+    );
+
+    await this.prisma.workItem.update({
+      where: { id: input.workItemId },
+      data: {
+        epicId: epic.id,
+        title: toCorePhrase(input.workItemTitle),
+        description:
+          input.workItemDescription ??
+          `Planned from planning request for ${input.projectName}.`,
+      },
+    });
+
+    await this.clearPlanningApproval(input.projectId);
+    await this.ensureAcceptanceCriteria(
+      input.projectId,
+      input.workItemId,
+      planningAcceptanceCriteria,
+    );
+
+    const createdSubtasks: PlanningAgentTaskRecord[] = [];
+
+    for (const [index, task] of generatedTasks.entries()) {
+      const subtask = await this.prisma.workItem.create({
+        data: {
+          projectId: input.projectId,
+          epicId: epic.id,
+          parentId: input.workItemId,
+          kind: 'SUBTASK',
+          title: task.title.trim(),
+          description:
+            task.description?.trim() ||
+            `Generated by the planning agent from planning request ${input.workItemTitle}.`,
+          priority: toPrismaPriority(input.workItemPriority),
+          sortOrder: index,
+        },
+      });
+
+      const acceptanceCriteria = task.acceptanceCriteria.length > 0
+        ? task.acceptanceCriteria
+        : [
+            `${task.title.trim()} has a clear implementation scope.`,
+            `${task.title.trim()} records evidence of completion.`,
+          ];
+
+      await this.ensureAcceptanceCriteria(input.projectId, subtask.id, acceptanceCriteria);
+
+      createdSubtasks.push({
+        workItemId: subtask.id,
+        title: subtask.title,
+        state: 'planning',
+        acceptanceCriteriaCount: acceptanceCriteria.length,
+      });
+    }
+
+    const comment = input.generatedResult.decisionSummary.trim();
+
+    await this.agentsService.createDecision(input.projectId, input.workItemId, input.runId, {
+      decision: 'Accept planning request and decompose into executable work.',
+      rationale: comment,
+    });
+
+    await this.agentsService.createArtifact(input.projectId, input.workItemId, input.runId, {
+      artifactType: 'plan',
+      label: 'Planning decomposition',
+      content: JSON.stringify(
+        {
+          epicId: epic.id,
+          epicTitle: epic.title,
+          createdSubtasks,
+          promotedToReadyForDevIds: [],
+          ambiguityNotes: generatedTasks.map((task) => ({
+            title: task.title,
+            notes: task.ambiguityNotes ?? [],
+          })),
+        },
+        null,
+        2,
+      ),
+    });
+
+    await this.workflowService.createWorkItemComment(input.projectId, input.workItemId, {
+      actorType: 'agent',
+      actorName: 'Planning agent',
+      content: comment,
+    });
+
+    return {
+      projectId: input.projectId,
+      sourceWorkItemId: input.workItemId,
+      accepted: true,
+      route: input.route,
+      input: input.input,
+      runId: input.runId,
+      usageEventId: null,
+      epicId: epic.id,
+      epicTitle: epic.title,
+      createdTaskIds: createdSubtasks.map((item) => item.workItemId),
+      promotedToReadyForDevIds: [],
+      comment,
+      tasks: createdSubtasks,
+    };
   }
 
   private buildUsagePayload(
@@ -470,9 +621,22 @@ export class PlanningAgentService {
   private async ensurePlannedEpic(
     projectId: string,
     developmentPlanId: string | null,
-    ideaTitle: string,
+    requestTitle: string,
   ) {
-    const epicTitle = toEpicTitle(ideaTitle);
+    return this.ensureEpic(
+      projectId,
+      developmentPlanId,
+      toEpicTitle(requestTitle),
+      `Generated by the planning agent from planning request ${requestTitle}.`,
+    );
+  }
+
+  private async ensureEpic(
+    projectId: string,
+    developmentPlanId: string | null,
+    epicTitle: string,
+    summary: string,
+  ) {
     const existing = await this.prisma.epic.findFirst({
       where: {
         projectId,
@@ -491,7 +655,7 @@ export class PlanningAgentService {
         projectId,
         developmentPlanId,
         title: epicTitle,
-        summary: `Generated by the planning agent from inbox idea ${ideaTitle}.`,
+        summary,
         sortOrder,
       },
     });
@@ -541,5 +705,12 @@ export class PlanningAgentService {
     });
 
     return Math.max(0, maxReadyForDev - currentReadyForDev);
+  }
+
+  private async clearPlanningApproval(projectId: string): Promise<void> {
+    await this.developmentPlansService.clearPlanningApproval(projectId, {
+      actorName: 'Planning agent',
+      summary: 'Planning agent decomposition changed the approved plan state.',
+    });
   }
 }

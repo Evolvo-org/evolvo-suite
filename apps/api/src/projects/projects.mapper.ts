@@ -20,7 +20,6 @@ import type {
 } from '@repo/shared';
 
 const emptyKanbanCounts = (): KanbanBoardCounts => ({
-  inbox: 0,
   planning: 0,
   readyForDev: 0,
   inDev: 0,

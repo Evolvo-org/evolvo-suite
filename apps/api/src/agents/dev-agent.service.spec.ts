@@ -125,4 +125,38 @@ describe('DevAgentService', () => {
     expect(agentsService.createArtifact).toHaveBeenCalledTimes(2);
     expect(usageService.createUsageEvent).toHaveBeenCalledOnce();
   });
+
+  it('uses runtime-provided worktree context when execution already prepared one', async () => {
+    const result = await service.executeTask('project-1', 'work-1', {
+      runtimeId: 'runtime-1',
+      leaseId: 'lease-1',
+      worktreePath: '/tmp/runtime/worktrees/project-1/work-1',
+      branchName: 'dev/work-1-runtime-branch',
+      baseBranch: 'release/next',
+      headSha: 'abc123runtime',
+    });
+
+    expect(worktreesService.upsertWorktree).toHaveBeenNthCalledWith(
+      1,
+      'project-1',
+      expect.objectContaining({
+        leaseId: 'lease-1',
+        path: '/tmp/runtime/worktrees/project-1/work-1',
+        branchName: 'dev/work-1-runtime-branch',
+        baseBranch: 'release/next',
+      }),
+    );
+    expect(worktreesService.upsertWorktree).toHaveBeenNthCalledWith(
+      2,
+      'project-1',
+      expect.objectContaining({
+        leaseId: 'lease-1',
+        path: '/tmp/runtime/worktrees/project-1/work-1',
+        branchName: 'dev/work-1-runtime-branch',
+        baseBranch: 'release/next',
+        headSha: 'abc123runtime',
+      }),
+    );
+    expect(result.headSha).toBe('abc123runtime');
+  });
 });

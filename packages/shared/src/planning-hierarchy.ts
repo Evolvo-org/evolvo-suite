@@ -1,3 +1,5 @@
+import type { PlanningApprovalStatus } from './development-plans';
+
 export type WorkItemKind = 'task' | 'subtask';
 
 export type WorkItemPriority = 'low' | 'medium' | 'high' | 'urgent';
@@ -42,9 +44,26 @@ export interface EpicNode {
 export interface PlanningHierarchyResponse {
   projectId: string;
   developmentPlanId: string | null;
+  planningApproval: PlanningApprovalStatus;
   epics: EpicNode[];
   workItemCount: number;
   acceptanceCriteriaCount: number;
+}
+
+export interface PlanningExpansionQueuedItem {
+  workItemId: string;
+  title: string;
+  state: 'planning';
+}
+
+export interface ExpandPlanningHierarchyResponse {
+  projectId: string;
+  developmentPlanId: string;
+  activePlanVersionNumber: number;
+  queueEpicId: string;
+  queuedItems: PlanningExpansionQueuedItem[];
+  skippedTitles: string[];
+  summary: string;
 }
 
 export interface CreateEpicRequest {

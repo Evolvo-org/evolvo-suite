@@ -1,5 +1,4 @@
 enum WorkItemState {
-  INBOX
   PLANNING
   READY_FOR_DEV
   IN_DEV
@@ -50,7 +49,7 @@ model WorkItem {
   epicId               String
   parentId             String?
   kind                 WorkItemKind
-  state                WorkItemState        @default(INBOX)
+  state                WorkItemState        @default(PLANNING)
   title                String
   description          String?              @db.Text
   priority             WorkItemPriority     @default(MEDIUM)

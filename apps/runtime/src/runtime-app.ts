@@ -9,12 +9,21 @@ import type {
 } from '@repo/shared';
 
 import type { RuntimeEnvironment } from './config';
+import {
+  assertValidAgentModelConfig,
+  getActiveAgentModelRoutingSummary,
+} from './config/agent-model.config';
 import { log } from './logger';
+import {
+  assertRuntimeProviderConfiguration,
+  getRuntimeProviderCredentialSummary,
+} from './providers/provider-registry';
 import { BranchManager } from './branch-manager';
 import { LocalRepoRegistry } from './repo-registry';
 import { RecoveryService } from './recovery-service';
 import { RepoSyncService } from './repo-sync';
 import { RuntimeApiClient } from './runtime-api-client';
+import { PlanningExecutionService } from './planning-execution.service';
 import {
   type PersistedRuntimeIdentity,
   RuntimeIdentityStore,
@@ -69,9 +78,16 @@ export class RuntimeApp {
       runtimeApiClient,
       worktreeManager,
     ),
+    private readonly planningExecutionService = new PlanningExecutionService(
+      environment,
+    ),
   ) {}
 
   public async start(): Promise<void> {
+    assertValidAgentModelConfig();
+    assertRuntimeProviderConfiguration({
+      environment: this.environment,
+    });
     await mkdir(this.environment.repositoriesRoot, { recursive: true });
     await this.localRepoRegistry.ensureStorage();
 
@@ -136,6 +152,10 @@ export class RuntimeApp {
       repositoriesRoot: this.environment.repositoriesRoot,
       repoRegistryPath: this.localRepoRegistry.getMetadataFilePath(),
       previousRegistration: persistedIdentity?.lastRegisteredAt ?? null,
+      agentModelRouting: getActiveAgentModelRoutingSummary(),
+      providerCredentials: getRuntimeProviderCredentialSummary({
+        environment: this.environment,
+      }),
       workPollingEnabled: this.environment.workPollingEnabled,
       workPollIntervalMs: this.environment.workPollIntervalMs,
       workPollIdleBackoffMs: this.environment.workPollIdleBackoffMs,
@@ -321,6 +341,75 @@ export class RuntimeApp {
     };
 
     try {
+      if (dispatch.lease.lane === 'planning') {
+        this.startLeaseProgressLoop();
+        this.activeJobSummary = `Planning ${dispatch.workItem.title}`;
+        this.lastAction = `Executing planning for work item ${dispatch.workItem.id}.`;
+
+        const planningExecution = await this.planningExecutionService.execute({
+          dispatch,
+        });
+
+        const execution = await this.runtimeApiClient.executePlanning({
+          projectId: dispatch.project.id,
+          workItemId: dispatch.workItem.id,
+          payload: {
+            runtimeId: this.environment.runtimeId,
+            leaseId: dispatch.lease.id,
+            generatedResult: planningExecution.generatedResult,
+          },
+        });
+
+        if (planningExecution.usage) {
+          await this.runtimeApiClient.createUsageEvent({
+            projectId: dispatch.project.id,
+            payload: {
+              workItemId: dispatch.workItem.id,
+              agentRunId: execution.runId,
+              runtimeId: this.environment.runtimeId,
+              agentType: 'planning',
+              provider: planningExecution.usage.provider,
+              model: planningExecution.usage.model,
+              inputTokens: planningExecution.usage.inputTokens,
+              outputTokens: planningExecution.usage.outputTokens,
+              totalTokens: planningExecution.usage.totalTokens,
+            },
+          });
+        }
+
+        if (this.leaseProgressTimer) {
+          clearInterval(this.leaseProgressTimer);
+          this.leaseProgressTimer = null;
+        }
+
+        await this.finalizeActiveLease({
+          outcome: 'completed',
+          nextState: execution.accepted
+            ? 'planning'
+            : 'requiresHumanIntervention',
+          summary: execution.comment,
+        });
+
+        this.activeLeaseContext = null;
+        this.activeJobSummary = null;
+        this.currentStatus = 'idle';
+        this.lastAction = `Lease ${dispatch.lease.id} completed via planning execution.`;
+
+        log('info', 'Runtime executed leased planning work item.', {
+          runtimeId: this.environment.runtimeId,
+          leaseId: dispatch.lease.id,
+          projectId: dispatch.project.id,
+          workItemId: dispatch.workItem.id,
+          accepted: execution.accepted,
+          nextState: execution.accepted
+            ? 'planning'
+            : 'requiresHumanIntervention',
+          createdTaskCount: execution.tasks.length,
+        });
+
+        return;
+      }
+
       await this.localRepoRegistry.upsertProject({
         id: dispatch.project.id,
         slug: dispatch.project.slug,
@@ -384,6 +473,135 @@ export class RuntimeApp {
       this.startLeaseProgressLoop();
       this.lastAction = `Lease ${dispatch.lease.id} acquired and branch ${branchName} prepared at ${repoRegistration.localPath}.`;
 
+      if (dispatch.lease.lane === 'dev') {
+        this.activeJobSummary = `Executing ${dispatch.workItem.title} in ${preparedWorktree.branchName}`;
+        this.lastAction = `Executing dev work item ${dispatch.workItem.id} in ${preparedWorktree.path}.`;
+
+        const execution = await this.runtimeApiClient.executeDevTask({
+          projectId: dispatch.project.id,
+          workItemId: dispatch.workItem.id,
+          payload: {
+            runtimeId: this.environment.runtimeId,
+            leaseId: dispatch.lease.id,
+            worktreePath: preparedWorktree.path,
+            branchName: preparedWorktree.branchName,
+            baseBranch: preparedWorktree.baseBranch,
+            headSha: preparedWorktree.headSha,
+          },
+        });
+
+        if (this.leaseProgressTimer) {
+          clearInterval(this.leaseProgressTimer);
+          this.leaseProgressTimer = null;
+        }
+
+        await this.finalizeActiveLease({
+          outcome: 'completed',
+          nextState: execution.nextState,
+          summary: execution.comment,
+        });
+
+        this.activeLeaseContext = null;
+        this.activeJobSummary = null;
+        this.currentStatus = 'idle';
+        this.lastAction = `Lease ${dispatch.lease.id} completed via dev execution.`;
+
+        log('info', 'Runtime executed leased dev work item.', {
+          runtimeId: this.environment.runtimeId,
+          leaseId: dispatch.lease.id,
+          projectId: dispatch.project.id,
+          workItemId: dispatch.workItem.id,
+          branchName: execution.branchName,
+          worktreePath: execution.worktreePath,
+          nextState: execution.nextState,
+        });
+
+        return;
+      }
+
+      if (dispatch.lease.lane === 'review') {
+        this.activeJobSummary = `Reviewing ${dispatch.workItem.title}`;
+        this.lastAction = `Executing review for work item ${dispatch.workItem.id}.`;
+
+        const execution = await this.runtimeApiClient.executeReview({
+          projectId: dispatch.project.id,
+          workItemId: dispatch.workItem.id,
+          payload: {
+            runtimeId: this.environment.runtimeId,
+            leaseId: dispatch.lease.id,
+          },
+        });
+
+        if (this.leaseProgressTimer) {
+          clearInterval(this.leaseProgressTimer);
+          this.leaseProgressTimer = null;
+        }
+
+        await this.finalizeActiveLease({
+          outcome: 'completed',
+          nextState: execution.nextState,
+          summary: execution.comment,
+        });
+
+        this.activeLeaseContext = null;
+        this.activeJobSummary = null;
+        this.currentStatus = 'idle';
+        this.lastAction = `Lease ${dispatch.lease.id} completed via review execution.`;
+
+        log('info', 'Runtime executed leased review work item.', {
+          runtimeId: this.environment.runtimeId,
+          leaseId: dispatch.lease.id,
+          projectId: dispatch.project.id,
+          workItemId: dispatch.workItem.id,
+          nextState: execution.nextState,
+          passed: execution.passed,
+        });
+
+        return;
+      }
+
+      if (dispatch.lease.lane === 'release') {
+        this.activeJobSummary = `Releasing ${dispatch.workItem.title}`;
+        this.lastAction = `Executing release for work item ${dispatch.workItem.id}.`;
+
+        const execution = await this.runtimeApiClient.executeRelease({
+          projectId: dispatch.project.id,
+          workItemId: dispatch.workItem.id,
+          payload: {
+            runtimeId: this.environment.runtimeId,
+            leaseId: dispatch.lease.id,
+            outcome: 'success',
+          },
+        });
+
+        if (this.leaseProgressTimer) {
+          clearInterval(this.leaseProgressTimer);
+          this.leaseProgressTimer = null;
+        }
+
+        await this.finalizeActiveLease({
+          outcome: 'completed',
+          nextState: execution.nextState,
+          summary: execution.comment,
+        });
+
+        this.activeLeaseContext = null;
+        this.activeJobSummary = null;
+        this.currentStatus = 'idle';
+        this.lastAction = `Lease ${dispatch.lease.id} completed via release execution.`;
+
+        log('info', 'Runtime executed leased release work item.', {
+          runtimeId: this.environment.runtimeId,
+          leaseId: dispatch.lease.id,
+          projectId: dispatch.project.id,
+          workItemId: dispatch.workItem.id,
+          nextState: execution.nextState,
+          releaseRunId: execution.releaseRun.id,
+        });
+
+        return;
+      }
+
       log('warn', 'Runtime leased work and paused further polling until execution is available.', {
         runtimeId: this.environment.runtimeId,
         leaseId: dispatch.lease.id,
@@ -399,11 +617,18 @@ export class RuntimeApp {
         isDirty: preparedWorktree.isDirty,
       });
     } catch (error) {
+      if (this.leaseProgressTimer) {
+        clearInterval(this.leaseProgressTimer);
+        this.leaseProgressTimer = null;
+      }
+
       await this.finalizeActiveLease({
         outcome: 'failed',
         errorMessage:
           error instanceof Error ? error.message : 'Unknown leased work failure.',
       });
+      this.activeLeaseContext = null;
+      this.activeJobSummary = null;
       throw error;
     }
   }
@@ -503,6 +728,15 @@ export class RuntimeApp {
 
   private async finalizeActiveLease(input: {
     outcome: 'completed' | 'failed' | 'cancelled';
+    nextState?:
+      | 'planning'
+      | 'readyForDev'
+      | 'inDev'
+      | 'readyForReview'
+      | 'inReview'
+      | 'readyForRelease'
+      | 'requiresHumanIntervention'
+      | 'released';
     summary?: string;
     errorMessage?: string;
   }): Promise<void> {
@@ -516,6 +750,7 @@ export class RuntimeApp {
       {
         leaseToken: this.activeLeaseContext.lease.leaseToken,
         outcome: input.outcome,
+        nextState: input.nextState,
         summary: input.summary,
         errorMessage: input.errorMessage,
       },

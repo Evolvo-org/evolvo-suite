@@ -9,6 +9,7 @@ import {
   listDevelopmentPlanVersions,
   projectQueryKeys,
 } from '@repo/api-client';
+import { Badge } from '@repo/ui/components/badge/badge';
 import { Button } from '@repo/ui/components/button/button';
 import { Card } from '@repo/ui/components/card/card';
 import { EmptyState } from '@repo/ui/components/empty-state/empty-state';
@@ -69,6 +70,14 @@ const categorizeInterventionReason = (summary: string, reason: string): string =
   return 'other';
 };
 
+const formatPlanningApprovalTimestamp = (timestamp: string | null): string | null => {
+  if (!timestamp) {
+    return null;
+  }
+
+  return new Date(timestamp).toLocaleString();
+};
+
 export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
   const projectQuery = useQuery({
     queryKey: projectQueryKeys.detail(projectId),
@@ -127,6 +136,23 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
   }
 
   const { data: project } = projectQuery;
+  const planningApproval = planQuery.data?.planningApproval;
+  const approvalTimestamp = formatPlanningApprovalTimestamp(
+    planningApproval?.approvedAt ?? null,
+  );
+  const hasApprovalDrift =
+    planningApproval?.isApproved === false &&
+    planningApproval?.approvedVersionId != null;
+  const approvalTone = planningApproval?.isApproved
+    ? 'success'
+    : hasApprovalDrift
+      ? 'warning'
+      : 'neutral';
+  const approvalLabel = planningApproval?.isApproved
+    ? 'Approved for execution'
+    : hasApprovalDrift
+      ? 'Approval no longer matches the active plan'
+      : 'Approval required';
 
   return (
     <div className="space-y-6">
@@ -201,7 +227,6 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
 
         <Card className="space-y-3 p-6" title="Queue counts">
           <ul className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
-            <li>Inbox: {project.metrics.kanbanCounts.inbox}</li>
             <li>Planning: {project.metrics.kanbanCounts.planning}</li>
             <li>Ready for dev: {project.metrics.kanbanCounts.readyForDev}</li>
             <li>In dev: {project.metrics.kanbanCounts.inDev}</li>
@@ -554,6 +579,28 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
               No development plan stored yet.
             </p>
           )}
+          <div className="rounded-xl border border-zinc-800/10 p-4 dark:border-white/10">
+            <div className="flex flex-wrap items-center gap-3">
+              <Badge tone={approvalTone}>{approvalLabel}</Badge>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                {planQuery.data?.activeVersionNumber
+                  ? `Active version v${planQuery.data.activeVersionNumber}`
+                  : 'No active plan version'}
+              </p>
+            </div>
+            <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+              {planningApproval?.isApproved
+                ? `Approved by ${planningApproval.approvedBy ?? 'Unknown operator'}${approvalTimestamp ? ` on ${approvalTimestamp}` : ''}.`
+                : hasApprovalDrift
+                  ? 'Planning changed after approval. Re-approve the active plan version before moving work into ready for dev.'
+                  : 'The active development plan version still needs operator approval before planning work can move into ready for dev.'}
+            </p>
+            {planningApproval?.summary ? (
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                {planningApproval.summary}
+              </p>
+            ) : null}
+          </div>
           <div className="rounded-xl border border-zinc-800/10 p-4 dark:border-white/10">
             <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
               Version history

@@ -241,7 +241,7 @@ packages/
 ## `packages/agents`
 
 * provider adapters
-* inbox/planning/dev/review/release agent interfaces
+* planning/dev/review/release agent interfaces
 * structured execution contracts
 
 ## `packages/git`
@@ -278,7 +278,6 @@ These remain unchanged and should stay separate in the model.
 
 ## Execution workflow
 
-* Inbox
 * Planning
 * Ready for dev
 * In dev
@@ -378,7 +377,6 @@ Only the API can move a card between states.
 
 Allowed transitions are enforced in domain services, for example:
 
-* Inbox → Planning
 * Planning → Ready for dev
 * Ready for dev → In dev
 * In dev → Ready for review
@@ -546,57 +544,26 @@ A project should end up with:
 
 ## Global agents
 
-### Inbox agent
-
-* global loop
-* round robin across projects
-* generates new ideas into Inbox
-
-Inbox generation should assemble context from:
-
-* project metadata and repository identity
-* latest product spec version
-* active development plan version when present
-* current backlog/inbox counts
-
-Inbox prompts should ask for concise, actionable candidate ideas that can later be accepted, rejected, or decomposed by the planning agent.
-
-Generated ideas must be validated before persistence:
-
-* title required
-* description required
-* priority required
-* rationale required
-* at least one source signal required
-
-Persisted ideas should:
-
-* land in `Inbox`
-* be attached to a durable inbox epic when no better bucket exists
-* record an agent run with prompt snapshot and decision rationale
-* record usage against the generated work item
-
 ### Planning agent
 
 * global loop
-* consumes Inbox
-* accepts/rejects ideas
+* consumes explicit planning requests
+* accepts/rejects requests
 * structures work
 * fills Planning
-* promotes to Ready for dev when allowed
+* waits for operator approval before execution promotion
 
 Planning triage should:
 
-* reject ideas when materially similar planned or in-flight work already exists
-* create or reuse a development plan when the project has no active plan yet
-* place accepted work under a durable epic derived from the accepted idea
-* keep the accepted inbox item as the parent task and generate executable subtasks beneath it
+* reject requests when materially similar planned or in-flight work already exists
+* require an active development plan version before execution
+* place accepted work under a durable epic derived from the planning request
+* keep the accepted planning item as the parent task and generate executable subtasks beneath it
 * add acceptance criteria to both the accepted task and generated subtasks
-* promote newly generated work into `Ready for dev` up to the effective per-project queue cap
+* leave generated work in `Planning` until an operator approves execution
 
 Planning persistence should:
 
-* transition accepted inbox ideas from `Inbox` to `Planning`
 * record an agent run with prompt snapshot, decision rationale, and planning artifact
 * add a planning comment to the source work item
 * record usage against the planning run
@@ -657,8 +624,8 @@ Dev execution should:
 Automation loops should:
 
 * trigger when a project is started and when operators explicitly request an automation run
-* generate inbox ideas only when an active project has no non-terminal work and no open interventions
-* promote inbox work through planning, dev, review, and release in sequence while eligible work exists
+* start from explicit planning work already in `Planning`
+* promote planning work through dev, review, and release in sequence while eligible work exists
 * stop immediately when open human interventions exist for the project
 * avoid re-processing the same work item repeatedly during a single automation run
 * emit structured scheduler logs for eligibility decisions, skipped projects, lease failures, and transition attempts
@@ -774,7 +741,7 @@ Routing is centrally configurable.
 System settings define:
 
 * a default provider/model pair
-* optional per-agent overrides for inbox, planning, dev, review, and release
+* optional per-agent overrides for planning, dev, review, and release
 
 Projects may override both the default pair and any per-agent route.
 
@@ -1093,11 +1060,11 @@ Exit criteria:
 
 ---
 
-## Phase 11 — Inbox and planning automation
+## Phase 11 — Planning automation
 
 Build:
 
-* inbox idea generation
+* explicit planning request execution
 * planning accept/reject flow
 * Ready for dev auto-fill respecting queue caps
 * round robin cross-project balancing
@@ -1140,7 +1107,7 @@ The best order is now:
 9. dev agent
 10. review agent
 11. release agent
-12. inbox/planning automation
+12. planning automation
 13. usage/billing foundations
 
 ---

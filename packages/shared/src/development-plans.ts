@@ -1,3 +1,27 @@
+export interface PlanningApprovalStatus {
+  approvedAt: string | null;
+  approvedBy: string | null;
+  approvedVersionId: string | null;
+  summary: string | null;
+  isApproved: boolean;
+}
+
+export interface DevelopmentPlanApprovalAuditItem {
+  id: string;
+  planVersionId: string;
+  planVersionNumber: number | null;
+  actorName: string;
+  summary: string | null;
+  action: 'approved' | 'reset';
+  createdAt: string;
+}
+
+export interface DevelopmentPlanApprovalAuditResponse {
+  projectId: string;
+  planId: string | null;
+  items: DevelopmentPlanApprovalAuditItem[];
+}
+
 export interface DevelopmentPlanResponse {
   projectId: string;
   planId: string | null;
@@ -6,6 +30,7 @@ export interface DevelopmentPlanResponse {
   activeVersionNumber: number | null;
   activeContent: string | null;
   versionCount: number;
+  planningApproval: PlanningApprovalStatus;
   updatedAt: string | null;
 }
 
@@ -22,6 +47,7 @@ export interface DevelopmentPlanVersionsResponse {
   projectId: string;
   planId: string | null;
   activeVersionId: string | null;
+  planningApproval: PlanningApprovalStatus;
   versions: DevelopmentPlanVersionItem[];
 }
 
@@ -39,4 +65,9 @@ export interface UpdateDevelopmentPlanRequest {
 
 export interface ActivateDevelopmentPlanVersionRequest {
   versionId: string;
+}
+
+export interface ApproveDevelopmentPlanRequest {
+  actorName: string;
+  summary?: string;
 }

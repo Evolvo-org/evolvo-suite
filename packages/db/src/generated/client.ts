@@ -167,6 +167,11 @@ export type DevelopmentPlan = Prisma.DevelopmentPlanModel
  */
 export type PlanVersion = Prisma.PlanVersionModel
 /**
+ * Model DevelopmentPlanApprovalAudit
+ * 
+ */
+export type DevelopmentPlanApprovalAudit = Prisma.DevelopmentPlanApprovalAuditModel
+/**
  * Model ReleaseRun
  * 
  */

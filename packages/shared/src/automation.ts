@@ -5,7 +5,7 @@ export interface RunProjectAutomationRequest {
 }
 
 export interface AutomationActionRecord {
-  lane: 'inbox' | 'planning' | 'dev' | 'review' | 'release';
+  lane: 'planning' | 'dev' | 'review' | 'release';
   workItemId: string | null;
   summary: string;
 }

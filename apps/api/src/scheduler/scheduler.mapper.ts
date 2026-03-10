@@ -3,6 +3,8 @@ import type { SchedulerLease } from '@repo/shared';
 
 const mapLane = (value: WorkItemLease['lane']): SchedulerLease['lane'] => {
   switch (value) {
+    case 'PLANNING':
+      return 'planning';
     case 'REVIEW':
       return 'review';
     case 'RELEASE':

@@ -19,20 +19,18 @@ import { mapUsageEvent, mapUsageSummary } from './usage.mapper.js';
 const providerAliases: Record<string, string> = {
   openai: 'openai',
   'open-ai': 'openai',
-  anthropic: 'anthropic',
-  claude: 'anthropic',
-  google: 'google',
-  gemini: 'google',
-  github: 'github',
-  azure: 'azure',
+  codex: 'codex',
+  'codex sdk': 'codex',
+  'codex-sdk': 'codex',
+  github: 'codex',
+  'github-copilot': 'codex',
 };
 
 const modelPricingPer1kTokens: Record<string, { input: number; output: number }> = {
   'openai:gpt-5.4': { input: 0.01, output: 0.03 },
   'openai:gpt-5.4-mini': { input: 0.002, output: 0.006 },
-  'anthropic:claude-sonnet-4': { input: 0.003, output: 0.015 },
-  'google:gemini-2.5-pro': { input: 0.0035, output: 0.01 },
-  'github:copilot-gpt-5.4': { input: 0.01, output: 0.03 },
+  'codex:codex-mini-latest': { input: 0.0015, output: 0.006 },
+  'codex:codex-latest': { input: 0.015, output: 0.06 },
 };
 
 @Injectable()

@@ -12,11 +12,8 @@ describe('AutomationService', () => {
       findFirst: ReturnType<typeof vi.fn>;
     };
   };
-  let inboxAgentService: {
-    generateIdeas: ReturnType<typeof vi.fn>;
-  };
   let planningAgentService: {
-    triageInboxIdea: ReturnType<typeof vi.fn>;
+    executePlanning: ReturnType<typeof vi.fn>;
   };
   let devAgentService: {
     executeTask: ReturnType<typeof vi.fn>;
@@ -57,14 +54,8 @@ describe('AutomationService', () => {
         }),
       },
     };
-    inboxAgentService = {
-      generateIdeas: vi.fn().mockImplementation(async () => {
-        boardState = [{ id: 'work-1', state: 'INBOX' }];
-        return { items: [{ workItemId: 'work-1' }] };
-      }),
-    };
     planningAgentService = {
-      triageInboxIdea: vi.fn().mockImplementation(async (_projectId: string, workItemId: string) => {
+      executePlanning: vi.fn().mockImplementation(async (_projectId: string, workItemId: string) => {
         boardState = boardState.map((item) =>
           item.id === workItemId ? { ...item, state: 'PLANNING' } : item,
         );
@@ -103,7 +94,6 @@ describe('AutomationService', () => {
     service = new AutomationService(
       prisma as never,
       { ensureProjectExists: vi.fn().mockResolvedValue(undefined) } as never,
-      inboxAgentService as never,
       planningAgentService as never,
       devAgentService as never,
       reviewAgentService as never,
@@ -111,25 +101,16 @@ describe('AutomationService', () => {
     );
   });
 
-  it('triggers the inbox loop first for active empty projects', async () => {
+  it('does not invent new planning work for empty active projects', async () => {
     const result = await service.runProjectAutomation('project-1', {
       maxActions: 1,
     });
 
-    expect(result.actions).toEqual([
-      {
-        lane: 'inbox',
-        workItemId: null,
-        summary: 'Generated 1 inbox idea(s).',
-      },
-    ]);
-    expect(inboxAgentService.generateIdeas).toHaveBeenCalledWith('project-1', {
-      maxIdeas: 1,
-    });
+    expect(result.actions).toEqual([]);
   });
 
-  it('triggers the planning loop for inbox work', async () => {
-    boardState = [{ id: 'work-1', state: 'INBOX' }];
+  it('triggers the planning loop for planning work', async () => {
+    boardState = [{ id: 'work-1', state: 'PLANNING' }];
 
     const result = await service.runProjectAutomation('project-1', {
       maxActions: 1,
@@ -142,7 +123,7 @@ describe('AutomationService', () => {
         summary: 'planned',
       },
     ]);
-    expect(planningAgentService.triageInboxIdea).toHaveBeenCalledWith(
+    expect(planningAgentService.executePlanning).toHaveBeenCalledWith(
       'project-1',
       'work-1',
       {},
@@ -181,7 +162,7 @@ describe('AutomationService', () => {
 
   it('triggers the release loop before lower-priority lanes', async () => {
     boardState = [
-      { id: 'work-1', state: 'INBOX' },
+      { id: 'work-1', state: 'PLANNING' },
       { id: 'work-2', state: 'READY_FOR_DEV' },
       { id: 'work-3', state: 'READY_FOR_REVIEW' },
       { id: 'work-4', state: 'READY_FOR_RELEASE' },
@@ -199,7 +180,7 @@ describe('AutomationService', () => {
     expect(releaseAgentService.executeRelease).toHaveBeenCalledWith('project-1', 'work-4', {});
     expect(reviewAgentService.executeReview).not.toHaveBeenCalled();
     expect(devAgentService.executeTask).not.toHaveBeenCalled();
-    expect(planningAgentService.triageInboxIdea).not.toHaveBeenCalled();
+    expect(planningAgentService.executePlanning).not.toHaveBeenCalled();
   });
 
   it('stops automation when open interventions exist', async () => {
@@ -212,12 +193,11 @@ describe('AutomationService', () => {
 
     expect(result.actions).toEqual([]);
     expect(releaseAgentService.executeRelease).not.toHaveBeenCalled();
-    expect(inboxAgentService.generateIdeas).not.toHaveBeenCalled();
   });
 
   it('does not reprocess the same work item repeatedly in one run', async () => {
-    boardState = [{ id: 'work-1', state: 'INBOX' }];
-    planningAgentService.triageInboxIdea.mockResolvedValue({ comment: 'planned once' });
+    boardState = [{ id: 'work-1', state: 'PLANNING' }];
+    planningAgentService.executePlanning.mockResolvedValue({ comment: 'planned once' });
 
     const result = await service.runProjectAutomation('project-1', {
       maxActions: 3,
@@ -230,6 +210,6 @@ describe('AutomationService', () => {
         summary: 'planned once',
       },
     ]);
-    expect(planningAgentService.triageInboxIdea).toHaveBeenCalledTimes(1);
+    expect(planningAgentService.executePlanning).toHaveBeenCalledTimes(1);
   });
 });

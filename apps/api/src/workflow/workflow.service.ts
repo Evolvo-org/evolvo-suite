@@ -1,4 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import type {
   CreateWorkItemCommentRequest,
   KanbanBoardCounts,
@@ -43,7 +48,7 @@ const toPrismaState = (value: TransitionWorkItemRequest['toState']) => {
     case 'released':
       return 'RELEASED' as const;
     default:
-      return 'INBOX' as const;
+      return 'PLANNING' as const;
   }
 };
 
@@ -66,7 +71,7 @@ const fromPrismaState = (value: string): TransitionWorkItemRequest['toState'] =>
     case 'RELEASED':
       return 'released';
     default:
-      return 'inbox';
+      return 'planning';
   }
 };
 
@@ -321,6 +326,7 @@ export class WorkflowService {
     }
 
     const fromState = fromPrismaState(workItem.state);
+    await this.assertPlanningApprovedForExecution(projectId, fromState, payload);
     this.workflowStateMachineService.assertTransition(fromState, payload);
 
     await this.prisma.$transaction(async (transaction) => {
@@ -386,6 +392,34 @@ export class WorkflowService {
 
     if (!workItem) {
       throw new NotFoundException('Work item not found.');
+    }
+  }
+
+  private async assertPlanningApprovedForExecution(
+    projectId: string,
+    fromState: TransitionWorkItemRequest['toState'],
+    payload: TransitionWorkItemRequest,
+  ): Promise<void> {
+    if (fromState !== 'planning' || payload.toState !== 'readyForDev') {
+      return;
+    }
+
+    const developmentPlan = await this.prisma.developmentPlan.findUnique({
+      where: { projectId },
+      select: {
+        activeVersionId: true,
+        planningApprovedVersionId: true,
+        planningApprovedAt: true,
+      },
+    });
+
+    const isApproved =
+      Boolean(developmentPlan?.planningApprovedAt) &&
+      developmentPlan?.activeVersionId != null &&
+      developmentPlan.activeVersionId === developmentPlan.planningApprovedVersionId;
+
+    if (!isApproved) {
+      throw new ConflictException('Planning approval is required before work can move to ready for dev.');
     }
   }
 }

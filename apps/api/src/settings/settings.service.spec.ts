@@ -76,8 +76,8 @@ describe('SettingsService', () => {
     const updatedAt = new Date('2026-03-09T12:45:00.000Z');
     prisma.systemAgentRouting.upsert.mockResolvedValue({
       id: 'system-agent-routing-defaults',
-      defaultProvider: 'anthropic',
-      defaultModel: 'claude-sonnet-4',
+      defaultProvider: 'codex',
+      defaultModel: 'codex-mini-latest',
       agentRoutesJson: {
         dev: {
           provider: 'openai',
@@ -88,8 +88,8 @@ describe('SettingsService', () => {
     });
 
     const response = await service.updateSystemAgentRouting({
-      defaultProvider: 'anthropic',
-      defaultModel: 'claude-sonnet-4',
+      defaultProvider: 'codex',
+      defaultModel: 'codex-mini-latest',
       agentRoutes: {
         dev: {
           provider: 'openai',
@@ -98,7 +98,7 @@ describe('SettingsService', () => {
       },
     });
 
-    expect(response.routing.defaultProvider).toBe('anthropic');
+    expect(response.routing.defaultProvider).toBe('codex');
     expect(response.routing.agentRoutes.dev?.model).toBe('gpt-5.4');
     expect(response.updatedAt).toBe(updatedAt.toISOString());
     expect(prisma.systemAgentRouting.upsert).toHaveBeenCalledOnce();

@@ -38,21 +38,12 @@ const optionalNonEmptyString = z.preprocess(
   z.string().trim().min(1).optional(),
 );
 
-const inboxIdeaCandidateSchema = z.object({
-  title: z.string().trim().min(1).max(200),
-  description: z.string().trim().min(1).max(10000),
-  priority: z.enum(workItemPriorities),
-  rationale: z.string().trim().min(1).max(5000),
-  sourceSignals: z.array(z.string().trim().min(1).max(200)).min(1).max(12),
-});
-
 const agentRouteTargetSchema = z.object({
   provider: z.enum(agentProviders),
   model: z.string().trim().min(1).max(160),
 });
 
 const agentRouteOverridesSchema = z.object({
-  inbox: agentRouteTargetSchema.optional(),
   planning: agentRouteTargetSchema.optional(),
   dev: agentRouteTargetSchema.optional(),
   review: agentRouteTargetSchema.optional(),
@@ -150,6 +141,11 @@ export const updateDevelopmentPlanSchema = z.object({
 
 export const activateDevelopmentPlanVersionSchema = z.object({
   versionId: z.string().trim().min(1),
+});
+
+export const approveDevelopmentPlanSchema = z.object({
+  actorName: z.string().trim().min(1).max(200),
+  summary: z.string().trim().min(1).max(5000).optional(),
 });
 
 export const createEpicSchema = z.object({
@@ -443,20 +439,44 @@ export const createAgentArtifactSchema = z.object({
   url: z.string().trim().url().optional(),
 });
 
-export const generateInboxIdeasSchema = z.object({
-  maxIdeas: z.number().int().positive().max(10).optional(),
+export const executePlanningSchema = z.object({
   runtimeId: z.string().trim().min(1).max(160).optional(),
-});
-
-export const inboxIdeaCandidatesSchema = z.array(inboxIdeaCandidateSchema).min(1).max(10);
-
-export const triageInboxIdeaSchema = z.object({
-  runtimeId: z.string().trim().min(1).max(160).optional(),
+  leaseId: z.string().trim().min(1).max(160).optional(),
+  generatedResult: z
+    .object({
+      systemPrompt: z.string().trim().min(1).max(20_000),
+      userPrompt: z.string().trim().min(1).max(50_000),
+      accepted: z.boolean(),
+      decisionSummary: z.string().trim().min(1).max(10_000),
+      epicTitle: z.string().trim().min(1).max(200).optional(),
+      epicSummary: z.string().trim().min(1).max(5_000).optional(),
+      tasks: z
+        .array(
+          z.object({
+            title: z.string().trim().min(1).max(200),
+            description: z.string().trim().min(1).max(5_000).optional(),
+            acceptanceCriteria: z
+              .array(z.string().trim().min(1).max(500))
+              .max(8),
+            ambiguityNotes: z
+              .array(z.string().trim().min(1).max(500))
+              .max(8)
+              .optional(),
+          }),
+        )
+        .max(8)
+        .optional(),
+    })
+    .optional(),
 });
 
 export const executeDevTaskSchema = z.object({
   runtimeId: z.string().trim().min(1).max(160).optional(),
   leaseId: z.string().trim().min(1).max(160).optional(),
+  worktreePath: z.string().trim().min(1).max(2_048).optional(),
+  branchName: z.string().trim().min(1).max(255).optional(),
+  baseBranch: z.string().trim().min(1).max(255).optional(),
+  headSha: z.string().trim().min(1).max(255).optional(),
 });
 
 export const executeReviewSchema = z.object({
@@ -636,6 +656,8 @@ export const runtimeEnvironmentSchema = z.object({
   RUNTIME_ID: z.string().trim().min(1).default('runtime-local'),
   RUNTIME_DISPLAY_NAME: z.string().trim().min(1).max(160).optional(),
   RUNTIME_CAPABILITIES: z.string().trim().default('git,leases,heartbeats'),
+  OPENAI_API_KEY: optionalNonEmptyString,
+  CODEX_API_KEY: optionalNonEmptyString,
   API_BASE_URL: z.string().trim().url().default('http://localhost:3000/api/v1'),
   API_AUTH_TOKEN: optionalNonEmptyString,
   API_RETRY_MAX_ATTEMPTS: z.coerce.number().int().min(1).max(10).default(3),

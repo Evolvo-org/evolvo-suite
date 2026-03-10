@@ -5,7 +5,6 @@ export * from './auth';
 export * from './automation';
 export * from './agents';
 export * from './agent-routing';
-export * from './inbox-agent';
 export * from './planning-agent';
 export * from './dev-agent';
 export * from './review-agent';

@@ -9,6 +9,11 @@ enum ProjectRepositoryProvider {
   GITHUB
 }
 
+enum PlanningApprovalAuditAction {
+  APPROVED
+  RESET
+}
+
 model Project {
   id                  String                 @id @default(cuid())
   name                String
@@ -104,28 +109,51 @@ model ProductSpec {
 }
 
 model DevelopmentPlan {
-  id              String       @id @default(cuid())
-  projectId       String       @unique
-  title           String
-  activeVersionId String?      @unique
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  project         Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  activeVersion   PlanVersion? @relation("ActivePlanVersion", fields: [activeVersionId], references: [id], onDelete: SetNull)
-  versions        PlanVersion[] @relation("PlanVersions")
-  epics           Epic[]
+  id                       String                       @id @default(cuid())
+  projectId                String                       @unique
+  title                    String
+  activeVersionId          String?                      @unique
+  planningApprovedVersionId String?                     @unique
+  planningApprovedAt       DateTime?
+  planningApprovedBy       String?
+  planningApprovalSummary  String?                      @db.Text
+  createdAt                DateTime                     @default(now())
+  updatedAt                DateTime                     @updatedAt
+  project                  Project                      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  activeVersion            PlanVersion?                 @relation("ActivePlanVersion", fields: [activeVersionId], references: [id], onDelete: SetNull)
+  planningApprovedVersion  PlanVersion?                 @relation("ApprovedPlanVersion", fields: [planningApprovedVersionId], references: [id], onDelete: SetNull)
+  versions                 PlanVersion[]                @relation("PlanVersions")
+  epics                    Epic[]
+  approvalAudit            DevelopmentPlanApprovalAudit[]
 }
 
 model PlanVersion {
-  id                String           @id @default(cuid())
-  developmentPlanId String
-  versionNumber     Int
-  title             String
-  content           String           @db.Text
-  summary           String?
-  createdAt         DateTime         @default(now())
-  developmentPlan   DevelopmentPlan  @relation("PlanVersions", fields: [developmentPlanId], references: [id], onDelete: Cascade)
-  activatedBy       DevelopmentPlan? @relation("ActivePlanVersion")
+  id                  String                        @id @default(cuid())
+  developmentPlanId   String
+  versionNumber       Int
+  title               String
+  content             String                        @db.Text
+  summary             String?
+  createdAt           DateTime                      @default(now())
+  developmentPlan     DevelopmentPlan               @relation("PlanVersions", fields: [developmentPlanId], references: [id], onDelete: Cascade)
+  activatedBy         DevelopmentPlan?              @relation("ActivePlanVersion")
+  approvedByPlan      DevelopmentPlan?              @relation("ApprovedPlanVersion")
+  approvalAuditEvents DevelopmentPlanApprovalAudit[]
 
   @@unique([developmentPlanId, versionNumber])
+}
+
+model DevelopmentPlanApprovalAudit {
+  id                String                      @id @default(cuid())
+  developmentPlanId String
+  planVersionId     String
+  action            PlanningApprovalAuditAction @default(APPROVED)
+  actorName         String
+  summary           String?                     @db.Text
+  createdAt         DateTime                    @default(now())
+  developmentPlan   DevelopmentPlan             @relation(fields: [developmentPlanId], references: [id], onDelete: Cascade)
+  planVersion       PlanVersion                 @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
+
+  @@index([developmentPlanId, createdAt])
+  @@index([planVersionId, createdAt])
 }

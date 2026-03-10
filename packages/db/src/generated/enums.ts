@@ -60,7 +60,6 @@ export type StructuredLogLevel = (typeof StructuredLogLevel)[keyof typeof Struct
 
 
 export const WorkItemState = {
-  INBOX: 'INBOX',
   PLANNING: 'PLANNING',
   READY_FOR_DEV: 'READY_FOR_DEV',
   IN_DEV: 'IN_DEV',
@@ -115,6 +114,14 @@ export const ProjectRepositoryProvider = {
 } as const
 
 export type ProjectRepositoryProvider = (typeof ProjectRepositoryProvider)[keyof typeof ProjectRepositoryProvider]
+
+
+export const PlanningApprovalAuditAction = {
+  APPROVED: 'APPROVED',
+  RESET: 'RESET'
+} as const
+
+export type PlanningApprovalAuditAction = (typeof PlanningApprovalAuditAction)[keyof typeof PlanningApprovalAuditAction]
 
 
 export const ReleaseRunStatus = {
@@ -186,6 +193,7 @@ export type RuntimeArtifactType = (typeof RuntimeArtifactType)[keyof typeof Runt
 
 
 export const SchedulerLeaseLane = {
+  PLANNING: 'PLANNING',
   DEV: 'DEV',
   REVIEW: 'REVIEW',
   RELEASE: 'RELEASE'

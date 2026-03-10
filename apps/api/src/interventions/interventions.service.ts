@@ -381,7 +381,7 @@ export class InterventionsService {
       case 'RELEASED':
         return 'released' as const;
       default:
-        return 'inbox' as const;
+        return 'planning' as const;
     }
   }
 

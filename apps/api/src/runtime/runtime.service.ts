@@ -64,8 +64,8 @@ const toPrismaWorkItemState = (value: WorkItemState) => {
       return 'REQUIRES_HUMAN_INTERVENTION' as const;
     case 'released':
       return 'RELEASED' as const;
-    default:
-      return 'INBOX' as const;
+    default: 
+      return 'PLANNING' as const;
   }
 };
 
@@ -88,7 +88,7 @@ const fromPrismaWorkItemState = (value: string): WorkItemState => {
     case 'RELEASED':
       return 'released';
     default:
-      return 'inbox';
+      return 'planning';
   }
 };
 
@@ -112,9 +112,11 @@ const toPrismaArtifactType = (
 };
 
 const normalizeLeaseLane = (
-  value: SchedulerLease['lane'] | 'DEV' | 'REVIEW' | 'RELEASE',
+  value: SchedulerLease['lane'] | 'PLANNING' | 'DEV' | 'REVIEW' | 'RELEASE',
 ): SchedulerLease['lane'] => {
   switch (value) {
+    case 'PLANNING':
+      return 'planning';
     case 'REVIEW':
       return 'review';
     case 'RELEASE':
@@ -259,8 +261,21 @@ export class RuntimeService {
       };
     }
 
-    const [project, workItem] = await Promise.all([
+    const [project, projectPlanningSource, workItem] = await Promise.all([
       this.projectsService.getProjectDetail(acquired.lease.projectId),
+      acquired.lease.lane === 'planning'
+        ? this.prisma.project.findUnique({
+            where: { id: acquired.lease.projectId },
+            include: {
+              productSpec: true,
+              developmentPlan: {
+                include: {
+                  activeVersion: true,
+                },
+              },
+            },
+          })
+        : Promise.resolve(null),
       this.prisma.workItem.findUniqueOrThrow({
         where: { id: acquired.lease.workItemId },
         include: {
@@ -311,6 +326,31 @@ export class RuntimeService {
         queueLimits: project.queueLimits,
       }),
       workItem: mapRuntimeDispatchWorkItem(workItem, acquired.lease.lane),
+      planningContext:
+        acquired.lease.lane === 'planning'
+          ? {
+              route: await this.projectsService.resolveProjectAgentRoute(
+                acquired.lease.projectId,
+                'planning',
+              ),
+              productSpecId: projectPlanningSource?.productSpec?.id ?? null,
+              productSpecVersion:
+                projectPlanningSource?.productSpec?.version ?? null,
+              productSpecContent:
+                projectPlanningSource?.productSpec?.content ?? null,
+              developmentPlanId: projectPlanningSource?.developmentPlan?.id ?? null,
+              developmentPlanTitle:
+                projectPlanningSource?.developmentPlan?.title ?? null,
+              developmentPlanVersionNumber:
+                projectPlanningSource?.developmentPlan?.activeVersion
+                  ?.versionNumber ?? null,
+              developmentPlanContent:
+                projectPlanningSource?.developmentPlan?.activeVersion
+                  ?.content ?? null,
+              duplicateWorkItemId: null,
+              duplicateWorkItemTitle: null,
+            }
+          : null,
     };
   }
 

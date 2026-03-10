@@ -8,6 +8,7 @@ import type {
   CreateAcceptanceCriterionRequest,
   CreateEpicRequest,
   CreateWorkItemRequest,
+  ExpandPlanningHierarchyResponse,
   PlanningHierarchyResponse,
   UpdateAcceptanceCriterionRequest,
   UpdateEpicRequest,
@@ -20,9 +21,16 @@ import type {
 
 import { PrismaService } from '../prisma/prisma.service.js';
 import { ProjectsService } from '../projects/projects.service.js';
+import { DevelopmentPlansService } from '../development-plans/development-plans.service.js';
+import { mapPlanningApproval } from '../development-plans/development-plans.mapper.js';
 
 type PrismaWorkItemKind = 'TASK' | 'SUBTASK';
 type PrismaWorkItemPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+
+type PlanExpansionSection = {
+  title: string;
+  content: string;
+};
 
 type HierarchyEpicRecord = {
   id: string;
@@ -63,6 +71,9 @@ const mapWorkItemKind = (value: PrismaWorkItemKind) =>
 const mapWorkItemPriority = (value: PrismaWorkItemPriority) =>
   value.toLowerCase() as WorkItemPriority;
 
+const planExpansionQueueEpicTitle = 'Planning requests';
+const maxPlanExpansionSections = 8;
+
 const toPrismaPriority = (
   value: WorkItemPriority | undefined,
 ): PrismaWorkItemPriority => {
@@ -85,6 +96,8 @@ export class PlanningService {
     private readonly prisma: PrismaService,
     @Inject(ProjectsService)
     private readonly projectsService: ProjectsService,
+    @Inject(DevelopmentPlansService)
+    private readonly developmentPlansService: DevelopmentPlansService,
   ) {}
 
   public async getHierarchy(
@@ -95,7 +108,12 @@ export class PlanningService {
     const [developmentPlan, epics, workItems] = await this.prisma.$transaction([
       this.prisma.developmentPlan.findUnique({
         where: { projectId },
-        select: { id: true },
+        include: {
+          activeVersion: true,
+          versions: {
+            orderBy: { versionNumber: 'desc' },
+          },
+        },
       }),
       this.prisma.epic.findMany({
         where: { projectId },
@@ -199,12 +217,126 @@ export class PlanningService {
     return {
       projectId,
       developmentPlanId: developmentPlan?.id ?? null,
+      planningApproval: mapPlanningApproval(developmentPlan),
       epics: hierarchyEpics,
       workItemCount: workItems.length,
       acceptanceCriteriaCount: workItems.reduce(
         (count, workItem) => count + workItem.acceptanceCriteria.length,
         0,
       ),
+    };
+  }
+
+  public async expandPlan(
+    projectId: string,
+  ): Promise<ExpandPlanningHierarchyResponse> {
+    await this.projectsService.ensureProjectExists(projectId);
+
+    const project = await this.prisma.project.findUnique({
+      where: { id: projectId },
+      include: {
+        productSpec: true,
+        developmentPlan: {
+          include: {
+            activeVersion: true,
+          },
+        },
+      },
+    });
+
+    if (!project?.productSpec?.content) {
+      throw new BadRequestException(
+        'A product specification is required before expanding the planning hierarchy.',
+      );
+    }
+
+    if (!project.developmentPlan?.activeVersion) {
+      throw new BadRequestException(
+        'An active development plan version is required before expanding the planning hierarchy.',
+      );
+    }
+
+    const sections = this.extractPlanSections(
+      project.developmentPlan.activeVersion.title,
+      project.developmentPlan.activeVersion.content,
+    );
+    const queueEpic = await this.ensurePlanningQueueEpic(
+      projectId,
+      project.developmentPlan.id,
+    );
+    const [existingEpics, existingWorkItems, existingQueueCount] = await Promise.all([
+      this.prisma.epic.findMany({
+        where: { projectId },
+        select: { title: true },
+      }),
+      this.prisma.workItem.findMany({
+        where: { projectId },
+        select: { title: true },
+      }),
+      this.prisma.workItem.count({
+        where: {
+          projectId,
+          epicId: queueEpic.id,
+          parentId: null,
+        },
+      }),
+    ]);
+
+    const existingTitles = new Set(
+      [...existingEpics, ...existingWorkItems]
+        .map((record) => this.normalizePlanningTitle(record.title))
+        .filter((value) => value.length > 0),
+    );
+    const queuedItems: ExpandPlanningHierarchyResponse['queuedItems'] = [];
+    const skippedTitles: string[] = [];
+
+    for (const section of sections.slice(0, maxPlanExpansionSections)) {
+      const normalizedTitle = this.normalizePlanningTitle(section.title);
+
+      if (existingTitles.has(normalizedTitle)) {
+        skippedTitles.push(section.title);
+        continue;
+      }
+
+      const created = await this.prisma.workItem.create({
+        data: {
+          projectId,
+          epicId: queueEpic.id,
+          parentId: null,
+          kind: 'TASK',
+          title: section.title,
+          description: this.buildPlanExpansionDescription({
+            planTitle: project.developmentPlan.title,
+            activeVersionNumber: project.developmentPlan.activeVersion.versionNumber,
+            sectionTitle: section.title,
+            sectionContent: section.content,
+          }),
+          priority: 'MEDIUM',
+          sortOrder: existingQueueCount + queuedItems.length,
+        },
+      });
+
+      existingTitles.add(normalizedTitle);
+      queuedItems.push({
+        workItemId: created.id,
+        title: created.title,
+        state: 'planning',
+      });
+    }
+
+    const summary =
+      queuedItems.length > 0
+        ? `Queued ${queuedItems.length} planning request${queuedItems.length === 1 ? '' : 's'} from active development plan v${project.developmentPlan.activeVersion.versionNumber}. The runtime planning lane will expand them into epics as leases are processed.`
+        : `No new planning requests were queued because ${skippedTitles.length === 1 ? 'that section already exists in the project backlog.' : 'those sections already exist in the project backlog.'}`;
+
+    return {
+      projectId,
+      developmentPlanId: project.developmentPlan.id,
+      activePlanVersionNumber: project.developmentPlan.activeVersion.versionNumber,
+      queueEpicId: queueEpic.id,
+      queuedItems,
+      skippedTitles,
+      summary,
     };
   }
 
@@ -230,6 +362,8 @@ export class PlanningService {
       },
     });
 
+    await this.clearPlanningApproval(projectId);
+
     return this.getHierarchy(projectId);
   }
 
@@ -250,6 +384,8 @@ export class PlanningService {
       },
     });
 
+    await this.clearPlanningApproval(projectId);
+
     return this.getHierarchy(projectId);
   }
 
@@ -262,6 +398,8 @@ export class PlanningService {
     await this.prisma.epic.delete({
       where: { id: epicId },
     });
+
+    await this.clearPlanningApproval(projectId);
 
     return this.getHierarchy(projectId);
   }
@@ -298,6 +436,8 @@ export class PlanningService {
         sortOrder: payload.sortOrder ?? siblingCount,
       },
     });
+
+    await this.clearPlanningApproval(projectId);
 
     return this.getHierarchy(projectId);
   }
@@ -338,6 +478,8 @@ export class PlanningService {
       },
     });
 
+    await this.clearPlanningApproval(projectId);
+
     return this.getHierarchy(projectId);
   }
 
@@ -350,6 +492,8 @@ export class PlanningService {
     await this.prisma.workItem.delete({
       where: { id: workItemId },
     });
+
+    await this.clearPlanningApproval(projectId);
 
     return this.getHierarchy(projectId);
   }
@@ -367,6 +511,8 @@ export class PlanningService {
         priority: toPrismaPriority(payload.priority),
       },
     });
+
+    await this.clearPlanningApproval(projectId);
 
     return this.getHierarchy(projectId);
   }
@@ -392,6 +538,8 @@ export class PlanningService {
       });
     }
 
+    await this.clearPlanningApproval(projectId);
+
     return this.getHierarchy(projectId);
   }
 
@@ -415,6 +563,8 @@ export class PlanningService {
       },
     });
 
+    await this.clearPlanningApproval(projectId);
+
     return this.getHierarchy(projectId);
   }
 
@@ -434,6 +584,8 @@ export class PlanningService {
       },
     });
 
+    await this.clearPlanningApproval(projectId);
+
     return this.getHierarchy(projectId);
   }
 
@@ -447,7 +599,16 @@ export class PlanningService {
       where: { id: criterionId },
     });
 
+    await this.clearPlanningApproval(projectId);
+
     return this.getHierarchy(projectId);
+  }
+
+  private async clearPlanningApproval(projectId: string): Promise<void> {
+    await this.developmentPlansService.clearPlanningApproval(projectId, {
+      actorName: 'System',
+      summary: 'Planning hierarchy changed after approval.',
+    });
   }
 
   private async getEpic(projectId: string, epicId: string) {
@@ -574,5 +735,148 @@ export class PlanningService {
         'Dependencies must reference work items in the same project.',
       );
     }
+  }
+
+  private async ensurePlanningQueueEpic(
+    projectId: string,
+    developmentPlanId: string,
+  ) {
+    const existingEpic = await this.prisma.epic.findFirst({
+      where: {
+        projectId,
+        title: planExpansionQueueEpicTitle,
+      },
+    });
+
+    if (existingEpic) {
+      return existingEpic;
+    }
+
+    const epicCount = await this.prisma.epic.count({ where: { projectId } });
+
+    return this.prisma.epic.create({
+      data: {
+        projectId,
+        developmentPlanId,
+        title: planExpansionQueueEpicTitle,
+        summary:
+          'System-managed planning requests derived from the active development plan.',
+        sortOrder: epicCount,
+      },
+    });
+  }
+
+  private extractPlanSections(
+    planTitle: string,
+    content: string,
+  ): PlanExpansionSection[] {
+    const sections: PlanExpansionSection[] = [];
+    const lines = content.split(/\r?\n/);
+    let currentTitle: string | null = null;
+    let currentLines: string[] = [];
+
+    const flushSection = () => {
+      if (!currentTitle) {
+        return;
+      }
+
+      const normalizedTitle = currentTitle.trim();
+      const normalizedContent = currentLines.join('\n').trim();
+
+      if (normalizedTitle.length === 0) {
+        return;
+      }
+
+      sections.push({
+        title: normalizedTitle,
+        content: normalizedContent.length > 0 ? normalizedContent : normalizedTitle,
+      });
+    };
+
+    for (const line of lines) {
+      const heading = this.parsePlanSectionHeading(line.trim());
+
+      if (heading) {
+        flushSection();
+        currentTitle = heading;
+        currentLines = [];
+        continue;
+      }
+
+      if (!currentTitle) {
+        currentTitle = planTitle.trim() || 'Active development plan';
+      }
+
+      currentLines.push(line);
+    }
+
+    flushSection();
+
+    const dedupedSections: PlanExpansionSection[] = [];
+    const seenTitles = new Set<string>();
+
+    for (const section of sections) {
+      const normalizedTitle = this.normalizePlanningTitle(section.title);
+
+      if (normalizedTitle.length === 0 || seenTitles.has(normalizedTitle)) {
+        continue;
+      }
+
+      seenTitles.add(normalizedTitle);
+      dedupedSections.push(section);
+    }
+
+    return dedupedSections.length > 0
+      ? dedupedSections
+      : [
+          {
+            title: planTitle.trim() || 'Active development plan',
+            content: content.trim(),
+          },
+        ];
+  }
+
+  private parsePlanSectionHeading(line: string): string | null {
+    if (line.length === 0) {
+      return null;
+    }
+
+    const markdownHeadingMatch = /^(#{1,2})\s+(.+)$/.exec(line);
+
+    if (markdownHeadingMatch) {
+      return markdownHeadingMatch[2]?.trim() ?? null;
+    }
+
+    const numberedHeadingMatch = /^(\d+(?:\.\d+)*)[.)]\s+(.+)$/.exec(line);
+
+    if (numberedHeadingMatch) {
+      return numberedHeadingMatch[2]?.trim() ?? null;
+    }
+
+    return null;
+  }
+
+  private buildPlanExpansionDescription(input: {
+    planTitle: string;
+    activeVersionNumber: number;
+    sectionTitle: string;
+    sectionContent: string;
+  }): string {
+    return [
+      'Expand this active development plan section into a distinct epic with executable tasks if it represents material work.',
+      `Development plan: ${input.planTitle} v${input.activeVersionNumber}`,
+      `Plan section: ${input.sectionTitle}`,
+      '',
+      'Section details:',
+      input.sectionContent,
+    ].join('\n');
+  }
+
+  private normalizePlanningTitle(value: string): string {
+    return value
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .replace(/\s+/g, ' ');
   }
 }

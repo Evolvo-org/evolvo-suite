@@ -63,7 +63,6 @@ export interface ProjectListItem {
 
 export interface ProjectOverviewMetrics {
   kanbanCounts: {
-    inbox: number;
     planning: number;
     readyForDev: number;
     inDev: number;

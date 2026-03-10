@@ -4,7 +4,12 @@ import {
   createReleaseVersion,
   createReviewGateResult,
   createRuntimeArtifactUploadMetadata,
+  createUsageEvent,
   configureApiClient,
+  executePlanning,
+  executeDevTask,
+  executeRelease,
+  executeReview,
   getProjectWorktrees,
   markProjectWorktreeStale,
   recordReleaseResult,
@@ -20,9 +25,18 @@ import {
 } from '@repo/api-client';
 import type {
   CreateReviewGateResultRequest,
+  ExecutePlanningRequest,
+  ExecutePlanningResponse,
+  ExecuteDevTaskRequest,
+  ExecuteDevTaskResponse,
+  ExecuteReleaseRequest,
+  ExecuteReleaseResponse,
+  ExecuteReviewRequest,
+  ExecuteReviewResponse,
   RecordReleaseResultRequest,
   ReleaseRunRecord,
   RegisterRuntimeRequest,
+  CreateUsageEventRequest,
   RuntimeArtifactType,
   RuntimeArtifactUploadMetadataResponse,
   RuntimeDetailResponse,
@@ -31,6 +45,7 @@ import type {
   RuntimeProgressUpdateRequest,
   RuntimeWorkDispatchResponse,
   UpsertReleaseNoteRequest,
+  UsageEventRecord,
   WorktreeListResponse,
   WorktreeStatus,
   WorktreeResponse,
@@ -115,7 +130,6 @@ export class RuntimeApiClient {
       leaseToken: string;
       outcome: 'completed' | 'failed' | 'cancelled';
       nextState?:
-        | 'inbox'
         | 'planning'
         | 'readyForDev'
         | 'inDev'
@@ -164,6 +178,78 @@ export class RuntimeApiClient {
           isDirty: input.isDirty,
           details: input.details,
         });
+
+        return response.data;
+      }),
+    );
+  }
+
+  public async executeDevTask(input: {
+    projectId: string;
+    workItemId: string;
+    payload: ExecuteDevTaskRequest;
+  }): Promise<ExecuteDevTaskResponse> {
+    return this.withRequestContext(() =>
+      this.executeWithRetry('executeDevTask', async () => {
+        const response = await executeDevTask(
+          input.projectId,
+          input.workItemId,
+          input.payload,
+        );
+
+        return response.data;
+      }),
+    );
+  }
+
+  public async executePlanning(input: {
+    projectId: string;
+    workItemId: string;
+    payload: ExecutePlanningRequest;
+  }): Promise<ExecutePlanningResponse> {
+    return this.withRequestContext(() =>
+      this.executeWithRetry('executePlanning', async () => {
+        const response = await executePlanning(
+          input.projectId,
+          input.workItemId,
+          input.payload,
+        );
+
+        return response.data;
+      }),
+    );
+  }
+
+  public async executeReview(input: {
+    projectId: string;
+    workItemId: string;
+    payload: ExecuteReviewRequest;
+  }): Promise<ExecuteReviewResponse> {
+    return this.withRequestContext(() =>
+      this.executeWithRetry('executeReview', async () => {
+        const response = await executeReview(
+          input.projectId,
+          input.workItemId,
+          input.payload,
+        );
+
+        return response.data;
+      }),
+    );
+  }
+
+  public async executeRelease(input: {
+    projectId: string;
+    workItemId: string;
+    payload: ExecuteReleaseRequest;
+  }): Promise<ExecuteReleaseResponse> {
+    return this.withRequestContext(() =>
+      this.executeWithRetry('executeRelease', async () => {
+        const response = await executeRelease(
+          input.projectId,
+          input.workItemId,
+          input.payload,
+        );
 
         return response.data;
       }),
@@ -233,6 +319,19 @@ export class RuntimeApiClient {
             sizeBytes: input.sizeBytes,
           },
         );
+
+        return response.data;
+      }),
+    );
+  }
+
+  public async createUsageEvent(input: {
+    projectId: string;
+    payload: CreateUsageEventRequest;
+  }): Promise<UsageEventRecord> {
+    return this.withRequestContext(() =>
+      this.executeWithRetry('createUsageEvent', async () => {
+        const response = await createUsageEvent(input.projectId, input.payload);
 
         return response.data;
       }),

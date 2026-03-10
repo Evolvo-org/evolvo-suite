@@ -2,9 +2,7 @@ import type { AgentType } from './agents';
 
 export const agentProviders = [
   'openai',
-  'anthropic',
-  'github-copilot',
-  'mock',
+  'codex',
 ] as const;
 
 export type AgentProvider = (typeof agentProviders)[number];
@@ -54,10 +52,6 @@ export const defaultAgentRoutingConfig: AgentRoutingConfig = {
   defaultProvider: 'openai',
   defaultModel: 'gpt-5.4-mini',
   agentRoutes: {
-    inbox: {
-      provider: 'openai',
-      model: 'gpt-5.4-mini',
-    },
     planning: {
       provider: 'openai',
       model: 'gpt-5.4',
@@ -67,8 +61,8 @@ export const defaultAgentRoutingConfig: AgentRoutingConfig = {
       model: 'gpt-5.4',
     },
     review: {
-      provider: 'anthropic',
-      model: 'claude-sonnet-4',
+      provider: 'openai',
+      model: 'gpt-5.4',
     },
     release: {
       provider: 'openai',

@@ -291,9 +291,22 @@ describe('AppController (e2e)', () => {
       .post(`/api/v1/projects/${projectId}/start`)
       .expect(201);
 
+    const createEpicResponse = await request(app.getHttpServer())
+      .post(`/api/v1/projects/${projectId}/planning/epics`)
+      .send({
+        title: 'Automation epic',
+      })
+      .expect(201);
+
+    const epicId = createEpicResponse.body.data.epics[0].id as string;
+
     await request(app.getHttpServer())
-      .post(`/api/v1/projects/${projectId}/agents/inbox/generate`)
-      .send({ maxIdeas: 1 })
+      .post(`/api/v1/projects/${projectId}/planning/work-items`)
+      .send({
+        epicId,
+        kind: 'task',
+        title: 'Expand project plan into executable work',
+      })
       .expect(201);
 
     const boardResponse = await request(app.getHttpServer())
@@ -405,18 +418,18 @@ describe('AppController (e2e)', () => {
       .get(`/api/v1/projects/${projectId}/board`)
       .expect(200)
       .expect((response) => {
-        expect(response.body.counts.inbox).toBe(1);
+        expect(response.body.counts.planning).toBe(1);
         expect(response.body.columns[0].items[0].id).toBe(taskId);
       });
 
     await request(app.getHttpServer())
       .post(`/api/v1/projects/${projectId}/work-items/${taskId}/transition`)
       .send({
-        toState: 'planning',
+        toState: 'readyForDev',
       })
       .expect(201)
       .expect((response) => {
-        expect(response.body.data.counts.planning).toBe(1);
+        expect(response.body.data.counts.readyForDev).toBe(1);
       });
 
     await request(app.getHttpServer())
@@ -1088,76 +1101,7 @@ describe('AppController (e2e)', () => {
       });
   });
 
-  it('/api/v1/projects/:projectId/agents/inbox/generate creates inbox items and records usage', async () => {
-    const runtimeId = `inbox-runtime-${Date.now()}`;
-
-    await request(app.getHttpServer())
-      .post('/api/v1/runtimes/register')
-      .send({
-        runtimeId,
-        displayName: 'Inbox runtime',
-        capabilities: ['planning'],
-      })
-      .expect(201);
-
-    const createProjectResponse = await request(app.getHttpServer())
-      .post('/api/v1/projects')
-      .send({
-        name: `Inbox Agent Test ${Date.now()}`,
-        repository: {
-          provider: 'github',
-          owner: 'Evolvo-org',
-          name: 'evolvo-suite',
-          url: 'https://github.com/Evolvo-org/evolvo-suite',
-          defaultBranch: 'main',
-          baseBranch: 'main',
-        },
-        productDescription:
-          'Build queue controls, runtime observability, and safer release automation for autonomous delivery.',
-      })
-      .expect(201);
-
-    const projectId = createProjectResponse.body.data.id as string;
-
-    const generationResponse = await request(app.getHttpServer())
-      .post(`/api/v1/projects/${projectId}/agents/inbox/generate`)
-      .send({
-        runtimeId,
-        maxIdeas: 2,
-      })
-      .expect(201);
-
-    expect(generationResponse.body.data.candidates).toHaveLength(2);
-    expect(generationResponse.body.data.items).toHaveLength(2);
-
-    const firstWorkItemId = generationResponse.body.data.items[0].workItemId as string;
-
-    await request(app.getHttpServer())
-      .get(`/api/v1/projects/${projectId}/board`)
-      .expect(200)
-      .expect((response) => {
-        expect(response.body.counts.inbox).toBe(2);
-      });
-
-    await request(app.getHttpServer())
-      .get(`/api/v1/projects/${projectId}/work-items/${firstWorkItemId}/agent-runs`)
-      .expect(200)
-      .expect((response) => {
-        expect(response.body.items).toHaveLength(1);
-        expect(response.body.items[0].agentType).toBe('inbox');
-        expect(response.body.items[0].promptSnapshot).not.toBeNull();
-      });
-
-    await request(app.getHttpServer())
-      .get(`/api/v1/projects/${projectId}/usage/summary`)
-      .expect(200)
-      .expect((response) => {
-        expect(response.body.totalEvents).toBe(2);
-        expect(response.body.byAgent[0].key).toBe('inbox');
-      });
-  });
-
-  it('/api/v1/projects/:projectId/agents/planning/work-items/:workItemId/triage decomposes inbox ideas', async () => {
+  it('/api/v1/projects/:projectId/agents/planning/work-items/:workItemId/execute decomposes planning requests', async () => {
     const runtimeId = `planning-runtime-${Date.now()}`;
 
     await request(app.getHttpServer())
@@ -1182,30 +1126,45 @@ describe('AppController (e2e)', () => {
           baseBranch: 'main',
         },
         productDescription:
-          'Convert inbox ideas into actionable plans and keep ready-for-dev filled.',
+          'Convert approved planning requests into actionable plans and keep ready-for-dev filled.',
       })
       .expect(201);
 
     const projectId = createProjectResponse.body.data.id as string;
 
-    const inboxResponse = await request(app.getHttpServer())
-      .post(`/api/v1/projects/${projectId}/agents/inbox/generate`)
+    await request(app.getHttpServer())
+      .post(`/api/v1/projects/${projectId}/start`)
+      .expect(201);
+
+    const createEpicResponse = await request(app.getHttpServer())
+      .post(`/api/v1/projects/${projectId}/planning/epics`)
       .send({
-        runtimeId,
-        maxIdeas: 1,
+        title: 'Planning requests',
       })
       .expect(201);
 
-    const workItemId = inboxResponse.body.data.items[0].workItemId as string;
+    const epicId = createEpicResponse.body.data.epics[0].id as string;
 
-    const triageResponse = await request(app.getHttpServer())
-      .post(`/api/v1/projects/${projectId}/agents/planning/work-items/${workItemId}/triage`)
+    const createTaskResponse = await request(app.getHttpServer())
+      .post(`/api/v1/projects/${projectId}/planning/work-items`)
+      .send({
+        epicId,
+        kind: 'task',
+        title: 'Decompose operator dashboard planning request',
+        description: 'Break the approved scope into executable subtasks with validation.',
+      })
+      .expect(201);
+
+    const workItemId = createTaskResponse.body.data.epics[0].tasks[0].id as string;
+
+    const executionResponse = await request(app.getHttpServer())
+      .post(`/api/v1/projects/${projectId}/agents/planning/work-items/${workItemId}/execute`)
       .send({ runtimeId })
       .expect(201);
 
-    expect(triageResponse.body.data.accepted).toBe(true);
-    expect(triageResponse.body.data.tasks.length).toBeGreaterThanOrEqual(2);
-    expect(triageResponse.body.data.promotedToReadyForDevIds.length).toBeGreaterThan(0);
+    expect(executionResponse.body.data.accepted).toBe(true);
+    expect(executionResponse.body.data.tasks.length).toBeGreaterThanOrEqual(2);
+    expect(executionResponse.body.data.promotedToReadyForDevIds).toHaveLength(0);
 
     await request(app.getHttpServer())
       .get(`/api/v1/projects/${projectId}/work-items/${workItemId}`)
@@ -2209,8 +2168,8 @@ describe('AppController (e2e)', () => {
       .send({
         userId,
         agentType: 'review',
-        provider: 'Anthropic',
-        model: 'Claude Sonnet 4',
+        provider: 'Codex SDK',
+        model: 'codex-mini-latest',
         inputTokens: 400,
         outputTokens: 100,
         estimatedCostUsd: 0.005,
@@ -2226,6 +2185,7 @@ describe('AppController (e2e)', () => {
         expect(response.body.totalTokens).toBe(2500);
         expect(response.body.byAgent).toHaveLength(2);
         expect(response.body.byProviderModel.some((item: { key: string }) => item.key === 'openai:gpt-5.4')).toBe(true);
+        expect(response.body.byProviderModel.some((item: { key: string }) => item.key === 'codex:codex-mini-latest')).toBe(true);
       });
 
     await request(app.getHttpServer())

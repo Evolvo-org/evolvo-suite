@@ -4,9 +4,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import type { Prisma } from '@repo/db/client';
 import type {
   ActivateDevelopmentPlanVersionRequest,
+  ApproveDevelopmentPlanRequest,
   CreateDevelopmentPlanRequest,
+  DevelopmentPlanApprovalAuditResponse,
   DevelopmentPlanResponse,
   DevelopmentPlanVersionsResponse,
   UpdateDevelopmentPlanRequest,
@@ -16,6 +19,7 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { ProjectsService } from '../projects/projects.service.js';
 
 import {
+  mapDevelopmentPlanApprovalAudit,
   mapDevelopmentPlan,
   mapDevelopmentPlanVersions,
 } from './development-plans.mapper.js';
@@ -128,6 +132,11 @@ export class DevelopmentPlansService {
               : version.id,
         },
       });
+
+      await this.clearPlanningApprovalForPlan(transaction, developmentPlan, {
+        actorName: 'System',
+        summary: 'Development plan content changed after approval.',
+      });
     });
 
     return mapDevelopmentPlan(
@@ -147,6 +156,33 @@ export class DevelopmentPlansService {
     );
   }
 
+  public async listApprovalAudit(
+    projectId: string,
+  ): Promise<DevelopmentPlanApprovalAuditResponse> {
+    await this.projectsService.ensureProjectExists(projectId);
+
+    const developmentPlan = await this.prisma.developmentPlan.findUnique({
+      where: { projectId },
+      select: { id: true },
+    });
+
+    if (!developmentPlan) {
+      return mapDevelopmentPlanApprovalAudit(projectId, null, []);
+    }
+
+    const items = await this.prisma.developmentPlanApprovalAudit.findMany({
+      where: { developmentPlanId: developmentPlan.id },
+      include: {
+        planVersion: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return mapDevelopmentPlanApprovalAudit(projectId, developmentPlan.id, items);
+  }
+
   public async activateVersion(
     projectId: string,
     payload: ActivateDevelopmentPlanVersionRequest,
@@ -155,7 +191,13 @@ export class DevelopmentPlansService {
 
     const developmentPlan = await this.prisma.developmentPlan.findUnique({
       where: { projectId },
-      select: { id: true },
+      select: {
+        id: true,
+        planningApprovedAt: true,
+        planningApprovedBy: true,
+        planningApprovedVersionId: true,
+        planningApprovalSummary: true,
+      },
     });
 
     if (!developmentPlan) {
@@ -173,17 +215,94 @@ export class DevelopmentPlansService {
       throw new NotFoundException('Development plan version not found.');
     }
 
-    await this.prisma.developmentPlan.update({
-      where: { id: developmentPlan.id },
-      data: {
-        activeVersionId: version.id,
-      },
+    await this.prisma.$transaction(async (transaction) => {
+      await transaction.developmentPlan.update({
+        where: { id: developmentPlan.id },
+        data: {
+          activeVersionId: version.id,
+        },
+      });
+
+      await this.clearPlanningApprovalForPlan(transaction, developmentPlan, {
+        actorName: 'System',
+        summary: 'The active development plan version changed after approval.',
+      });
     });
 
     return mapDevelopmentPlan(
       projectId,
       await this.findDevelopmentPlan(projectId),
     );
+  }
+
+  public async approveDevelopmentPlan(
+    projectId: string,
+    payload: ApproveDevelopmentPlanRequest,
+  ): Promise<DevelopmentPlanResponse> {
+    await this.projectsService.ensureProjectExists(projectId);
+
+    const developmentPlan = await this.findDevelopmentPlan(projectId);
+
+    if (!developmentPlan) {
+      throw new NotFoundException('Development plan not found.');
+    }
+
+    if (!developmentPlan.activeVersionId) {
+      throw new ConflictException('An active development plan version is required before approval.');
+    }
+
+    const activeVersionId = developmentPlan.activeVersionId;
+
+    await this.prisma.$transaction(async (transaction) => {
+      await transaction.developmentPlan.update({
+        where: { id: developmentPlan.id },
+        data: {
+          planningApprovedAt: new Date(),
+          planningApprovedBy: payload.actorName.trim(),
+          planningApprovedVersionId: activeVersionId,
+          planningApprovalSummary: payload.summary?.trim() ?? null,
+        },
+      });
+
+      await transaction.developmentPlanApprovalAudit.create({
+        data: {
+          developmentPlanId: developmentPlan.id,
+          planVersionId: activeVersionId,
+          actorName: payload.actorName.trim(),
+          summary: payload.summary?.trim(),
+        },
+      });
+    });
+
+    return mapDevelopmentPlan(
+      projectId,
+      await this.findDevelopmentPlan(projectId),
+    );
+  }
+
+  public async clearPlanningApproval(
+    projectId: string,
+    input?: {
+      actorName?: string;
+      summary?: string;
+    },
+  ): Promise<void> {
+    const developmentPlan = await this.prisma.developmentPlan.findUnique({
+      where: { projectId },
+      select: {
+        id: true,
+        planningApprovedAt: true,
+        planningApprovedBy: true,
+        planningApprovedVersionId: true,
+        planningApprovalSummary: true,
+      },
+    });
+
+    if (!developmentPlan) {
+      return;
+    }
+
+    await this.clearPlanningApprovalForPlan(this.prisma, developmentPlan, input);
   }
 
   private async findDevelopmentPlan(projectId: string) {
@@ -194,6 +313,51 @@ export class DevelopmentPlansService {
         versions: {
           orderBy: { versionNumber: 'desc' },
         },
+      },
+    });
+  }
+
+  private async clearPlanningApprovalForPlan(
+    executor: Prisma.TransactionClient | PrismaService,
+    developmentPlan: {
+      id: string;
+      planningApprovedAt: Date | null;
+      planningApprovedBy: string | null;
+      planningApprovedVersionId: string | null;
+      planningApprovalSummary: string | null;
+    },
+    input?: {
+      actorName?: string;
+      summary?: string;
+    },
+  ): Promise<void> {
+    const wasApproved =
+      developmentPlan.planningApprovedAt != null &&
+      developmentPlan.planningApprovedVersionId != null;
+
+    await executor.developmentPlan.update({
+      where: { id: developmentPlan.id },
+      data: {
+        planningApprovedAt: null,
+        planningApprovedBy: null,
+        planningApprovedVersionId: null,
+        planningApprovalSummary: null,
+      },
+    });
+
+    if (!wasApproved || !developmentPlan.planningApprovedVersionId) {
+      return;
+    }
+
+    await executor.developmentPlanApprovalAudit.create({
+      data: {
+        developmentPlanId: developmentPlan.id,
+        planVersionId: developmentPlan.planningApprovedVersionId,
+        action: 'RESET',
+        actorName: input?.actorName?.trim() || 'System',
+        summary:
+          input?.summary?.trim() ||
+          'Planning changes invalidated the previous approval.',
       },
     });
   }
