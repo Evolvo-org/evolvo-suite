@@ -1,6 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import type { ArgumentsHost } from '@nestjs/common';
 import { describe, expect, it, vi } from 'vitest';
+import { z } from 'zod';
 
 import { HttpExceptionFilter } from './http-exception.filter.js';
 
@@ -60,5 +61,49 @@ describe('HttpExceptionFilter', () => {
         }),
       }),
     );
+  });
+
+  it('maps raw zod validation failures to a bad request response', () => {
+    const logsService = {
+      writeLog: vi.fn().mockResolvedValue(undefined),
+    };
+    const requestContextService = {
+      getCorrelationIdFromRequest: vi.fn().mockReturnValue('corr-456'),
+    };
+    const response = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    };
+    const request = {
+      method: 'POST',
+      url: '/api/v1/projects/project-1/development-plan/approve',
+    };
+    const host = {
+      switchToHttp: () => ({
+        getRequest: () => request,
+        getResponse: () => response,
+      }),
+    } as ArgumentsHost;
+    const filter = new HttpExceptionFilter(
+      logsService as never,
+      requestContextService as never,
+    );
+    const validationError = z.object({ actorName: z.string() }).safeParse('oops');
+
+    if (validationError.success) {
+      throw new Error('Expected validation to fail.');
+    }
+
+    filter.catch(validationError.error, host);
+
+    expect(response.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+    expect(response.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Validation failed.',
+        errors: ['Expected object, received string'],
+        correlationId: 'corr-456',
+      }),
+    );
+    expect(logsService.writeLog).not.toHaveBeenCalled();
   });
 });

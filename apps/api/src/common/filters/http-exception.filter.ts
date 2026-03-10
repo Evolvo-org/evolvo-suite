@@ -2,6 +2,7 @@ import { Catch, HttpException, HttpStatus, Inject } from '@nestjs/common';
 import type { ArgumentsHost } from '@nestjs/common';
 import { Prisma } from '@repo/db/client';
 import type { Request, Response } from 'express';
+import { ZodError } from 'zod';
 
 import { LogsService } from '../../logs/logs.service.js';
 import { RequestContextService } from '../../logs/request-context.service.js';
@@ -62,6 +63,15 @@ const normalizeUnknownException = (
 ): NormalizedExceptionDetails => {
   if (exception instanceof HttpException) {
     return normalizeHttpException(exception);
+  }
+
+  if (exception instanceof ZodError) {
+    return {
+      message: 'Validation failed.',
+      errors: exception.issues.map((issue) => issue.message),
+      exceptionName: exception.name,
+      rawMessage: exception.message,
+    };
   }
 
   if (exception instanceof Prisma.PrismaClientKnownRequestError) {
@@ -142,6 +152,8 @@ export class HttpExceptionFilter {
     const statusCode =
       exception instanceof HttpException
         ? exception.getStatus()
+        : exception instanceof ZodError
+          ? HttpStatus.BAD_REQUEST
         : HttpStatus.INTERNAL_SERVER_ERROR;
     const normalized = normalizeUnknownException(exception, statusCode);
     const message = normalized.message;
