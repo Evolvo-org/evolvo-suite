@@ -21,6 +21,18 @@ describe('ZodValidationPipe', () => {
     });
   });
 
+  it('parses simple object-literal strings before validation', () => {
+    const pipe = new ZodValidationPipe(
+      z.object({
+        actorName: z.string().min(1),
+      }),
+    );
+
+    expect(pipe.transform('{actorName: "Operator One"}')).toEqual({
+      actorName: 'Operator One',
+    });
+  });
+
   it('keeps rejecting plain strings when the schema expects an object', () => {
     const pipe = new ZodValidationPipe(
       z.object({

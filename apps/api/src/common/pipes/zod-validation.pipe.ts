@@ -3,6 +3,10 @@ import type { PipeTransform } from '@nestjs/common';
 import type { ZodSchema } from 'zod';
 import { ZodError } from 'zod';
 
+const quoteBareObjectKeys = (value: string): string => {
+  return value.replace(/([{,]\s*)([A-Za-z_][A-Za-z0-9_]*)\s*:/g, '$1"$2":');
+};
+
 const tryParseJsonString = <TValue>(value: TValue): TValue | unknown => {
   if (typeof value !== 'string') {
     return value;
@@ -17,7 +21,11 @@ const tryParseJsonString = <TValue>(value: TValue): TValue | unknown => {
   try {
     return JSON.parse(trimmedValue);
   } catch {
-    return value;
+    try {
+      return JSON.parse(quoteBareObjectKeys(trimmedValue));
+    } catch {
+      return value;
+    }
   }
 };
 
