@@ -8,11 +8,18 @@ describe('DevelopmentPlansService', () => {
       findUnique: ReturnType<typeof vi.fn>;
       update: ReturnType<typeof vi.fn>;
     };
+    workItem: {
+      findMany: ReturnType<typeof vi.fn>;
+      updateMany: ReturnType<typeof vi.fn>;
+    };
     planVersion: {
       findFirst: ReturnType<typeof vi.fn>;
     };
     developmentPlanApprovalAudit: {
       create: ReturnType<typeof vi.fn>;
+    };
+    workItemStateTransition: {
+      createMany: ReturnType<typeof vi.fn>;
     };
     $transaction: ReturnType<typeof vi.fn>;
   };
@@ -80,16 +87,28 @@ describe('DevelopmentPlansService', () => {
           }),
         update: vi.fn().mockResolvedValue(undefined),
       },
+      workItem: {
+        findMany: vi.fn().mockResolvedValue([
+          { id: 'work-1' },
+          { id: 'work-2' },
+        ]),
+        updateMany: vi.fn().mockResolvedValue({ count: 2 }),
+      },
       planVersion: {
         findFirst: vi.fn(),
       },
       developmentPlanApprovalAudit: {
         create: vi.fn().mockResolvedValue(undefined),
       },
+      workItemStateTransition: {
+        createMany: vi.fn().mockResolvedValue({ count: 2 }),
+      },
       $transaction: vi.fn().mockImplementation(async (callback) =>
         callback({
           developmentPlan: prisma.developmentPlan,
+          workItem: prisma.workItem,
           developmentPlanApprovalAudit: prisma.developmentPlanApprovalAudit,
+          workItemStateTransition: prisma.workItemStateTransition,
         }),
       ),
     };
@@ -101,6 +120,7 @@ describe('DevelopmentPlansService', () => {
       prisma as never,
       logsService as never,
       { ensureProjectExists: vi.fn().mockResolvedValue(undefined) } as never,
+      { assertTransition: vi.fn() } as never,
     );
   });
 
@@ -128,6 +148,32 @@ describe('DevelopmentPlansService', () => {
         }),
       }),
     );
+    expect(prisma.workItem.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          projectId: 'project-1',
+          state: 'PLANNING',
+        }),
+      }),
+    );
+    expect(prisma.workItem.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          state: 'READY_FOR_DEV',
+        }),
+      }),
+    );
+    expect(prisma.workItemStateTransition.createMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.arrayContaining([
+          expect.objectContaining({
+            workItemId: 'work-1',
+            fromState: 'PLANNING',
+            toState: 'READY_FOR_DEV',
+          }),
+        ]),
+      }),
+    );
     expect(logsService.writeLog).toHaveBeenCalledWith(
       expect.objectContaining({
         eventType: 'development-plan.approval.attempt',
@@ -136,6 +182,11 @@ describe('DevelopmentPlansService', () => {
     expect(logsService.writeLog).toHaveBeenCalledWith(
       expect.objectContaining({
         eventType: 'development-plan.approved',
+      }),
+    );
+    expect(logsService.writeLog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventType: 'development-plan.approval.promoted-work-items',
       }),
     );
     expect(result.planningApproval.isApproved).toBe(true);

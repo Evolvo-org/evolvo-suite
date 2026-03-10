@@ -18,12 +18,17 @@ import type {
 import { LogsService } from '../logs/logs.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { ProjectsService } from '../projects/projects.service.js';
+import { WorkflowStateMachineService } from '../workflow/workflow-state-machine.service.js';
 
 import {
   mapDevelopmentPlanApprovalAudit,
   mapDevelopmentPlan,
   mapDevelopmentPlanVersions,
 } from './development-plans.mapper.js';
+
+const planningRequestEpicTitle = 'Planning requests';
+const approvalPromotionReason =
+  'The active development plan version was approved, so planned work can move into ready for dev.';
 
 @Injectable()
 export class DevelopmentPlansService {
@@ -34,6 +39,8 @@ export class DevelopmentPlansService {
     private readonly logsService: LogsService,
     @Inject(ProjectsService)
     private readonly projectsService: ProjectsService,
+    @Inject(WorkflowStateMachineService)
+    private readonly workflowStateMachineService: WorkflowStateMachineService,
   ) {}
 
   public async getDevelopmentPlan(
@@ -288,6 +295,8 @@ export class DevelopmentPlansService {
           summary: payload.summary?.trim(),
         },
       });
+
+      await this.promoteApprovedPlanningWork(transaction, projectId);
     });
 
     await this.logsService.writeLog({
@@ -307,6 +316,76 @@ export class DevelopmentPlansService {
       projectId,
       await this.findDevelopmentPlan(projectId),
     );
+  }
+
+  private async promoteApprovedPlanningWork(
+    transaction: Prisma.TransactionClient,
+    projectId: string,
+  ): Promise<void> {
+    this.workflowStateMachineService.assertTransition('planning', {
+      toState: 'readyForDev',
+      reason: approvalPromotionReason,
+    });
+
+    const promotableWorkItems = await transaction.workItem.findMany({
+      where: {
+        projectId,
+        state: 'PLANNING',
+        epic: {
+          is: {
+            title: {
+              not: planningRequestEpicTitle,
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+      },
+      orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'asc' }],
+    });
+
+    if (promotableWorkItems.length === 0) {
+      return;
+    }
+
+    const workItemIds = promotableWorkItems.map((item) => item.id);
+    const now = new Date();
+
+    await transaction.workItem.updateMany({
+      where: {
+        id: {
+          in: workItemIds,
+        },
+      },
+      data: {
+        state: 'READY_FOR_DEV',
+        stateUpdatedAt: now,
+      },
+    });
+
+    await transaction.workItemStateTransition.createMany({
+      data: workItemIds.map((workItemId) => ({
+        projectId,
+        workItemId,
+        fromState: 'PLANNING',
+        toState: 'READY_FOR_DEV',
+        reason: approvalPromotionReason,
+        isOperatorOverride: false,
+      })),
+    });
+
+    await this.logsService.writeLog({
+      level: 'info',
+      source: 'workflow',
+      projectId,
+      eventType: 'development-plan.approval.promoted-work-items',
+      message: `Promoted ${workItemIds.length} planning work item(s) to ready for dev after plan approval.`,
+      payload: {
+        workItemIds,
+        promotedCount: workItemIds.length,
+      },
+    });
   }
 
   public async clearPlanningApproval(
