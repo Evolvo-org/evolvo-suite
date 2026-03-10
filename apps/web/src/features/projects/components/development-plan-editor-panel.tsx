@@ -20,6 +20,15 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import {
+  QueryLoadingCard,
+  QueryStateCard,
+} from '../../feedback/components/query-state-card';
+import {
+  getErrorToastMessage,
+  useToast,
+} from '../../feedback/components/toast-provider';
+
 const generatePlanDraft = (
   projectName: string,
   productSpec: string | null,
@@ -63,6 +72,7 @@ export const DevelopmentPlanEditorPanel = ({
   projectId: string;
 }) => {
   const queryClient = useQueryClient();
+  const { pushToast } = useToast();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [summary, setSummary] = useState('');
@@ -132,11 +142,16 @@ export const DevelopmentPlanEditorPanel = ({
       await invalidatePlanQueries();
     },
     onError: (error) => {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to create the development plan.',
+      const message = getErrorToastMessage(
+        error,
+        'Unable to create the development plan.',
       );
+      setErrorMessage(message);
+      pushToast({
+        description: message,
+        title: 'Plan creation failed',
+        variant: 'error',
+      });
     },
   });
 
@@ -153,11 +168,16 @@ export const DevelopmentPlanEditorPanel = ({
       await invalidatePlanQueries();
     },
     onError: (error) => {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to save the development plan.',
+      const message = getErrorToastMessage(
+        error,
+        'Unable to save the development plan.',
       );
+      setErrorMessage(message);
+      pushToast({
+        description: message,
+        title: 'Plan save failed',
+        variant: 'error',
+      });
     },
   });
 
@@ -171,11 +191,16 @@ export const DevelopmentPlanEditorPanel = ({
       await invalidatePlanQueries();
     },
     onError: (error) => {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to activate the selected plan version.',
+      const message = getErrorToastMessage(
+        error,
+        'Unable to activate the selected plan version.',
       );
+      setErrorMessage(message);
+      pushToast({
+        description: message,
+        title: 'Plan activation failed',
+        variant: 'error',
+      });
     },
   });
 
@@ -358,21 +383,25 @@ export const DevelopmentPlanEditorPanel = ({
     versionsQuery.isLoading
   ) {
     return (
-      <Card className="p-6" title="Loading development plan editor">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Fetching the active plan, saved versions, and supporting project data.
-        </p>
-      </Card>
+      <QueryLoadingCard
+        title="Loading development plan editor"
+        description="Fetching the active plan, saved versions, and supporting project data."
+      />
     );
   }
 
   if (projectQuery.isError || !projectQuery.data) {
     return (
-      <Card className="p-6" title="Development plan unavailable">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          The project could not be loaded. Confirm the API is available.
-        </p>
-      </Card>
+      <QueryStateCard
+        title="Development plan unavailable"
+        description="The project could not be loaded. Confirm the API is available."
+        onRetry={() => {
+          void projectQuery.refetch();
+          void planQuery.refetch();
+          void versionsQuery.refetch();
+          void productSpecQuery.refetch();
+        }}
+      />
     );
   }
 

@@ -21,6 +21,11 @@ import { Textarea } from '@repo/ui/components/textarea/textarea';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
+import {
+  getErrorToastMessage,
+  useToast,
+} from '../../feedback/components/toast-provider';
+
 const actorTypeOptions: WorkItemCommentActorType[] = ['human', 'agent', 'system'];
 const priorityOptions: WorkItemPriority[] = ['low', 'medium', 'high', 'urgent'];
 
@@ -87,6 +92,7 @@ export const WorkItemDetailPanel = ({
   onClose: () => void;
 }) => {
   const queryClient = useQueryClient();
+  const { pushToast } = useToast();
   const detailQuery = useQuery({
     queryKey: projectQueryKeys.workItemDetail(projectId, workItemId),
     queryFn: () => getWorkItemDetail(projectId, workItemId),
@@ -153,7 +159,16 @@ export const WorkItemDetailPanel = ({
       await refreshAll();
     },
     onError: (error) => {
-      setErrorMessage(error instanceof Error ? error.message : 'Unable to save work item changes.');
+      const message = getErrorToastMessage(
+        error,
+        'Unable to save work item changes.',
+      );
+      setErrorMessage(message);
+      pushToast({
+        description: message,
+        title: 'Work item save failed',
+        variant: 'error',
+      });
     },
   });
 
@@ -170,7 +185,16 @@ export const WorkItemDetailPanel = ({
       await refreshAll();
     },
     onError: (error) => {
-      setErrorMessage(error instanceof Error ? error.message : 'Unable to create comment.');
+      const message = getErrorToastMessage(
+        error,
+        'Unable to create comment.',
+      );
+      setErrorMessage(message);
+      pushToast({
+        description: message,
+        title: 'Comment creation failed',
+        variant: 'error',
+      });
     },
   });
 
@@ -185,7 +209,16 @@ export const WorkItemDetailPanel = ({
       await refreshAll();
     },
     onError: (error) => {
-      setErrorMessage(error instanceof Error ? error.message : 'Unable to update acceptance criterion.');
+      const message = getErrorToastMessage(
+        error,
+        'Unable to update acceptance criterion.',
+      );
+      setErrorMessage(message);
+      pushToast({
+        description: message,
+        title: 'Acceptance criterion update failed',
+        variant: 'error',
+      });
     },
   });
 

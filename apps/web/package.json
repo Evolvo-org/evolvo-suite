@@ -11,6 +11,7 @@
     "cypress:run": "cypress run --e2e",
     "test:e2e": "start-server-and-test dev http://localhost:3001 cypress:run",
     "test:e2e:open": "start-server-and-test dev http://localhost:3001 cypress:open",
+    "test": "vitest run",
     "lint": "biome lint --config-path ../../packages/biome-config/next.json ./app",
     "check-types": "tsc --noEmit"
   },
@@ -25,6 +26,7 @@
     "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
+    "@repo/vitest-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.2.1",
     "@types/node": "^22.15.3",
@@ -35,6 +37,7 @@
     "postcss": "^8.5.8",
     "start-server-and-test": "^2.1.5",
     "tailwindcss": "^4.2.1",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "^2.1.8"
   }
 }

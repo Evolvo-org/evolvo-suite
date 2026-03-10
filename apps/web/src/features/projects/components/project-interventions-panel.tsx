@@ -20,6 +20,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import {
+  QueryLoadingCard,
+  QueryStateCard,
+} from '../../feedback/components/query-state-card';
+import {
+  getErrorToastMessage,
+  useToast,
+} from '../../feedback/components/toast-provider';
 import { HumanInterventionStatusBadge } from './human-intervention-status-badge';
 
 const formatTimestamp = (value: string | null): string => {
@@ -92,6 +100,7 @@ export const ProjectInterventionsPanel = ({
   projectId: string;
 }) => {
   const queryClient = useQueryClient();
+  const { pushToast } = useToast();
   const [selectedInterventionId, setSelectedInterventionId] = useState<string | null>(
     null,
   );
@@ -155,11 +164,16 @@ export const ProjectInterventionsPanel = ({
       await refreshProjectState();
     },
     onError: (error) => {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to resolve the intervention case.',
+      const message = getErrorToastMessage(
+        error,
+        'Unable to resolve the intervention case.',
       );
+      setErrorMessage(message);
+      pushToast({
+        description: message,
+        title: 'Intervention resolve failed',
+        variant: 'error',
+      });
     },
   });
 
@@ -175,22 +189,25 @@ export const ProjectInterventionsPanel = ({
       await refreshProjectState();
     },
     onError: (error) => {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to retry the intervention case.',
+      const message = getErrorToastMessage(
+        error,
+        'Unable to retry the intervention case.',
       );
+      setErrorMessage(message);
+      pushToast({
+        description: message,
+        title: 'Intervention retry failed',
+        variant: 'error',
+      });
     },
   });
 
   if (projectQuery.isLoading || interventionsQuery.isLoading) {
     return (
-      <Card className="p-6" title="Loading intervention queue">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Fetching blocked work, evidence, and operator recovery actions from
-          the API.
-        </p>
-      </Card>
+      <QueryLoadingCard
+        title="Loading intervention queue"
+        description="Fetching blocked work, evidence, and operator recovery actions from the API."
+      />
     );
   }
 
@@ -201,12 +218,14 @@ export const ProjectInterventionsPanel = ({
     !interventionsQuery.data
   ) {
     return (
-      <Card className="p-6" title="Intervention queue unavailable">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          The intervention queue could not be loaded. Confirm the API is
-          available and the project still exists.
-        </p>
-      </Card>
+      <QueryStateCard
+        title="Intervention queue unavailable"
+        description="The intervention queue could not be loaded. Confirm the API is available and the project still exists."
+        onRetry={() => {
+          void projectQuery.refetch();
+          void interventionsQuery.refetch();
+        }}
+      />
     );
   }
 

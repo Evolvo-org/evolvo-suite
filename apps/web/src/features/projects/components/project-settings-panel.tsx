@@ -19,6 +19,15 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
+import {
+  QueryLoadingCard,
+  QueryStateCard,
+} from '../../feedback/components/query-state-card';
+import {
+  getErrorToastMessage,
+  useToast,
+} from '../../feedback/components/toast-provider';
+
 const queueLimitFields = [
   ['maxPlanning', 'Max planning'],
   ['maxReadyForDev', 'Max ready for dev'],
@@ -91,6 +100,7 @@ const QueueLimitForm = ({
 
 export const ProjectSettingsPanel = ({ projectId }: { projectId: string }) => {
   const queryClient = useQueryClient();
+  const { pushToast } = useToast();
   const [systemDraft, setSystemDraft] = useState<ProjectQueueLimits | null>(
     null,
   );
@@ -174,11 +184,16 @@ export const ProjectSettingsPanel = ({ projectId }: { projectId: string }) => {
       await invalidateSettingsQueries();
     },
     onError: (error) => {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to save system queue defaults.',
+      const message = getErrorToastMessage(
+        error,
+        'Unable to save system queue defaults.',
       );
+      setErrorMessage(message);
+      pushToast({
+        description: message,
+        title: 'System defaults save failed',
+        variant: 'error',
+      });
     },
   });
 
@@ -194,11 +209,16 @@ export const ProjectSettingsPanel = ({ projectId }: { projectId: string }) => {
       await invalidateSettingsQueries();
     },
     onError: (error) => {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to save project queue limits.',
+      const message = getErrorToastMessage(
+        error,
+        'Unable to save project queue limits.',
       );
+      setErrorMessage(message);
+      pushToast({
+        description: message,
+        title: 'Project override save failed',
+        variant: 'error',
+      });
     },
   });
 
@@ -214,11 +234,16 @@ export const ProjectSettingsPanel = ({ projectId }: { projectId: string }) => {
       await invalidateSettingsQueries();
     },
     onError: (error) => {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to reset project queue limits.',
+      const message = getErrorToastMessage(
+        error,
+        'Unable to reset project queue limits.',
       );
+      setErrorMessage(message);
+      pushToast({
+        description: message,
+        title: 'Project override reset failed',
+        variant: 'error',
+      });
     },
   });
 
@@ -228,11 +253,10 @@ export const ProjectSettingsPanel = ({ projectId }: { projectId: string }) => {
     projectQueueLimitsQuery.isLoading
   ) {
     return (
-      <Card className="p-6" title="Loading settings">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Fetching queue defaults and project settings from the API.
-        </p>
-      </Card>
+      <QueryLoadingCard
+        title="Loading settings"
+        description="Fetching queue defaults and project settings from the API."
+      />
     );
   }
 
@@ -245,12 +269,15 @@ export const ProjectSettingsPanel = ({ projectId }: { projectId: string }) => {
     !projectQueueLimitsQuery.data
   ) {
     return (
-      <Card className="p-6" title="Settings unavailable">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          The settings view could not be loaded. Confirm the API is available
-          and the project still exists.
-        </p>
-      </Card>
+      <QueryStateCard
+        title="Settings unavailable"
+        description="The settings view could not be loaded. Confirm the API is available and the project still exists."
+        onRetry={() => {
+          void projectQuery.refetch();
+          void systemQueueLimitsQuery.refetch();
+          void projectQueueLimitsQuery.refetch();
+        }}
+      />
     );
   }
 

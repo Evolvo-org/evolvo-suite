@@ -9,10 +9,19 @@ import {
 import type { WorktreeResponse } from '@repo/shared';
 import { Button } from '@repo/ui/components/button/button';
 import { Card } from '@repo/ui/components/card/card';
+import { EmptyState } from '@repo/ui/components/empty-state/empty-state';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useState } from 'react';
 
+import {
+  QueryLoadingCard,
+  QueryStateCard,
+} from '../../feedback/components/query-state-card';
+import {
+  getErrorToastMessage,
+  useToast,
+} from '../../feedback/components/toast-provider';
 import { WorktreeStatusBadge } from './worktree-status-badge';
 
 const formatTimestamp = (value: string | null): string => {
@@ -54,6 +63,7 @@ export const ProjectWorktreesPanel = ({
   projectId: string;
 }) => {
   const queryClient = useQueryClient();
+  const { pushToast } = useToast();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const projectQuery = useQuery({
@@ -81,21 +91,25 @@ export const ProjectWorktreesPanel = ({
       });
     },
     onError: (error) => {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to request worktree cleanup.',
+      const message = getErrorToastMessage(
+        error,
+        'Unable to request worktree cleanup.',
       );
+      setErrorMessage(message);
+      pushToast({
+        description: message,
+        title: 'Worktree cleanup failed',
+        variant: 'error',
+      });
     },
   });
 
   if (projectQuery.isLoading || worktreesQuery.isLoading) {
     return (
-      <Card className="p-6" title="Loading worktrees">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Fetching task worktree state and repository branches from the API.
-        </p>
-      </Card>
+      <QueryLoadingCard
+        title="Loading worktrees"
+        description="Fetching task worktree state and repository branches from the API."
+      />
     );
   }
 
@@ -106,12 +120,14 @@ export const ProjectWorktreesPanel = ({
     !worktreesQuery.data
   ) {
     return (
-      <Card className="p-6" title="Worktrees unavailable">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          The worktree view could not be loaded. Confirm the API is available
-          and the project still exists.
-        </p>
-      </Card>
+      <QueryStateCard
+        title="Worktrees unavailable"
+        description="The worktree view could not be loaded. Confirm the API is available and the project still exists."
+        onRetry={() => {
+          void projectQuery.refetch();
+          void worktreesQuery.refetch();
+        }}
+      />
     );
   }
 
@@ -249,9 +265,10 @@ export const ProjectWorktreesPanel = ({
 
       <Card className="space-y-4 p-6" title="Worktree inventory">
         {worktrees.length === 0 ? (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            No worktrees have been created for this project yet.
-          </p>
+          <EmptyState
+            title="No worktrees yet"
+            description="No worktrees have been created for this project yet."
+          />
         ) : (
           <ul className="space-y-4">
             {worktrees.map((worktree) => (

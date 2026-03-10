@@ -33,6 +33,16 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
+import {
+  QueryEmptyCard,
+  QueryLoadingCard,
+  QueryStateCard,
+} from '../../feedback/components/query-state-card';
+import {
+  getErrorToastMessage,
+  useToast,
+} from '../../feedback/components/toast-provider';
+
 type HierarchyMutationFactory = () => Promise<
   MutationResponse<PlanningHierarchyResponse>
 >;
@@ -78,6 +88,7 @@ export const PlanningHierarchyPanel = ({
   projectId: string;
 }) => {
   const queryClient = useQueryClient();
+  const { pushToast } = useToast();
   const projectQuery = useQuery({
     queryKey: projectQueryKeys.detail(projectId),
     queryFn: () => getProjectDetail(projectId),
@@ -103,11 +114,16 @@ export const PlanningHierarchyPanel = ({
       });
     },
     onError: (error) => {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to save planning hierarchy changes.',
+      const message = getErrorToastMessage(
+        error,
+        'Unable to save planning hierarchy changes.',
       );
+      setErrorMessage(message);
+      pushToast({
+        description: message,
+        title: 'Planning change failed',
+        variant: 'error',
+      });
     },
   });
 
@@ -118,11 +134,10 @@ export const PlanningHierarchyPanel = ({
 
   if (projectQuery.isLoading || hierarchyQuery.isLoading) {
     return (
-      <Card className="p-6" title="Loading planning hierarchy">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Fetching the current epic, task, and subtask structure from the API.
-        </p>
-      </Card>
+      <QueryLoadingCard
+        title="Loading planning hierarchy"
+        description="Fetching the current epic, task, and subtask structure from the API."
+      />
     );
   }
 
@@ -133,12 +148,14 @@ export const PlanningHierarchyPanel = ({
     !hierarchyQuery.data
   ) {
     return (
-      <Card className="p-6" title="Planning hierarchy unavailable">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          The planning hierarchy could not be loaded. Confirm the API is running
-          and the project still exists.
-        </p>
-      </Card>
+      <QueryStateCard
+        title="Planning hierarchy unavailable"
+        description="The planning hierarchy could not be loaded. Confirm the API is running and the project still exists."
+        onRetry={() => {
+          void projectQuery.refetch();
+          void hierarchyQuery.refetch();
+        }}
+      />
     );
   }
 
@@ -222,12 +239,10 @@ export const PlanningHierarchyPanel = ({
 
       <div className="space-y-4">
         {hierarchy.epics.length === 0 ? (
-          <Card className="p-6" title="No epics yet">
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              Start by creating the first epic for this project. Tasks and
-              subtasks attach underneath each epic.
-            </p>
-          </Card>
+          <QueryEmptyCard
+            title="No epics yet"
+            description="Start by creating the first epic for this project. Tasks and subtasks attach underneath each epic."
+          />
         ) : null}
 
         {hierarchy.epics.map((epic) => (

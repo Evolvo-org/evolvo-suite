@@ -16,6 +16,11 @@ import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
+import {
+  QueryLoadingCard,
+  QueryStateCard,
+} from '../../feedback/components/query-state-card';
+
 const formatNumber = (value: number): string =>
   new Intl.NumberFormat('en-GB').format(value);
 
@@ -171,12 +176,10 @@ export const ProjectUsageAnalyticsPanel = ({
 
   if (projectQuery.isLoading || projectUsageQuery.isLoading) {
     return (
-      <Card className="p-6" title="Loading usage analytics">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Fetching project usage totals, provider costs, and user activity from
-          the API.
-        </p>
-      </Card>
+      <QueryLoadingCard
+        title="Loading usage analytics"
+        description="Fetching project usage totals, provider costs, and user activity from the API."
+      />
     );
   }
 
@@ -187,12 +190,14 @@ export const ProjectUsageAnalyticsPanel = ({
     !projectUsageQuery.data
   ) {
     return (
-      <Card className="p-6" title="Usage analytics unavailable">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          The usage analytics view could not be loaded. Confirm the API is
-          available and the project still exists.
-        </p>
-      </Card>
+      <QueryStateCard
+        title="Usage analytics unavailable"
+        description="The usage analytics view could not be loaded. Confirm the API is available and the project still exists."
+        onRetry={() => {
+          void projectQuery.refetch();
+          void projectUsageQuery.refetch();
+        }}
+      />
     );
   }
 
@@ -402,9 +407,18 @@ export const ProjectUsageAnalyticsPanel = ({
               Loading user usage summary.
             </p>
           ) : userUsageQuery.isError ? (
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              User usage could not be loaded for this identifier.
-            </p>
+            <div className="space-y-3">
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                User usage could not be loaded for this identifier.
+              </p>
+              <Button
+                onClick={() => {
+                  void userUsageQuery.refetch();
+                }}
+              >
+                Retry user usage
+              </Button>
+            </div>
           ) : renderBreakdownList({
               emptyCopy: 'No usage has been recorded for the selected user and range.',
               items: [...(selectedUserUsage?.byAgent ?? [])].sort(

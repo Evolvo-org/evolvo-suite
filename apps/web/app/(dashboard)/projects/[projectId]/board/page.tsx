@@ -1,8 +1,8 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { getBoard, getProjectDetail, projectQueryKeys } from '@repo/api-client';
+import { getBoard, projectQueryKeys } from '@repo/api-client';
 
 import { KanbanBoardPanel } from '../../../../../src/features/projects/components/kanban-board-panel';
-import { prefetchQuerySafely } from '../../../../../src/lib/prefetch-query-safely';
+import { prefetchProjectPage } from '../../../../../src/lib/project-page';
 import { getQueryClient } from '../../../../../src/lib/query-client';
 
 export default async function ProjectBoardPage({
@@ -13,15 +13,11 @@ export default async function ProjectBoardPage({
   const { projectId } = await params;
   const queryClient = getQueryClient();
 
-  await Promise.all([
-    prefetchQuerySafely(queryClient, {
-      queryKey: projectQueryKeys.detail(projectId),
-      queryFn: () => getProjectDetail(projectId),
-    }),
-    prefetchQuerySafely(queryClient, {
+  await prefetchProjectPage(queryClient, projectId, [
+    {
       queryKey: projectQueryKeys.board(projectId),
       queryFn: () => getBoard(projectId),
-    }),
+    },
   ]);
 
   return (

@@ -8,9 +8,11 @@
     "./components/card/card": "./src/components/card/card.tsx",
     "./components/code/code": "./src/components/code/code.tsx",
     "./components/dialog/dialog": "./src/components/dialog/dialog.tsx",
+    "./components/empty-state/empty-state": "./src/components/empty-state/empty-state.tsx",
     "./components/input/input": "./src/components/input/input.tsx",
     "./components/select/select": "./src/components/select/select.tsx",
     "./components/sheet/sheet": "./src/components/sheet/sheet.tsx",
+    "./components/skeleton/skeleton": "./src/components/skeleton/skeleton.tsx",
     "./components/table/table": "./src/components/table/table.tsx",
     "./components/tabs/tabs": "./src/components/tabs/tabs.tsx",
     "./components/textarea/textarea": "./src/components/textarea/textarea.tsx"
@@ -18,14 +20,17 @@
   "scripts": {
     "lint": "biome lint --config-path ../biome-config/library.json ./src",
     "generate:component": "turbo gen react-component",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
+    "@repo/vitest-config": "workspace:*",
     "@types/node": "^22.15.3",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "^2.1.8"
   },
   "dependencies": {
     "react": "^19.2.4",

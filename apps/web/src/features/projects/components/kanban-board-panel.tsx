@@ -13,6 +13,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
+import {
+  QueryLoadingCard,
+  QueryStateCard,
+} from '../../feedback/components/query-state-card';
+import {
+  getErrorToastMessage,
+  useToast,
+} from '../../feedback/components/toast-provider';
 import { WorkItemDetailPanel } from './work-item-detail-panel';
 
 const stateDescriptions: Record<WorkItemState, string> = {
@@ -42,6 +50,7 @@ const formatStateLabel = (value: WorkItemState): string => {
 
 export const KanbanBoardPanel = ({ projectId }: { projectId: string }) => {
   const queryClient = useQueryClient();
+  const { pushToast } = useToast();
   const projectQuery = useQuery({
     queryKey: projectQueryKeys.detail(projectId),
     queryFn: () => getProjectDetail(projectId),
@@ -76,11 +85,16 @@ export const KanbanBoardPanel = ({ projectId }: { projectId: string }) => {
       });
     },
     onError: (error) => {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to move the selected work item.',
+      const message = getErrorToastMessage(
+        error,
+        'Unable to move the selected work item.',
       );
+      setErrorMessage(message);
+      pushToast({
+        description: message,
+        title: 'Board transition failed',
+        variant: 'error',
+      });
     },
   });
 
@@ -93,22 +107,23 @@ export const KanbanBoardPanel = ({ projectId }: { projectId: string }) => {
 
   if (projectQuery.isLoading || boardQuery.isLoading) {
     return (
-      <Card className="p-6" title="Loading kanban board">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Fetching workflow columns and work items from the API.
-        </p>
-      </Card>
+      <QueryLoadingCard
+        title="Loading kanban board"
+        description="Fetching workflow columns and work items from the API."
+      />
     );
   }
 
   if (projectQuery.isError || boardQuery.isError || !projectQuery.data || !boardQuery.data) {
     return (
-      <Card className="p-6" title="Kanban board unavailable">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          The board could not be loaded. Confirm the API is available and the
-          project still exists.
-        </p>
-      </Card>
+      <QueryStateCard
+        title="Kanban board unavailable"
+        description="The board could not be loaded. Confirm the API is available and the project still exists."
+        onRetry={() => {
+          void projectQuery.refetch();
+          void boardQuery.refetch();
+        }}
+      />
     );
   }
 

@@ -257,23 +257,23 @@ Tasks:
 - [x] Add reconnect behaviour
 
 ## WEB-023 - Add loading, empty, and error polish
-**Status:** todo  
+**Status:** done  
 **Outcome:** The UI is resilient and usable.
 
 Tasks:
-- [ ] Add skeleton states
-- [ ] Add empty states
-- [ ] Add mutation error toasts
-- [ ] Add retry affordances
-- [ ] Add not-found handling
+- [x] Add skeleton states
+- [x] Add empty states
+- [x] Add mutation error toasts
+- [x] Add retry affordances
+- [x] Add not-found handling
 
 ## WEB-024 - Add frontend tests
-**Status:** todo  
+**Status:** done  
 **Outcome:** Core user flows are protected.
 
 Tasks:
-- [ ] Test dashboard load
-- [ ] Test project create flow
-- [ ] Test board rendering
-- [ ] Test drag/drop transition path
-- [ ] Test query invalidation on realtime events
+- [x] Test dashboard load
+- [x] Test project create flow
+- [x] Test board rendering
+- [x] Test drag/drop transition path
+- [x] Test query invalidation on realtime events

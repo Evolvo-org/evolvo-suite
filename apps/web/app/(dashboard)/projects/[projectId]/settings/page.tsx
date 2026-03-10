@@ -1,6 +1,5 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import {
-  getProjectDetail,
   getProjectQueueLimits,
   getSystemQueueLimits,
   projectQueryKeys,
@@ -8,7 +7,7 @@ import {
 } from '@repo/api-client';
 
 import { ProjectSettingsPanel } from '../../../../../src/features/projects/components/project-settings-panel';
-import { prefetchQuerySafely } from '../../../../../src/lib/prefetch-query-safely';
+import { prefetchProjectPage } from '../../../../../src/lib/project-page';
 import { getQueryClient } from '../../../../../src/lib/query-client';
 
 export default async function ProjectSettingsPage({
@@ -19,19 +18,15 @@ export default async function ProjectSettingsPage({
   const { projectId } = await params;
   const queryClient = getQueryClient();
 
-  await Promise.all([
-    prefetchQuerySafely(queryClient, {
-      queryKey: projectQueryKeys.detail(projectId),
-      queryFn: () => getProjectDetail(projectId),
-    }),
-    prefetchQuerySafely(queryClient, {
+  await prefetchProjectPage(queryClient, projectId, [
+    {
       queryKey: projectQueryKeys.queueLimits(projectId),
       queryFn: () => getProjectQueueLimits(projectId),
-    }),
-    prefetchQuerySafely(queryClient, {
+    },
+    {
       queryKey: settingsQueryKeys.systemQueueLimits(),
       queryFn: () => getSystemQueueLimits(),
-    }),
+    },
   ]);
 
   return (

@@ -10,8 +10,14 @@ import { Textarea } from '@repo/ui/components/textarea/textarea';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 
+import {
+  getErrorToastMessage,
+  useToast,
+} from '../../feedback/components/toast-provider';
+
 export const ProductSpecEditor = ({ projectId }: { projectId: string }) => {
   const queryClient = useQueryClient();
+  const { pushToast } = useToast();
   const productSpecQuery = useQuery({
     queryKey: projectQueryKeys.productSpec(projectId),
     queryFn: () => getProductSpec(projectId),
@@ -52,11 +58,16 @@ export const ProductSpecEditor = ({ projectId }: { projectId: string }) => {
       setDraft(response.data.content ?? '');
     },
     onError: (error) => {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to save the product specification.',
+      const message = getErrorToastMessage(
+        error,
+        'Unable to save the product specification.',
       );
+      setErrorMessage(message);
+      pushToast({
+        description: message,
+        title: 'Specification save failed',
+        variant: 'error',
+      });
     },
   });
 

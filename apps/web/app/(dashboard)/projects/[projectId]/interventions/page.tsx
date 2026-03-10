@@ -1,12 +1,11 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import {
-  getProjectDetail,
   listHumanInterventions,
   projectQueryKeys,
 } from '@repo/api-client';
 
 import { ProjectInterventionsPanel } from '../../../../../src/features/projects/components/project-interventions-panel';
-import { prefetchQuerySafely } from '../../../../../src/lib/prefetch-query-safely';
+import { prefetchProjectPage } from '../../../../../src/lib/project-page';
 import { getQueryClient } from '../../../../../src/lib/query-client';
 
 export default async function ProjectInterventionsPage({
@@ -17,15 +16,11 @@ export default async function ProjectInterventionsPage({
   const { projectId } = await params;
   const queryClient = getQueryClient();
 
-  await Promise.all([
-    prefetchQuerySafely(queryClient, {
-      queryKey: projectQueryKeys.detail(projectId),
-      queryFn: () => getProjectDetail(projectId),
-    }),
-    prefetchQuerySafely(queryClient, {
+  await prefetchProjectPage(queryClient, projectId, [
+    {
       queryKey: projectQueryKeys.interventions(projectId),
       queryFn: () => listHumanInterventions(projectId),
-    }),
+    },
   ]);
 
   return (

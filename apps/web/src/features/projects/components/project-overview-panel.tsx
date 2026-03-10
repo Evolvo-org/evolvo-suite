@@ -9,10 +9,16 @@ import {
   listDevelopmentPlanVersions,
   projectQueryKeys,
 } from '@repo/api-client';
+import { Button } from '@repo/ui/components/button/button';
 import { Card } from '@repo/ui/components/card/card';
+import { EmptyState } from '@repo/ui/components/empty-state/empty-state';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 
+import {
+  QueryLoadingCard,
+  QueryStateCard,
+} from '../../feedback/components/query-state-card';
 import { ProjectStatusBadge } from './project-status-badge';
 import { ProductSpecEditor } from './product-spec-editor';
 
@@ -96,22 +102,27 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
 
   if (projectQuery.isLoading) {
     return (
-      <Card className="p-6" title="Loading project overview">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Fetching the latest durable project state from the API.
-        </p>
-      </Card>
+      <QueryLoadingCard
+        title="Loading project overview"
+        description="Fetching the latest durable project state from the API."
+      />
     );
   }
 
   if (projectQuery.isError || !projectQuery.data) {
     return (
-      <Card className="p-6" title="Project unavailable">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          The project overview could not be loaded. Confirm the API is available
-          and the project exists.
-        </p>
-      </Card>
+      <QueryStateCard
+        title="Project unavailable"
+        description="The project overview could not be loaded. Confirm the API is available and the project exists."
+        onRetry={() => {
+          void projectQuery.refetch();
+          void runtimeDashboardQuery.refetch();
+          void releaseHistoryQuery.refetch();
+          void interventionsQuery.refetch();
+          void planQuery.refetch();
+          void versionsQuery.refetch();
+        }}
+      />
     );
   }
 
@@ -206,10 +217,10 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
 
         <Card className="space-y-3 p-6" title="Latest activity">
           {project.metrics.latestActivity.length === 0 ? (
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              Activity timelines arrive in the observability phase. This slice
-              keeps the slot stable now.
-            </p>
+            <EmptyState
+              title="No activity yet"
+              description="Activity timelines arrive in the observability phase. This slot stays stable until the activity feed lands."
+            />
           ) : (
             <ul className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
               {project.metrics.latestActivity.map((activity) => (
@@ -226,9 +237,19 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
             Loading runtime health, heartbeat, and recent failure data.
           </p>
         ) : runtimeDashboardQuery.isError ? (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            Runtime dashboard data could not be loaded.
-          </p>
+          <div className="space-y-3">
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+              Runtime dashboard data could not be loaded.
+            </p>
+            <Button
+              onClick={() => {
+                void runtimeDashboardQuery.refetch();
+              }}
+              type="button"
+            >
+              Retry runtime dashboard
+            </Button>
+          </div>
         ) : runtimeDashboardQuery.data?.items.length ? (
           <ul className="grid gap-3 xl:grid-cols-2">
             {runtimeDashboardQuery.data.items.map((runtime) => (
@@ -291,9 +312,19 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
             Loading release history and latest tag information.
           </p>
         ) : releaseHistoryQuery.isError ? (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            Release dashboard data could not be loaded.
-          </p>
+          <div className="space-y-3">
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+              Release dashboard data could not be loaded.
+            </p>
+            <Button
+              onClick={() => {
+                void releaseHistoryQuery.refetch();
+              }}
+              type="button"
+            >
+              Retry release dashboard
+            </Button>
+          </div>
         ) : (() => {
           const releases = releaseHistoryQuery.data?.items ?? [];
           const latestTaggedRelease = releases.find((item) => item.version?.tagName);
@@ -382,9 +413,19 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
             Loading intervention queue and retry state.
           </p>
         ) : interventionsQuery.isError ? (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            Intervention dashboard data could not be loaded.
-          </p>
+          <div className="space-y-3">
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+              Intervention dashboard data could not be loaded.
+            </p>
+            <Button
+              onClick={() => {
+                void interventionsQuery.refetch();
+              }}
+              type="button"
+            >
+              Retry intervention dashboard
+            </Button>
+          </div>
         ) : (() => {
           const interventions = interventionsQuery.data?.items ?? [];
           const openInterventions = interventions.filter((item) => item.status === 'open');

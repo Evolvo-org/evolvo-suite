@@ -19,6 +19,11 @@ import {
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
+import {
+  getErrorToastMessage,
+  useToast,
+} from '../../feedback/components/toast-provider';
+
 const queueLimitFields = [
   ['maxPlanning', 'Max planning'],
   ['maxReadyForDev', 'Max ready for dev'],
@@ -59,6 +64,7 @@ const areQueueLimitsEqual = (
 export const ProjectCreateForm = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { pushToast } = useToast();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const systemQueueLimitsQuery = useQuery({
@@ -80,9 +86,13 @@ export const ProjectCreateForm = () => {
       router.push(`/projects/${response.data.id}`);
     },
     onError: (error) => {
-      setErrorMessage(
-        error instanceof Error ? error.message : 'Unable to create project.',
-      );
+      const message = getErrorToastMessage(error, 'Unable to create project.');
+      setErrorMessage(message);
+      pushToast({
+        description: message,
+        title: 'Project creation failed',
+        variant: 'error',
+      });
     },
   });
 

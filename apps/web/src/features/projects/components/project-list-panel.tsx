@@ -5,6 +5,11 @@ import { Card } from '@repo/ui/components/card/card';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 
+import {
+  QueryEmptyCard,
+  QueryLoadingCard,
+  QueryStateCard,
+} from '../../feedback/components/query-state-card';
 import { ProjectSearchForm } from './project-search-form';
 import { ProjectStatusBadge } from './project-status-badge';
 
@@ -34,29 +39,35 @@ export const ProjectListPanel = ({ query }: { query: string }) => {
       <ProjectSearchForm query={query} />
 
       {projectsQuery.isError ? (
-        <Card className="p-6" title="Projects unavailable">
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            The API could not load project data. Check the API process and
-            database connection.
-          </p>
-        </Card>
+        <QueryStateCard
+          title="Projects unavailable"
+          description="The API could not load project data. Check the API process and database connection."
+          onRetry={() => {
+            void projectsQuery.refetch();
+          }}
+        />
       ) : null}
 
       {projectsQuery.isLoading ? (
-        <Card className="p-6" title="Loading projects">
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            Fetching the current project inventory.
-          </p>
-        </Card>
+        <QueryLoadingCard
+          title="Loading projects"
+          description="Fetching the current project inventory."
+        />
       ) : null}
 
       {projectsQuery.data && projectsQuery.data.items.length === 0 ? (
-        <Card className="p-6" title="No projects yet">
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            Create the first project to seed product definition, planning, and
-            execution.
-          </p>
-        </Card>
+        <QueryEmptyCard
+          title="No projects yet"
+          description="Create the first project to seed product definition, planning, and execution."
+          action={
+            <Link
+              className="inline-flex items-center justify-center rounded-xl bg-zinc-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200"
+              href="/projects/new"
+            >
+              Create project
+            </Link>
+          }
+        />
       ) : null}
 
       <div className="grid gap-4 xl:grid-cols-2">

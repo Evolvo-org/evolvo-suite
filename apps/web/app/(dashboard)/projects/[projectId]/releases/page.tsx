@@ -1,12 +1,11 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import {
-  getProjectDetail,
   getReleaseHistory,
   projectQueryKeys,
 } from '@repo/api-client';
 
 import { ProjectReleaseHistoryPanel } from '../../../../../src/features/projects/components/project-release-history-panel';
-import { prefetchQuerySafely } from '../../../../../src/lib/prefetch-query-safely';
+import { prefetchProjectPage } from '../../../../../src/lib/project-page';
 import { getQueryClient } from '../../../../../src/lib/query-client';
 
 export default async function ProjectReleasesPage({
@@ -17,15 +16,11 @@ export default async function ProjectReleasesPage({
   const { projectId } = await params;
   const queryClient = getQueryClient();
 
-  await Promise.all([
-    prefetchQuerySafely(queryClient, {
-      queryKey: projectQueryKeys.detail(projectId),
-      queryFn: () => getProjectDetail(projectId),
-    }),
-    prefetchQuerySafely(queryClient, {
+  await prefetchProjectPage(queryClient, projectId, [
+    {
       queryKey: projectQueryKeys.releases(projectId),
       queryFn: () => getReleaseHistory(projectId),
-    }),
+    },
   ]);
 
   return (

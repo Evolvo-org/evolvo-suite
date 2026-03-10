@@ -7,10 +7,15 @@ import {
 } from '@repo/api-client';
 import type { ReleaseRunRecord } from '@repo/shared';
 import { Card } from '@repo/ui/components/card/card';
+import { EmptyState } from '@repo/ui/components/empty-state/empty-state';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import {
+  QueryLoadingCard,
+  QueryStateCard,
+} from '../../feedback/components/query-state-card';
 import { ReleaseStatusBadge } from './release-status-badge';
 
 const formatTimestamp = (value: string | null): string => {
@@ -50,12 +55,10 @@ export const ProjectReleaseHistoryPanel = ({
 
   if (projectQuery.isLoading || releaseHistoryQuery.isLoading) {
     return (
-      <Card className="p-6" title="Loading releases">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Fetching release history, version tags, and published notes from the
-          API.
-        </p>
-      </Card>
+      <QueryLoadingCard
+        title="Loading releases"
+        description="Fetching release history, version tags, and published notes from the API."
+      />
     );
   }
 
@@ -66,12 +69,14 @@ export const ProjectReleaseHistoryPanel = ({
     !releaseHistoryQuery.data
   ) {
     return (
-      <Card className="p-6" title="Release history unavailable">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          The release history view could not be loaded. Confirm the API is
-          available and the project still exists.
-        </p>
-      </Card>
+      <QueryStateCard
+        title="Release history unavailable"
+        description="The release history view could not be loaded. Confirm the API is available and the project still exists."
+        onRetry={() => {
+          void projectQuery.refetch();
+          void releaseHistoryQuery.refetch();
+        }}
+      />
     );
   }
 
@@ -192,9 +197,10 @@ export const ProjectReleaseHistoryPanel = ({
       <div className="grid gap-6 xl:grid-cols-[1.2fr_1fr]">
         <Card className="space-y-4 p-6" title="Version list">
           {releases.length === 0 ? (
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              No release history has been recorded for this project yet.
-            </p>
+            <EmptyState
+              title="No releases yet"
+              description="No release history has been recorded for this project yet."
+            />
           ) : (
             <ul className="space-y-3">
               {releases.map((release) => {
