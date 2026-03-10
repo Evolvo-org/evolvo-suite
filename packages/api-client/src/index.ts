@@ -1208,6 +1208,17 @@ export const updateProject = async (
   });
 };
 
+export const deleteProject = async (
+  projectId: string,
+): Promise<MutationResponse<{ projectId: string; name: string }>> => {
+  return fetchJson<MutationResponse<{ projectId: string; name: string }>>(
+    `/projects/${projectId}`,
+    {
+      method: 'DELETE',
+    },
+  );
+};
+
 export const startProject = async (
   projectId: string,
 ): Promise<MutationResponse<ProjectStatusResponse>> => {

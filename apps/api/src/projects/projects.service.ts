@@ -825,6 +825,43 @@ export class ProjectsService {
     return mapProjectStatus(project);
   }
 
+  public async deleteProject(
+    projectId: string,
+  ): Promise<{ projectId: string; name: string }> {
+    const project = await this.prisma.project.findUnique({
+      where: { id: projectId },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+
+    if (!project) {
+      throw new NotFoundException('Project not found.');
+    }
+
+    await this.prisma.project.delete({
+      where: { id: projectId },
+    });
+
+    await this.logsService.writeLog({
+      level: 'warn',
+      source: 'projects',
+      projectId,
+      eventType: 'project.deleted',
+      message: `Project ${project.name} deleted.`,
+      payload: {
+        projectId,
+        name: project.name,
+      },
+    });
+
+    return {
+      projectId,
+      name: project.name,
+    };
+  }
+
   public async getProjectStatus(
     projectId: string,
   ): Promise<ProjectStatusResponse> {

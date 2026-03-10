@@ -8,14 +8,18 @@ export interface PlanningGeneratedTaskInput {
   ambiguityNotes?: string[];
 }
 
+export interface PlanningGeneratedEpicInput {
+  title: string;
+  summary?: string;
+  tasks: PlanningGeneratedTaskInput[];
+}
+
 export interface PlanningGeneratedResultInput {
   systemPrompt: string;
   userPrompt: string;
   accepted: boolean;
   decisionSummary: string;
-  epicTitle?: string;
-  epicSummary?: string;
-  tasks: PlanningGeneratedTaskInput[];
+  epics: PlanningGeneratedEpicInput[];
 }
 
 export interface ExecutePlanningRequest {
@@ -26,9 +30,17 @@ export interface ExecutePlanningRequest {
 
 export interface PlanningAgentTaskRecord {
   workItemId: string;
+  epicId: string;
+  epicTitle: string;
   title: string;
   state: 'planning' | 'readyForDev';
   acceptanceCriteriaCount: number;
+}
+
+export interface PlanningAgentEpicRecord {
+  epicId: string;
+  title: string;
+  taskIds: string[];
 }
 
 export interface ExecutePlanningResponse {
@@ -41,6 +53,7 @@ export interface ExecutePlanningResponse {
   usageEventId: string | null;
   epicId: string | null;
   epicTitle: string | null;
+  epics: PlanningAgentEpicRecord[];
   createdTaskIds: string[];
   promotedToReadyForDevIds: string[];
   comment: string;

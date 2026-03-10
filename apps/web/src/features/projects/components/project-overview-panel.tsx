@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  deleteProject,
   expandPlanningHierarchy,
   getDevelopmentPlan,
   getProjectDetail,
@@ -18,6 +19,7 @@ import { Card } from '@repo/ui/components/card/card';
 import { EmptyState } from '@repo/ui/components/empty-state/empty-state';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import {
   QueryLoadingCard,
@@ -86,6 +88,7 @@ const formatPlanningApprovalTimestamp = (timestamp: string | null): string | nul
 };
 
 export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { pushToast } = useToast();
   const projectQuery = useQuery({
@@ -188,6 +191,27 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
     },
   });
 
+  const deleteProjectMutation = useMutation({
+    mutationFn: () => deleteProject(projectId),
+    onSuccess: async (response) => {
+      await queryClient.invalidateQueries({ queryKey: projectQueryKeys.all });
+      pushToast({
+        title: 'Project deleted',
+        description: `${response.data.name} was removed successfully.`,
+        variant: 'success',
+      });
+      router.push('/projects');
+    },
+    onError: (error) => {
+      const message = getErrorToastMessage(error, 'Unable to delete the project.');
+      pushToast({
+        title: 'Project deletion failed',
+        description: message,
+        variant: 'error',
+      });
+    },
+  });
+
   if (projectQuery.isLoading) {
     return (
       <QueryLoadingCard
@@ -245,7 +269,7 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
         <div className="flex flex-wrap items-center gap-3">
           <ProjectStatusBadge status={project.lifecycleStatus} />
           <Button
-            disabled={projectLifecycleMutation.isPending}
+            disabled={projectLifecycleMutation.isPending || deleteProjectMutation.isPending}
             onClick={() => {
               void projectLifecycleMutation.mutateAsync(
                 project.lifecycleStatus === 'active' ? 'stop' : 'start',
@@ -260,6 +284,24 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
               : project.lifecycleStatus === 'active'
                 ? 'Pause project'
                 : 'Activate project'}
+          </Button>
+          <Button
+            className="bg-red-600 hover:bg-red-500 dark:bg-red-500 dark:text-white dark:hover:bg-red-400"
+            disabled={deleteProjectMutation.isPending || projectLifecycleMutation.isPending}
+            onClick={() => {
+              if (
+                !window.confirm(
+                  `Delete project "${project.name}"? This permanently removes its planning, work items, runtime history, and settings.`,
+                )
+              ) {
+                return;
+              }
+
+              void deleteProjectMutation.mutateAsync();
+            }}
+            type="button"
+          >
+            {deleteProjectMutation.isPending ? 'Deleting project...' : 'Delete project'}
           </Button>
           <span className="text-sm text-zinc-500 dark:text-zinc-400">
             {project.repository.owner}/{project.repository.name}

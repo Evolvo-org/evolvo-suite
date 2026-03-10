@@ -63,10 +63,7 @@ describe('PlanningService', () => {
       workItem: {
         findMany: vi.fn().mockResolvedValue([]),
         count: vi.fn().mockResolvedValue(0),
-        create: vi
-          .fn()
-          .mockResolvedValueOnce({ id: 'work-1', title: 'Platform hardening' })
-          .mockResolvedValueOnce({ id: 'work-2', title: 'Observability' }),
+        create: vi.fn().mockResolvedValue({ id: 'work-1', title: 'Plan Delivery plan v2' }),
       },
     };
     projectsService = {
@@ -83,40 +80,31 @@ describe('PlanningService', () => {
     );
   });
 
-  it('queues planning requests from active development plan sections', async () => {
+  it('queues a single planning request from the active development plan', async () => {
     const result = await service.expandPlan('project-1');
 
     expect(result.activePlanVersionNumber).toBe(2);
     expect(result.queuedItems).toEqual([
       {
         workItemId: 'work-1',
-        title: 'Platform hardening',
-        state: 'planning',
-      },
-      {
-        workItemId: 'work-2',
-        title: 'Observability',
+        title: 'Plan Delivery plan v2',
         state: 'planning',
       },
     ]);
-    expect(prisma.workItem.create).toHaveBeenCalledTimes(2);
-    expect(prisma.workItem.create).toHaveBeenNthCalledWith(
-      1,
+    expect(prisma.workItem.create).toHaveBeenCalledTimes(1);
+    expect(prisma.workItem.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          title: 'Platform hardening',
+          title: 'Plan Delivery plan v2',
           priority: 'MEDIUM',
         }),
       }),
     );
   });
 
-  it('skips sections that already exist in the backlog', async () => {
+  it('skips the active plan when it already exists in the backlog', async () => {
     prisma.epic.findFirst.mockResolvedValue({ id: 'epic-planning', title: 'Planning requests' });
-    prisma.epic.findMany.mockResolvedValue([{ title: 'Platform hardening' }]);
-    prisma.workItem.create = vi
-      .fn()
-      .mockResolvedValueOnce({ id: 'work-2', title: 'Observability' });
+    prisma.workItem.findMany.mockResolvedValue([{ title: 'Plan Delivery plan v2' }]);
 
     service = new PlanningService(
       prisma as never,
@@ -126,14 +114,9 @@ describe('PlanningService', () => {
 
     const result = await service.expandPlan('project-1');
 
-    expect(result.queuedItems).toEqual([
-      {
-        workItemId: 'work-2',
-        title: 'Observability',
-        state: 'planning',
-      },
-    ]);
-    expect(result.skippedTitles).toEqual(['Platform hardening']);
+    expect(result.queuedItems).toEqual([]);
+    expect(result.skippedTitles).toEqual(['Plan Delivery plan v2']);
     expect(prisma.epic.create).not.toHaveBeenCalled();
+    expect(prisma.workItem.create).not.toHaveBeenCalled();
   });
 });

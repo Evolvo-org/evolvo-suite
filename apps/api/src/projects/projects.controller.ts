@@ -225,6 +225,17 @@ export class ProjectsController {
     };
   }
 
+  @Delete(':projectId')
+  public async deleteProject(@Param('projectId') projectId: string) {
+    const deletedProject = await this.projectsService.deleteProject(projectId);
+
+    return {
+      success: true as const,
+      message: 'Project deleted successfully.',
+      data: deletedProject,
+    };
+  }
+
   @Get(':projectId/status')
   public async getProjectStatus(@Param('projectId') projectId: string) {
     return this.projectsService.getProjectStatus(projectId);

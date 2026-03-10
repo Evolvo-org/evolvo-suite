@@ -448,20 +448,26 @@ export const executePlanningSchema = z.object({
       userPrompt: z.string().trim().min(1).max(50_000),
       accepted: z.boolean(),
       decisionSummary: z.string().trim().min(1).max(10_000),
-      epicTitle: z.string().trim().min(1).max(200).optional(),
-      epicSummary: z.string().trim().min(1).max(5_000).optional(),
-      tasks: z
+      epics: z
         .array(
           z.object({
             title: z.string().trim().min(1).max(200),
-            description: z.string().trim().min(1).max(5_000).optional(),
-            acceptanceCriteria: z
-              .array(z.string().trim().min(1).max(500))
+            summary: z.string().trim().min(1).max(5_000).optional(),
+            tasks: z
+              .array(
+                z.object({
+                  title: z.string().trim().min(1).max(200),
+                  description: z.string().trim().min(1).max(5_000).optional(),
+                  acceptanceCriteria: z
+                    .array(z.string().trim().min(1).max(500))
+                    .max(8),
+                  ambiguityNotes: z
+                    .array(z.string().trim().min(1).max(500))
+                    .max(8)
+                    .optional(),
+                }),
+              )
               .max(8),
-            ambiguityNotes: z
-              .array(z.string().trim().min(1).max(500))
-              .max(8)
-              .optional(),
           }),
         )
         .max(8)

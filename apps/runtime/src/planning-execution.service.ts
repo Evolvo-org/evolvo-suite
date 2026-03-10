@@ -17,28 +17,32 @@ const planningTaskSchema = z.object({
   ambiguityNotes: z.array(z.string().trim().min(1).max(500)).max(8).optional(),
 });
 
+const planningEpicSchema = z.object({
+  title: z.string().trim().min(1).max(200),
+  summary: z.string().trim().min(1).max(5_000).optional(),
+  tasks: z.array(planningTaskSchema).min(1).max(8),
+});
+
 const planningModelOutputSchema = z
   .object({
     accepted: z.boolean(),
     decisionSummary: z.string().trim().min(1).max(10_000),
-    epicTitle: z.string().trim().min(1).max(200).optional(),
-    epicSummary: z.string().trim().min(1).max(5_000).optional(),
-    tasks: z.array(planningTaskSchema).max(8),
+    epics: z.array(planningEpicSchema).max(8),
   })
   .superRefine((value, context) => {
-    if (value.accepted && value.tasks.length === 0) {
+    if (value.accepted && value.epics.length === 0) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Accepted planning results must include at least one task.',
-        path: ['tasks'],
+        message: 'Accepted planning results must include at least one epic.',
+        path: ['epics'],
       });
     }
 
-    if (!value.accepted && value.tasks.length > 0) {
+    if (!value.accepted && value.epics.length > 0) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Rejected planning results must not include generated tasks.',
-        path: ['tasks'],
+        message: 'Rejected planning results must not include generated epics.',
+        path: ['epics'],
       });
     }
   });
@@ -49,30 +53,40 @@ const planningOutputJsonSchema = {
   properties: {
     accepted: { type: 'boolean' },
     decisionSummary: { type: 'string' },
-    epicTitle: { type: 'string' },
-    epicSummary: { type: 'string' },
-    tasks: {
+    epics: {
       type: 'array',
       items: {
         type: 'object',
         additionalProperties: false,
         properties: {
           title: { type: 'string' },
-          description: { type: 'string' },
-          acceptanceCriteria: {
+          summary: { type: 'string' },
+          tasks: {
             type: 'array',
-            items: { type: 'string' },
-          },
-          ambiguityNotes: {
-            type: 'array',
-            items: { type: 'string' },
+            items: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                title: { type: 'string' },
+                description: { type: 'string' },
+                acceptanceCriteria: {
+                  type: 'array',
+                  items: { type: 'string' },
+                },
+                ambiguityNotes: {
+                  type: 'array',
+                  items: { type: 'string' },
+                },
+              },
+              required: ['title', 'acceptanceCriteria'],
+            },
           },
         },
-        required: ['title', 'acceptanceCriteria'],
+        required: ['title', 'tasks'],
       },
     },
   },
-  required: ['accepted', 'decisionSummary', 'tasks'],
+  required: ['accepted', 'decisionSummary', 'epics'],
 } as const;
 
 type PlanningModelOutput = z.infer<typeof planningModelOutputSchema>;
@@ -169,7 +183,9 @@ export class PlanningExecutionService {
             userPrompt: prompts.userPrompt,
           });
 
-    const parsed = planningModelOutputSchema.parse(JSON.parse(execution.rawText)) as PlanningModelOutput;
+    const parsed = planningModelOutputSchema.parse(
+      JSON.parse(execution.rawText),
+    ) as PlanningModelOutput;
 
     return {
       generatedResult: {
@@ -177,13 +193,18 @@ export class PlanningExecutionService {
         userPrompt: prompts.userPrompt,
         accepted: parsed.accepted,
         decisionSummary: parsed.decisionSummary.trim(),
-        epicTitle: parsed.epicTitle?.trim() || undefined,
-        epicSummary: parsed.epicSummary?.trim() || undefined,
-        tasks: parsed.tasks.map((task) => ({
-          title: task.title.trim(),
-          description: task.description?.trim() || undefined,
-          acceptanceCriteria: task.acceptanceCriteria.map((criterion) => criterion.trim()),
-          ambiguityNotes: task.ambiguityNotes?.map((note) => note.trim()) ?? [],
+        epics: parsed.epics.map((epic) => ({
+          title: epic.title.trim(),
+          summary: epic.summary?.trim() || undefined,
+          tasks: epic.tasks.map((task) => ({
+            title: task.title.trim(),
+            description: task.description?.trim() || undefined,
+            acceptanceCriteria: task.acceptanceCriteria.map((criterion) =>
+              criterion.trim(),
+            ),
+            ambiguityNotes:
+              task.ambiguityNotes?.map((note) => note.trim()) ?? [],
+          })),
         })),
       },
       usage: execution.usage,
@@ -200,8 +221,9 @@ export class PlanningExecutionService {
   }) {
     const systemPrompt = [
       'You are the planning agent for Evolvo.',
+      'Use the full product specification and the active development plan, when one exists, to design the implementation hierarchy.',
       'Decide whether the planning request should be accepted or rejected.',
-      'If accepted, expand it into execution-ready subtasks beneath the source planning item.',
+      'If accepted, return a structured set of epics and tasks that covers the requested work.',
       'Return valid JSON only.',
       'Use concise, operator-readable language.',
       'When similar work already exists, reject the idea unless the new work is materially distinct.',
@@ -214,20 +236,24 @@ export class PlanningExecutionService {
       `Planning request description: ${input.workItemDescription ?? 'No detailed description provided.'}`,
       `Product spec version: ${input.planningContext.productSpecVersion ?? 'none'}`,
       'Product spec content:',
-      input.planningContext.productSpecContent ?? 'No active product spec content is available.',
+      input.planningContext.productSpecContent ??
+        'No active product spec content is available.',
       `Development plan: ${input.planningContext.developmentPlanTitle ?? 'none'}`,
       `Development plan version: ${input.planningContext.developmentPlanVersionNumber ?? 'none'}`,
       'Development plan content:',
-      input.planningContext.developmentPlanContent ?? 'No active development plan content is available.',
+      input.planningContext.developmentPlanContent ??
+        'No active development plan content is available.',
       input.planningContext.duplicateWorkItemTitle
         ? `Potential duplicate work already exists: ${input.planningContext.duplicateWorkItemTitle}`
         : 'No duplicate work item was identified in the current project snapshot.',
       'Output requirements:',
-      '- Return a JSON object with accepted, decisionSummary, epicTitle, epicSummary, and tasks.',
-      '- If accepted is true, include between 1 and 8 tasks.',
+      '- Return a JSON object with accepted, decisionSummary, and epics.',
+      '- If accepted is true, include between 1 and 8 epics.',
+      '- Each epic must include title and tasks.',
+      '- Each epic should contain between 1 and 8 tasks.',
       '- Each task must include title and acceptanceCriteria.',
       '- Add ambiguityNotes only when the work cannot be executed safely without clarification.',
-      '- If accepted is false, tasks must be an empty array.',
+      '- If accepted is false, epics must be an empty array.',
     ].join('\n');
 
     return {
@@ -272,7 +298,9 @@ export class PlanningExecutionService {
     userPrompt: string;
   }): Promise<ProviderExecutionResult> {
     const route = getAgentModelRoute('planning');
-    const { Codex } = await importEsmModule<CodexSdkModule>('@openai/codex-sdk');
+    const { Codex } = await importEsmModule<CodexSdkModule>(
+      '@openai/codex-sdk',
+    );
     const client = new Codex({
       apiKey: this.environment.codexApiKey ?? undefined,
     });
@@ -283,9 +311,12 @@ export class PlanningExecutionService {
       skipGitRepoCheck: true,
       workingDirectory: this.environment.repositoriesRoot,
     });
-    const result = await thread.run(`${input.systemPrompt}\n\n${input.userPrompt}`, {
-      outputSchema: planningOutputJsonSchema,
-    });
+    const result = await thread.run(
+      `${input.systemPrompt}\n\n${input.userPrompt}`,
+      {
+        outputSchema: planningOutputJsonSchema,
+      },
+    );
 
     return {
       rawText: result.finalResponse.trim(),

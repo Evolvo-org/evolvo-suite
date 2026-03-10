@@ -166,4 +166,132 @@ describe('PlanningAgentService', () => {
       }),
     );
   });
+
+  it('persists runtime-generated epics and tasks from the structured planning result', async () => {
+    prisma.workItem.findFirst = vi
+      .fn()
+      .mockResolvedValueOnce({
+        id: 'work-1',
+        projectId: 'project-1',
+        title: 'Improve release safety',
+        description: 'Add safer release controls and verification.',
+        priority: 'HIGH',
+        state: 'PLANNING',
+        epic: null,
+        acceptanceCriteria: [],
+      })
+      .mockResolvedValueOnce(null);
+    prisma.workItem.count = vi.fn().mockResolvedValue(0);
+    prisma.epic.create = vi
+      .fn()
+      .mockResolvedValueOnce({ id: 'epic-ops', title: 'Operations' })
+      .mockResolvedValueOnce({ id: 'epic-runtime', title: 'Runtime visibility' });
+    prisma.workItem.create = vi
+      .fn()
+      .mockResolvedValueOnce({ id: 'task-2', title: 'Add release gates' })
+      .mockResolvedValueOnce({ id: 'task-3', title: 'Wire runtime alerts' });
+
+    service = new PlanningAgentService(
+      prisma as never,
+      projectsService as never,
+      developmentPlansService as never,
+      workflowService as never,
+      agentsService as never,
+      usageService as never,
+    );
+
+    const result = await service.executePlanning('project-1', 'work-1', {
+      runtimeId: 'runtime-1',
+      leaseId: 'lease-1',
+      generatedResult: {
+        systemPrompt: 'system prompt',
+        userPrompt: 'user prompt',
+        accepted: true,
+        decisionSummary: 'Accepted because the full spec and plan imply multiple implementation tracks.',
+        epics: [
+          {
+            title: 'Operations',
+            summary: 'Release safety and operator controls.',
+            tasks: [
+              {
+                title: 'Define release guardrails',
+                description: 'Describe the mandatory checks before release.',
+                acceptanceCriteria: ['Guardrails are documented'],
+                ambiguityNotes: [],
+              },
+              {
+                title: 'Add release gates',
+                description: 'Persist and enforce release gate checks.',
+                acceptanceCriteria: ['Release gates are enforced'],
+                ambiguityNotes: [],
+              },
+            ],
+          },
+          {
+            title: 'Runtime visibility',
+            summary: 'Make runtime behavior visible to operators.',
+            tasks: [
+              {
+                title: 'Wire runtime alerts',
+                description: 'Expose degraded runtime state in observability.',
+                acceptanceCriteria: ['Runtime alerts are shown'],
+                ambiguityNotes: [],
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    expect(result.accepted).toBe(true);
+    expect(result.epics).toEqual([
+      {
+        epicId: 'epic-ops',
+        title: 'Operations',
+        taskIds: ['work-1', 'task-2'],
+      },
+      {
+        epicId: 'epic-runtime',
+        title: 'Runtime visibility',
+        taskIds: ['task-3'],
+      },
+    ]);
+    expect(result.tasks).toEqual([
+      {
+        workItemId: 'work-1',
+        epicId: 'epic-ops',
+        epicTitle: 'Operations',
+        title: 'Define release guardrails',
+        state: 'planning',
+        acceptanceCriteriaCount: 1,
+      },
+      {
+        workItemId: 'task-2',
+        epicId: 'epic-ops',
+        epicTitle: 'Operations',
+        title: 'Add release gates',
+        state: 'planning',
+        acceptanceCriteriaCount: 1,
+      },
+      {
+        workItemId: 'task-3',
+        epicId: 'epic-runtime',
+        epicTitle: 'Runtime visibility',
+        title: 'Wire runtime alerts',
+        state: 'planning',
+        acceptanceCriteriaCount: 1,
+      },
+    ]);
+    expect(prisma.workItem.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'work-1' },
+        data: expect.objectContaining({
+          epicId: 'epic-ops',
+          title: 'Define release guardrails',
+        }),
+      }),
+    );
+    expect(prisma.workItem.create).toHaveBeenCalledTimes(2);
+    expect(usageService.createUsageEvent).not.toHaveBeenCalled();
+  });
 });

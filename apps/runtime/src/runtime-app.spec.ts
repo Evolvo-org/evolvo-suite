@@ -438,20 +438,24 @@ describe('RuntimeApp', () => {
           userPrompt: 'user prompt',
           accepted: true,
           decisionSummary: 'Accepted because the idea aligns with the active plan.',
-          epicTitle: 'Plan queue dashboard',
-          epicSummary: 'Break the queue dashboard into execution-ready work.',
-          tasks: [
+          epics: [
             {
-              title: 'Define scope',
-              description: 'Define the operational dashboard scope.',
-              acceptanceCriteria: ['Dashboard scope documented'],
-              ambiguityNotes: [],
+              title: 'Queue dashboard',
+              summary: 'Break the queue dashboard into execution-ready work.',
+              tasks: [
+                {
+                  title: 'Define scope',
+                  description: 'Define the operational dashboard scope.',
+                  acceptanceCriteria: ['Dashboard scope documented'],
+                  ambiguityNotes: [],
+                },
+              ],
             },
           ],
         },
         usage: {
           provider: 'openai',
-          model: 'gpt-5.3',
+          model: 'gpt-5.3-codex',
           inputTokens: 120,
           outputTokens: 80,
           totalTokens: 200,
@@ -477,7 +481,7 @@ describe('RuntimeApp', () => {
           projectId: 'project-1',
           agentType: 'planning',
           provider: 'openai',
-          model: 'gpt-5.3',
+          model: 'gpt-5.3-codex',
           source: 'system-agent',
         },
         input: {
@@ -491,13 +495,22 @@ describe('RuntimeApp', () => {
         runId: 'run-0',
         usageEventId: 'usage-0',
         epicId: 'epic-0',
-        epicTitle: 'Plan queue dashboard',
+        epicTitle: 'Queue dashboard',
+        epics: [
+          {
+            epicId: 'epic-0',
+            title: 'Queue dashboard',
+            taskIds: ['work-0'],
+          },
+        ],
         createdTaskIds: ['sub-0'],
         promotedToReadyForDevIds: [],
         comment: 'Planning agent accepted the idea and created executable work.',
         tasks: [
           {
-            workItemId: 'sub-0',
+            workItemId: 'work-0',
+            epicId: 'epic-0',
+            epicTitle: 'Queue dashboard',
             title: 'Define scope',
             state: 'planning',
             acceptanceCriteriaCount: 2,
@@ -585,14 +598,18 @@ describe('RuntimeApp', () => {
           userPrompt: 'user prompt',
           accepted: true,
           decisionSummary: 'Accepted because the idea aligns with the active plan.',
-          epicTitle: 'Plan queue dashboard',
-          epicSummary: 'Break the queue dashboard into execution-ready work.',
-          tasks: [
+          epics: [
             {
-              title: 'Define scope',
-              description: 'Define the operational dashboard scope.',
-              acceptanceCriteria: ['Dashboard scope documented'],
-              ambiguityNotes: [],
+              title: 'Queue dashboard',
+              summary: 'Break the queue dashboard into execution-ready work.',
+              tasks: [
+                {
+                  title: 'Define scope',
+                  description: 'Define the operational dashboard scope.',
+                  acceptanceCriteria: ['Dashboard scope documented'],
+                  ambiguityNotes: [],
+                },
+              ],
             },
           ],
         },
@@ -606,7 +623,7 @@ describe('RuntimeApp', () => {
         runtimeId: environment.runtimeId,
         agentType: 'planning',
         provider: 'openai',
-        model: 'gpt-5.3',
+        model: 'gpt-5.3-codex',
         inputTokens: 120,
         outputTokens: 80,
         totalTokens: 200,

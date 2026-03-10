@@ -29,20 +29,24 @@ describe('PlanningExecutionService', () => {
       rawText: JSON.stringify({
         accepted: true,
         decisionSummary: 'Accepted because the dashboard work is aligned with the current roadmap.',
-        epicTitle: 'Queue dashboard rollout',
-        epicSummary: 'Prepare the dashboard scope, data contract, and UI plan.',
-        tasks: [
+        epics: [
           {
-            title: 'Define operational scope',
-            description: 'Describe the dashboard audience and key metrics.',
-            acceptanceCriteria: ['Audience is named', 'Metrics are enumerated'],
-            ambiguityNotes: ['Confirm whether runtime lease backlog should be visible'],
+            title: 'Queue dashboard rollout',
+            summary: 'Prepare the dashboard scope, data contract, and UI plan.',
+            tasks: [
+              {
+                title: 'Define operational scope',
+                description: 'Describe the dashboard audience and key metrics.',
+                acceptanceCriteria: ['Audience is named', 'Metrics are enumerated'],
+                ambiguityNotes: ['Confirm whether runtime lease backlog should be visible'],
+              },
+            ],
           },
         ],
       }),
       usage: {
         provider: 'openai',
-        model: 'gpt-5.3',
+        model: 'gpt-5.3-codex',
         inputTokens: 111,
         outputTokens: 222,
         totalTokens: 333,
@@ -112,7 +116,7 @@ describe('PlanningExecutionService', () => {
             projectId: 'project-1',
             agentType: 'planning',
             provider: 'openai',
-            model: 'gpt-5.3',
+            model: 'gpt-5.3-codex',
             source: 'system-agent',
           },
           productSpecId: 'spec-1',
@@ -130,11 +134,12 @@ describe('PlanningExecutionService', () => {
 
     expect(runOpenAi).toHaveBeenCalledOnce();
     expect(result.generatedResult.accepted).toBe(true);
-    expect(result.generatedResult.tasks).toHaveLength(1);
-    expect(result.generatedResult.tasks[0]?.title).toBe('Define operational scope');
+    expect(result.generatedResult.epics).toHaveLength(1);
+    expect(result.generatedResult.epics[0]?.title).toBe('Queue dashboard rollout');
+    expect(result.generatedResult.epics[0]?.tasks[0]?.title).toBe('Define operational scope');
     expect(result.usage).toEqual({
       provider: 'openai',
-      model: 'gpt-5.3',
+      model: 'gpt-5.3-codex',
       inputTokens: 111,
       outputTokens: 222,
       totalTokens: 333,
@@ -147,7 +152,7 @@ describe('PlanningExecutionService', () => {
         rawText: JSON.stringify({
           accepted: true,
           decisionSummary: 'Accepted but missing task expansion.',
-          tasks: [],
+          epics: [],
         }),
         usage: null,
       }),
@@ -213,7 +218,7 @@ describe('PlanningExecutionService', () => {
               projectId: 'project-1',
               agentType: 'planning',
               provider: 'openai',
-              model: 'gpt-5.3',
+              model: 'gpt-5.3-codex',
               source: 'system-agent',
             },
             productSpecId: 'spec-1',
@@ -228,6 +233,6 @@ describe('PlanningExecutionService', () => {
           },
         },
       }),
-    ).rejects.toThrow('Accepted planning results must include at least one task.');
+    ).rejects.toThrow('Accepted planning results must include at least one epic.');
   });
 });

@@ -27,11 +27,6 @@ import { mapPlanningApproval } from '../development-plans/development-plans.mapp
 type PrismaWorkItemKind = 'TASK' | 'SUBTASK';
 type PrismaWorkItemPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 
-type PlanExpansionSection = {
-  title: string;
-  content: string;
-};
-
 type HierarchyEpicRecord = {
   id: string;
   projectId: string;
@@ -72,7 +67,6 @@ const mapWorkItemPriority = (value: PrismaWorkItemPriority) =>
   value.toLowerCase() as WorkItemPriority;
 
 const planExpansionQueueEpicTitle = 'Planning requests';
-const maxPlanExpansionSections = 8;
 
 const toPrismaPriority = (
   value: WorkItemPriority | undefined,
@@ -256,10 +250,11 @@ export class PlanningService {
       );
     }
 
-    const sections = this.extractPlanSections(
-      project.developmentPlan.activeVersion.title,
-      project.developmentPlan.activeVersion.content,
-    );
+    const planningRequestTitle = this.buildPlanExpansionTitle({
+      planTitle: project.developmentPlan.title,
+      activeVersionTitle: project.developmentPlan.activeVersion.title,
+      activeVersionNumber: project.developmentPlan.activeVersion.versionNumber,
+    });
     const queueEpic = await this.ensurePlanningQueueEpic(
       projectId,
       project.developmentPlan.id,
@@ -290,33 +285,29 @@ export class PlanningService {
     const queuedItems: ExpandPlanningHierarchyResponse['queuedItems'] = [];
     const skippedTitles: string[] = [];
 
-    for (const section of sections.slice(0, maxPlanExpansionSections)) {
-      const normalizedTitle = this.normalizePlanningTitle(section.title);
+    const normalizedTitle = this.normalizePlanningTitle(planningRequestTitle);
 
-      if (existingTitles.has(normalizedTitle)) {
-        skippedTitles.push(section.title);
-        continue;
-      }
-
+    if (existingTitles.has(normalizedTitle)) {
+      skippedTitles.push(planningRequestTitle);
+    } else {
       const created = await this.prisma.workItem.create({
         data: {
           projectId,
           epicId: queueEpic.id,
           parentId: null,
           kind: 'TASK',
-          title: section.title,
+          title: planningRequestTitle,
           description: this.buildPlanExpansionDescription({
             planTitle: project.developmentPlan.title,
+            activeVersionTitle: project.developmentPlan.activeVersion.title,
             activeVersionNumber: project.developmentPlan.activeVersion.versionNumber,
-            sectionTitle: section.title,
-            sectionContent: section.content,
+            planContent: project.developmentPlan.activeVersion.content,
           }),
           priority: 'MEDIUM',
-          sortOrder: existingQueueCount + queuedItems.length,
+          sortOrder: existingQueueCount,
         },
       });
 
-      existingTitles.add(normalizedTitle);
       queuedItems.push({
         workItemId: created.id,
         title: created.title,
@@ -326,8 +317,8 @@ export class PlanningService {
 
     const summary =
       queuedItems.length > 0
-        ? `Queued ${queuedItems.length} planning request${queuedItems.length === 1 ? '' : 's'} from active development plan v${project.developmentPlan.activeVersion.versionNumber}. The runtime planning lane will expand them into epics as leases are processed.`
-        : `No new planning requests were queued because ${skippedTitles.length === 1 ? 'that section already exists in the project backlog.' : 'those sections already exist in the project backlog.'}`;
+        ? `Queued 1 planning request from active development plan v${project.developmentPlan.activeVersion.versionNumber}. The runtime planning lane will expand it into epics as leases are processed.`
+        : 'No new planning request was queued because the active development plan is already represented in the project backlog.';
 
     return {
       projectId,
@@ -766,109 +757,34 @@ export class PlanningService {
     });
   }
 
-  private extractPlanSections(
-    planTitle: string,
-    content: string,
-  ): PlanExpansionSection[] {
-    const sections: PlanExpansionSection[] = [];
-    const lines = content.split(/\r?\n/);
-    let currentTitle: string | null = null;
-    let currentLines: string[] = [];
+  private buildPlanExpansionTitle(input: {
+    planTitle: string;
+    activeVersionTitle: string;
+    activeVersionNumber: number;
+  }): string {
+    const normalizedActiveVersionTitle = input.activeVersionTitle.trim();
 
-    const flushSection = () => {
-      if (!currentTitle) {
-        return;
-      }
-
-      const normalizedTitle = currentTitle.trim();
-      const normalizedContent = currentLines.join('\n').trim();
-
-      if (normalizedTitle.length === 0) {
-        return;
-      }
-
-      sections.push({
-        title: normalizedTitle,
-        content: normalizedContent.length > 0 ? normalizedContent : normalizedTitle,
-      });
-    };
-
-    for (const line of lines) {
-      const heading = this.parsePlanSectionHeading(line.trim());
-
-      if (heading) {
-        flushSection();
-        currentTitle = heading;
-        currentLines = [];
-        continue;
-      }
-
-      if (!currentTitle) {
-        currentTitle = planTitle.trim() || 'Active development plan';
-      }
-
-      currentLines.push(line);
+    if (normalizedActiveVersionTitle.length > 0) {
+      return `Plan ${normalizedActiveVersionTitle}`;
     }
 
-    flushSection();
-
-    const dedupedSections: PlanExpansionSection[] = [];
-    const seenTitles = new Set<string>();
-
-    for (const section of sections) {
-      const normalizedTitle = this.normalizePlanningTitle(section.title);
-
-      if (normalizedTitle.length === 0 || seenTitles.has(normalizedTitle)) {
-        continue;
-      }
-
-      seenTitles.add(normalizedTitle);
-      dedupedSections.push(section);
-    }
-
-    return dedupedSections.length > 0
-      ? dedupedSections
-      : [
-          {
-            title: planTitle.trim() || 'Active development plan',
-            content: content.trim(),
-          },
-        ];
-  }
-
-  private parsePlanSectionHeading(line: string): string | null {
-    if (line.length === 0) {
-      return null;
-    }
-
-    const markdownHeadingMatch = /^(#{1,2})\s+(.+)$/.exec(line);
-
-    if (markdownHeadingMatch) {
-      return markdownHeadingMatch[2]?.trim() ?? null;
-    }
-
-    const numberedHeadingMatch = /^(\d+(?:\.\d+)*)[.)]\s+(.+)$/.exec(line);
-
-    if (numberedHeadingMatch) {
-      return numberedHeadingMatch[2]?.trim() ?? null;
-    }
-
-    return null;
+    const normalizedPlanTitle = input.planTitle.trim() || 'development plan';
+    return `Plan ${normalizedPlanTitle} v${input.activeVersionNumber}`;
   }
 
   private buildPlanExpansionDescription(input: {
     planTitle: string;
+    activeVersionTitle: string;
     activeVersionNumber: number;
-    sectionTitle: string;
-    sectionContent: string;
+    planContent: string;
   }): string {
     return [
-      'Expand this active development plan section into a distinct epic with executable tasks if it represents material work.',
+      'Expand this active development plan into the smallest sensible set of epics, tasks, and subtasks for the current project.',
       `Development plan: ${input.planTitle} v${input.activeVersionNumber}`,
-      `Plan section: ${input.sectionTitle}`,
+      `Active version title: ${input.activeVersionTitle}`,
       '',
-      'Section details:',
-      input.sectionContent,
+      'Plan details:',
+      input.planContent,
     ].join('\n');
   }
 

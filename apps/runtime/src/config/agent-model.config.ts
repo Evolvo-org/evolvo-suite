@@ -23,7 +23,7 @@ export type RuntimeAgentModelConfig = Record<
 export const agentModelConfig: RuntimeAgentModelConfig = {
   planning: {
     provider: 'openai',
-    model: 'gpt-5.3',
+    model: 'gpt-5.3-codex',
     temperature: 0.1,
     maxTokens: 12000,
     timeoutMs: 120000,
@@ -50,7 +50,7 @@ export const agentModelConfig: RuntimeAgentModelConfig = {
   },
   release: {
     provider: 'openai',
-    model: 'gpt-5.3-mini',
+    model: 'gpt-5.3-codex',
     temperature: 0.1,
     maxTokens: 12000,
     timeoutMs: 120000,
