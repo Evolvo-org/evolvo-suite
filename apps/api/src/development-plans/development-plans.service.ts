@@ -15,6 +15,7 @@ import type {
   UpdateDevelopmentPlanRequest,
 } from '@repo/shared';
 
+import { LogsService } from '../logs/logs.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { ProjectsService } from '../projects/projects.service.js';
 
@@ -29,6 +30,8 @@ export class DevelopmentPlansService {
   public constructor(
     @Inject(PrismaService)
     private readonly prisma: PrismaService,
+    @Inject(LogsService)
+    private readonly logsService: LogsService,
     @Inject(ProjectsService)
     private readonly projectsService: ProjectsService,
   ) {}
@@ -253,6 +256,19 @@ export class DevelopmentPlansService {
 
     const activeVersionId = developmentPlan.activeVersionId;
 
+    await this.logsService.writeLog({
+      level: 'info',
+      source: 'api',
+      projectId,
+      eventType: 'development-plan.approval.attempt',
+      message: `Approving active development plan version ${activeVersionId}.`,
+      payload: {
+        developmentPlanId: developmentPlan.id,
+        activeVersionId,
+        actorName: payload.actorName.trim(),
+      },
+    });
+
     await this.prisma.$transaction(async (transaction) => {
       await transaction.developmentPlan.update({
         where: { id: developmentPlan.id },
@@ -272,6 +288,19 @@ export class DevelopmentPlansService {
           summary: payload.summary?.trim(),
         },
       });
+    });
+
+    await this.logsService.writeLog({
+      level: 'info',
+      source: 'api',
+      projectId,
+      eventType: 'development-plan.approved',
+      message: `Approved active development plan version ${activeVersionId}.`,
+      payload: {
+        developmentPlanId: developmentPlan.id,
+        activeVersionId,
+        actorName: payload.actorName.trim(),
+      },
     });
 
     return mapDevelopmentPlan(
@@ -348,6 +377,21 @@ export class DevelopmentPlansService {
     if (!wasApproved || !developmentPlan.planningApprovedVersionId) {
       return;
     }
+
+    await this.logsService.writeLog({
+      level: 'info',
+      source: 'api',
+      eventType: 'development-plan.approval.reset',
+      message: `Reset approval for development plan ${developmentPlan.id}.`,
+      payload: {
+        developmentPlanId: developmentPlan.id,
+        planVersionId: developmentPlan.planningApprovedVersionId,
+        actorName: input?.actorName?.trim() || 'System',
+        summary:
+          input?.summary?.trim() ||
+          'Planning changes invalidated the previous approval.',
+      },
+    });
 
     await executor.developmentPlanApprovalAudit.create({
       data: {

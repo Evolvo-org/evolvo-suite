@@ -1,5 +1,6 @@
 'use client';
 
+import { ApiClientError } from '@repo/api-client';
 import React, { type JSX, type ReactNode } from 'react';
 import {
   createContext,
@@ -59,11 +60,58 @@ const toneClasses: Record<ToastVariant, string> = {
     'border-emerald-500/20 bg-emerald-50 text-emerald-800 dark:border-emerald-400/20 dark:bg-emerald-950/40 dark:text-emerald-200',
 };
 
+type ApiErrorDetails = {
+  correlationId?: string;
+  errors?: string[];
+  message?: string;
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === 'object' && value !== null;
+};
+
+const parseApiErrorDetails = (value: unknown): ApiErrorDetails | null => {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const errors = Array.isArray(value.errors)
+    ? value.errors.filter((item): item is string => typeof item === 'string')
+    : undefined;
+
+  return {
+    correlationId:
+      typeof value.correlationId === 'string' ? value.correlationId : undefined,
+    errors,
+    message: typeof value.message === 'string' ? value.message : undefined,
+  };
+};
+
 export const getErrorToastMessage = (
   error: unknown,
   fallback: string,
 ): string => {
-  return error instanceof Error ? error.message : fallback;
+  if (!(error instanceof Error)) {
+    return fallback;
+  }
+
+  const details =
+    error instanceof ApiClientError ? parseApiErrorDetails(error.details) : null;
+  const baseMessage = details?.message?.trim() || error.message.trim() || fallback;
+  const detailMessage = details?.errors
+    ?.map((value) => value.trim())
+    .filter((value) => value.length > 0 && value !== baseMessage)
+    .slice(0, 2)
+    .join(' ');
+  const correlationSuffix = details?.correlationId
+    ? ` Reference: ${details.correlationId}`
+    : '';
+
+  if (detailMessage && detailMessage.length > 0) {
+    return `${baseMessage} ${detailMessage}${correlationSuffix}`.trim();
+  }
+
+  return `${baseMessage}${correlationSuffix}`.trim();
 };
 
 export const ToastProvider = ({

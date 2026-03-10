@@ -335,6 +335,9 @@ describe('SchedulerService', () => {
         priority: 'HIGH',
         sortOrder: 1,
         stateUpdatedAt: new Date('2026-03-09T11:30:00.000Z'),
+        epic: {
+          title: 'Planning requests',
+        },
       },
     ]);
     prisma.project.findMany.mockResolvedValue([
@@ -377,11 +380,16 @@ describe('SchedulerService', () => {
         priority: 'HIGH',
         sortOrder: 0,
         stateUpdatedAt: new Date('2026-03-09T11:30:00.000Z'),
+        epic: {
+          title: 'Planning requests',
+        },
       },
     ]);
     prisma.project.findMany.mockResolvedValue([
       {
         id: 'project-1',
+        name: 'Project One',
+        lifecycleStatus: 'ACTIVE',
         productSpec: {
           id: 'spec-1',
         },
@@ -430,6 +438,58 @@ describe('SchedulerService', () => {
 
     expect(result.lease?.lane).toBe('planning');
     expect(prisma.workItem.update).not.toHaveBeenCalled();
+  });
+
+  it('does not lease generated planning backlog items on the planning lane', async () => {
+    prisma.workItem.findMany.mockResolvedValue([
+      {
+        id: 'work-0',
+        projectId: 'project-1',
+        title: 'Implement dashboard filters',
+        state: 'PLANNING',
+        priority: 'HIGH',
+        sortOrder: 0,
+        stateUpdatedAt: new Date('2026-03-09T11:30:00.000Z'),
+        epic: {
+          title: 'Admin dashboard',
+        },
+      },
+    ]);
+    prisma.project.findMany.mockResolvedValue([
+      {
+        id: 'project-1',
+        name: 'Project One',
+        lifecycleStatus: 'ACTIVE',
+        productSpec: {
+          id: 'spec-1',
+        },
+        developmentPlan: {
+          id: 'plan-1',
+          activeVersion: {
+            id: 'plan-1-v1',
+          },
+        },
+        queueLimits: {
+          maxPlanning: 1,
+          maxInDev: 3,
+          maxInReview: 2,
+          maxReadyForRelease: 2,
+        },
+      },
+    ]);
+    prisma.workItem.groupBy.mockResolvedValue([]);
+    prisma.workItemLease.groupBy.mockResolvedValue([]);
+    prisma.$transaction.mockImplementation(async (callback: (transaction: typeof prisma) => unknown) => {
+      return callback(prisma);
+    });
+
+    const result = await service.acquireLease({
+      runtimeId: 'runtime-1',
+      lanes: ['planning'],
+    });
+
+    expect(result.lease).toBeNull();
+    expect(prisma.workItemLease.create).not.toHaveBeenCalled();
   });
 
   it('filters blocked items by requiring released dependencies', async () => {

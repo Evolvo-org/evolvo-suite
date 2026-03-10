@@ -1,4 +1,5 @@
 import React from 'react';
+import { ApiClientError } from '@repo/api-client';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 
@@ -26,5 +27,23 @@ describe('getErrorToastMessage', () => {
 
   it('uses the fallback for non-error values', () => {
     expect(getErrorToastMessage('oops', 'Fallback')).toBe('Fallback');
+  });
+
+  it('includes structured API details and the correlation id when available', () => {
+    expect(
+      getErrorToastMessage(
+        new ApiClientError('The server database schema is out of date.', 500, {
+          message: 'The server database schema is out of date.',
+          errors: [
+            'A required database table or column is missing in the deployed environment.',
+            'Run the latest database migrations for the API before retrying the request.',
+          ],
+          correlationId: 'corr-123',
+        }),
+        'Fallback',
+      ),
+    ).toBe(
+      'The server database schema is out of date. A required database table or column is missing in the deployed environment. Run the latest database migrations for the API before retrying the request. Reference: corr-123',
+    );
   });
 });

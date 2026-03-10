@@ -40,6 +40,7 @@ import { mapSchedulerLease } from './scheduler.mapper.js';
 
 const defaultLeaseDurationSeconds = 600;
 const defaultRecoveryLimit = 50;
+const planningRequestEpicTitle = 'Planning requests';
 
 const laneStateMap: Record<SchedulerLeaseLane, WorkItemState[]> = {
   planning: ['PLANNING'],
@@ -65,7 +66,11 @@ const priorityWeight: Record<WorkItem['priority'], number> = {
 type CandidateWorkItem = Pick<
   WorkItem,
   'id' | 'projectId' | 'title' | 'state' | 'priority' | 'sortOrder' | 'stateUpdatedAt'
->;
+> & {
+  epic: {
+    title: string;
+  } | null;
+};
 
 type LeaseWithTitle = WorkItemLease & { workItem: { title: string; state: WorkItemState } };
 
@@ -857,6 +862,11 @@ export class SchedulerService {
         priority: true,
         sortOrder: true,
         stateUpdatedAt: true,
+        epic: {
+          select: {
+            title: true,
+          },
+        },
       },
       orderBy: [{ stateUpdatedAt: 'asc' }, { sortOrder: 'asc' }],
     });
@@ -974,6 +984,10 @@ export class SchedulerService {
       const queueLimits = projectQueueLimitMap.get(candidate.projectId);
 
       if (!queueLimits) {
+        return false;
+      }
+
+      if (lane === 'planning' && !this.isPlanningRequestCandidate(candidate)) {
         return false;
       }
 
@@ -1110,6 +1124,10 @@ export class SchedulerService {
     }
 
     return candidates[0] ?? null;
+  }
+
+  private isPlanningRequestCandidate(candidate: CandidateWorkItem): boolean {
+    return candidate.epic?.title === planningRequestEpicTitle;
   }
 
   private getProjectLaneActiveCount(
