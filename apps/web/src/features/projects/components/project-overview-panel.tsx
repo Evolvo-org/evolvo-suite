@@ -9,6 +9,8 @@ import {
   listHumanInterventions,
   listDevelopmentPlanVersions,
   projectQueryKeys,
+  startProject,
+  stopProject,
 } from '@repo/api-client';
 import { Badge } from '@repo/ui/components/badge/badge';
 import { Button } from '@repo/ui/components/button/button';
@@ -146,6 +148,46 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
     },
   });
 
+  const projectLifecycleMutation = useMutation({
+    mutationFn: (nextAction: 'start' | 'stop') =>
+      nextAction === 'start' ? startProject(projectId) : stopProject(projectId),
+    onSuccess: async (_response, nextAction) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: projectQueryKeys.detail(projectId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: projectQueryKeys.runtimeDashboard(projectId),
+        }),
+      ]);
+      pushToast({
+        title:
+          nextAction === 'start' ? 'Project activated' : 'Project paused',
+        description:
+          nextAction === 'start'
+            ? 'The runtime can now lease new work for this project.'
+            : 'The runtime will stop leasing new work for this project.',
+        variant: 'success',
+      });
+    },
+    onError: (error, nextAction) => {
+      const message = getErrorToastMessage(
+        error,
+        nextAction === 'start'
+          ? 'Unable to activate the project.'
+          : 'Unable to pause the project.',
+      );
+      pushToast({
+        title:
+          nextAction === 'start'
+            ? 'Project activation failed'
+            : 'Project pause failed',
+        description: message,
+        variant: 'error',
+      });
+    },
+  });
+
   if (projectQuery.isLoading) {
     return (
       <QueryLoadingCard
@@ -202,10 +244,32 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
         </h1>
         <div className="flex flex-wrap items-center gap-3">
           <ProjectStatusBadge status={project.lifecycleStatus} />
+          <Button
+            disabled={projectLifecycleMutation.isPending}
+            onClick={() => {
+              void projectLifecycleMutation.mutateAsync(
+                project.lifecycleStatus === 'active' ? 'stop' : 'start',
+              );
+            }}
+            type="button"
+          >
+            {projectLifecycleMutation.isPending
+              ? project.lifecycleStatus === 'active'
+                ? 'Pausing project...'
+                : 'Activating project...'
+              : project.lifecycleStatus === 'active'
+                ? 'Pause project'
+                : 'Activate project'}
+          </Button>
           <span className="text-sm text-zinc-500 dark:text-zinc-400">
             {project.repository.owner}/{project.repository.name}
           </span>
         </div>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          {project.lifecycleStatus === 'active'
+            ? 'This project is eligible for runtime leasing.'
+            : 'Draft and paused projects will not lease new work until they are activated.'}
+        </p>
       </div>
 
       <div className="grid gap-4 xl:grid-cols-3">

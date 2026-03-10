@@ -85,6 +85,18 @@ describe('ProjectsService runtime dashboard', () => {
             createdAt: new Date('2026-03-10T07:15:00.000Z'),
             updatedAt: new Date('2026-03-10T08:25:00.000Z'),
           },
+          {
+            id: 'runtime-3',
+            displayName: 'Planner Idle',
+            status: 'IDLE',
+            capabilities: ['planning'],
+            activeJobSummary: null,
+            lastAction: 'Heartbeat recorded.',
+            lastError: null,
+            lastSeenAt: new Date('2026-03-10T08:29:45.000Z'),
+            createdAt: new Date('2026-03-10T08:00:00.000Z'),
+            updatedAt: new Date('2026-03-10T08:29:45.000Z'),
+          },
         ]),
       },
     };
@@ -115,7 +127,12 @@ describe('ProjectsService runtime dashboard', () => {
         }),
       }),
     );
-    expect(result.items).toHaveLength(2);
+    expect(prisma.runtimeInstance.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        orderBy: [{ lastSeenAt: 'desc' }, { createdAt: 'desc' }],
+      }),
+    );
+    expect(result.items).toHaveLength(3);
     expect(result.items[0]).toMatchObject({
       runtimeId: 'runtime-1',
       connectionStatus: 'online',
@@ -130,6 +147,13 @@ describe('ProjectsService runtime dashboard', () => {
       ],
     });
     expect(result.items[1]).toMatchObject({
+      runtimeId: 'runtime-3',
+      connectionStatus: 'online',
+      reportedStatus: 'idle',
+      activeJobs: 0,
+      recentFailures: [],
+    });
+    expect(result.items[2]).toMatchObject({
       runtimeId: 'runtime-2',
       connectionStatus: 'offline',
       reportedStatus: 'degraded',

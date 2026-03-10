@@ -365,32 +365,8 @@ export class ProjectsService {
       }),
     ]);
 
-    const runtimeIds = Array.from(
-      new Set(
-        [...activeLeases, ...recentLeases]
-          .map((lease) => lease.runtimeId)
-          .concat(
-            failureLogs
-              .map((log) => log.runtimeId)
-              .filter((runtimeId): runtimeId is string => Boolean(runtimeId)),
-          ),
-      ),
-    );
-
-    if (runtimeIds.length === 0) {
-      return {
-        projectId,
-        generatedAt: now.toISOString(),
-        items: [],
-      };
-    }
-
     const runtimes = await this.prisma.runtimeInstance.findMany({
-      where: {
-        id: {
-          in: runtimeIds,
-        },
-      },
+      orderBy: [{ lastSeenAt: 'desc' }, { createdAt: 'desc' }],
     });
 
     const activeJobsByRuntime = activeLeases.reduce<Record<string, number>>(
