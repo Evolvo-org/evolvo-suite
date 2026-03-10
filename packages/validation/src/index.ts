@@ -314,6 +314,7 @@ export const acquireSchedulerLeaseSchema = z.object({
   runtimeId: z.string().trim().min(1).max(160),
   lanes: z.array(z.enum(schedulerLeaseLanes)).min(1).max(3).optional(),
   projectId: z.string().trim().min(1).optional(),
+  workItemId: z.string().trim().min(1).optional(),
   leaseDurationSeconds: z.number().int().min(30).max(3600).optional(),
 });
 
@@ -347,6 +348,7 @@ export const runtimeHeartbeatSchema = z.object({
 export const requestRuntimeWorkSchema = z.object({
   lanes: z.array(z.enum(schedulerLeaseLanes)).min(1).max(3).optional(),
   projectId: z.string().trim().min(1).optional(),
+  workItemId: z.string().trim().min(1).optional(),
   leaseDurationSeconds: z.number().int().min(30).max(3600).optional(),
 });
 

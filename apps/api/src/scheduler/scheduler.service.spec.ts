@@ -441,6 +441,98 @@ describe('SchedulerService', () => {
     expect(prisma.workItem.update).not.toHaveBeenCalled();
   });
 
+  it('leases a specifically requested ready-for-dev work item when it is eligible', async () => {
+    prisma.workItem.findMany.mockResolvedValue([
+      {
+        id: 'work-1',
+        projectId: 'project-1',
+        title: 'Create user models',
+        state: 'READY_FOR_DEV',
+        priority: 'HIGH',
+        sortOrder: 1,
+        stateUpdatedAt: new Date('2026-03-09T11:30:00.000Z'),
+        epic: {
+          title: 'Admin dashboard',
+        },
+      },
+      {
+        id: 'work-init',
+        projectId: 'project-1',
+        title: 'Initialize repository structure',
+        state: 'READY_FOR_DEV',
+        priority: 'MEDIUM',
+        sortOrder: 2,
+        stateUpdatedAt: new Date('2026-03-09T11:31:00.000Z'),
+        epic: {
+          title: 'Admin dashboard',
+        },
+      },
+    ]);
+    prisma.project.findMany.mockResolvedValue([
+      {
+        id: 'project-1',
+        name: 'Project One',
+        lifecycleStatus: 'ACTIVE',
+        productSpec: {
+          id: 'spec-1',
+        },
+        developmentPlan: {
+          id: 'plan-1',
+          activeVersion: {
+            id: 'plan-1-v1',
+          },
+        },
+        queueLimits: {
+          maxPlanning: 1,
+          maxInDev: 3,
+          maxInReview: 2,
+          maxReadyForRelease: 2,
+        },
+      },
+    ]);
+    prisma.workItem.groupBy.mockResolvedValue([]);
+    prisma.workItemLease.groupBy.mockResolvedValue([]);
+    prisma.workItemLease.findFirst.mockResolvedValue(null);
+    prisma.workItemLease.create.mockResolvedValue({
+      id: 'lease-init',
+      projectId: 'project-1',
+      workItemId: 'work-init',
+      runtimeId: 'runtime-1',
+      lane: 'DEV',
+      status: 'ACTIVE',
+      leaseToken: 'token-init',
+      leasedAt: now,
+      expiresAt: new Date('2026-03-09T12:10:00.000Z'),
+      renewedAt: null,
+      releasedAt: null,
+      recoveredAt: null,
+      recoveryReason: null,
+      workItem: {
+        title: 'Initialize repository structure',
+        state: 'READY_FOR_DEV',
+      },
+    });
+    prisma.$transaction.mockImplementation(async (callback: (transaction: typeof prisma) => unknown) => {
+      return callback(prisma);
+    });
+
+    const result = await service.acquireLease({
+      runtimeId: 'runtime-1',
+      lanes: ['dev'],
+      projectId: 'project-1',
+      workItemId: 'work-init',
+    });
+
+    expect(result.lease?.workItemId).toBe('work-init');
+    expect(prisma.workItemLease.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          workItemId: 'work-init',
+        }),
+      }),
+    );
+  });
+
   it('does not lease generated planning backlog items on the planning lane', async () => {
     prisma.workItem.findMany.mockResolvedValue([
       {

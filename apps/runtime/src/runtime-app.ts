@@ -24,6 +24,7 @@ import { RecoveryService } from './recovery-service';
 import { RepoSyncService } from './repo-sync';
 import { RuntimeApiClient } from './runtime-api-client';
 import { PlanningExecutionService } from './planning-execution.service';
+import { DevTaskSelectionService } from './dev-task-selection.service';
 import {
   type PersistedRuntimeIdentity,
   RuntimeIdentityStore,
@@ -79,6 +80,9 @@ export class RuntimeApp {
       worktreeManager,
     ),
     private readonly planningExecutionService = new PlanningExecutionService(
+      environment,
+    ),
+    private readonly devTaskSelectionService = new DevTaskSelectionService(
       environment,
     ),
   ) {}
@@ -279,9 +283,9 @@ export class RuntimeApp {
 
     try {
       this.lastAction = 'Polling API for available leased work.';
-      const dispatch = await this.runtimeApiClient.requestWork(
-        this.environment.runtimeId,
-      );
+      const dispatch =
+        (await this.chooseNextDevDispatch()) ??
+        (await this.runtimeApiClient.requestWork(this.environment.runtimeId));
 
       if (!dispatch.lease || !dispatch.project || !dispatch.workItem) {
         this.handleIdlePoll(dispatch);
@@ -415,6 +419,7 @@ export class RuntimeApp {
         slug: dispatch.project.slug,
         repository: dispatch.project.repository,
       });
+
       const resolvedRepository =
         repoRegistration.repository ?? dispatch.project.repository;
       const branchName = this.branchManager.createBranchName({
@@ -641,6 +646,77 @@ export class RuntimeApp {
 
     this.idleBackoffMs = next;
     return next;
+  }
+
+  private async chooseNextDevDispatch(): Promise<RuntimeWorkDispatchResponse | null> {
+    try {
+      const schedulerState = await this.runtimeApiClient.getSchedulerState();
+      const readyProjects = schedulerState.projects.filter((project) =>
+        project.laneStates.some(
+          (laneState) => laneState.lane === 'dev' && laneState.readyCount > 0,
+        ),
+      );
+
+      if (readyProjects.length === 0) {
+        return null;
+      }
+
+      const boards = await Promise.all(
+        readyProjects.map(async (project) => ({
+          projectId: project.projectId,
+          projectName: project.projectName,
+          board: await this.runtimeApiClient.getBoard(project.projectId),
+        })),
+      );
+      const candidates = boards
+        .flatMap((item) => {
+          const readyForDev =
+            item.board.columns.find((column) => column.state === 'readyForDev')?.items ?? [];
+
+          return readyForDev.map((card) => ({
+            projectId: item.projectId,
+            projectName: item.projectName,
+            workItemId: card.id,
+            title: card.title,
+            description: card.description,
+            priority: card.priority,
+            dependencyIds: card.dependencyIds,
+          }));
+        })
+        .slice(0, 25);
+
+      if (candidates.length === 0) {
+        return null;
+      }
+
+      const selected = await this.devTaskSelectionService.chooseNextTask({
+        candidates,
+      });
+
+      if (!selected) {
+        return null;
+      }
+
+      this.lastAction = `Selecting next ready-for-dev task via AI: ${selected.workItemId}.`;
+
+      const dispatch = await this.runtimeApiClient.requestWork(
+        this.environment.runtimeId,
+        {
+          lanes: ['dev'],
+          projectId: selected.projectId,
+          workItemId: selected.workItemId,
+        },
+      );
+
+      return dispatch.lease ? dispatch : null;
+    } catch (error) {
+      log('warn', 'Runtime dev task selection failed; falling back to scheduler lease acquisition.', {
+        runtimeId: this.environment.runtimeId,
+        error: error instanceof Error ? error.message : 'Unknown dev task selection failure',
+      });
+
+      return null;
+    }
   }
 
   private async cancelActiveLeaseContext(reason: string): Promise<void> {

@@ -138,6 +138,7 @@ export class SchedulerService {
     const now = new Date();
     const runtimeId = payload.runtimeId.trim();
     const requestedProjectId = payload.projectId?.trim();
+    const requestedWorkItemId = payload.workItemId?.trim();
     const lanes: SchedulerLeaseLane[] = payload.lanes?.length
       ? payload.lanes
       : ['planning', 'dev', 'review', 'release'];
@@ -153,6 +154,7 @@ export class SchedulerService {
         transaction,
         lanes,
         requestedProjectId,
+        requestedWorkItemId,
         now,
       );
 
@@ -216,6 +218,7 @@ export class SchedulerService {
         message: `Scheduler leased ${mappedLease.workItemTitle} on the ${mappedLease.lane} lane.`,
         payload: {
           requestedProjectId: requestedProjectId ?? null,
+          requestedWorkItemId: requestedWorkItemId ?? null,
           requestedLanes: lanes,
           recoveredCount: recovered.recoveredCount,
           leaseId: mappedLease.id,
@@ -249,6 +252,7 @@ export class SchedulerService {
           message: 'Scheduler skipped one or more projects during lease acquisition.',
           payload: {
             requestedProjectId: requestedProjectId ?? null,
+            requestedWorkItemId: requestedWorkItemId ?? null,
             requestedLanes: lanes,
             skippedProjects: state.skippedProjects,
           },
@@ -264,6 +268,7 @@ export class SchedulerService {
         message: 'No eligible work item was available for lease.',
         payload: {
           requestedProjectId: requestedProjectId ?? null,
+          requestedWorkItemId: requestedWorkItemId ?? null,
           requestedLanes: lanes,
           recoveredCount: recovered.recoveredCount,
           laneSummaries: state.laneSummaries,
@@ -801,6 +806,7 @@ export class SchedulerService {
     transaction: Prisma.TransactionClient,
     lanes: SchedulerLeaseLane[],
     projectId: string | undefined,
+    workItemId: string | undefined,
     now: Date,
   ): Promise<CandidateWorkItem | null> {
     const systemQueueLimits = await this.settingsService.getResolvedSystemQueueLimits();
@@ -809,6 +815,7 @@ export class SchedulerService {
     ) as WorkItemState[];
     const candidates = await transaction.workItem.findMany({
       where: {
+        id: workItemId,
         projectId,
         OR: [
           {
@@ -1017,6 +1024,10 @@ export class SchedulerService {
       }
 
       return null;
+    }
+
+    if (workItemId) {
+      return eligibleCandidates.find((candidate) => candidate.id === workItemId) ?? null;
     }
 
     const sortedCandidates = [...eligibleCandidates].sort((left, right) => {

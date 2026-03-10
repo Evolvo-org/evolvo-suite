@@ -655,6 +655,180 @@ describe('RuntimeApp', () => {
     expect(runtimeApiClient.upsertWorktree).not.toHaveBeenCalled();
   });
 
+  it('asks the dev selector to choose a ready-for-dev task before leasing it', async () => {
+    const runtimeApiClient = {
+      registerRuntime: vi.fn(),
+      sendHeartbeat: vi.fn(),
+      getSchedulerState: vi.fn().mockResolvedValue({
+        projectId: null,
+        generatedAt: new Date().toISOString(),
+        cursors: [],
+        laneSummaries: [
+          {
+            lane: 'dev',
+            readyCount: 2,
+            inProgressCount: 0,
+            activeLeaseCount: 0,
+          },
+        ],
+        skippedProjects: [],
+        projects: [
+          {
+            projectId: 'project-1',
+            projectName: 'Evolvo Suite',
+            lifecycleStatus: 'ACTIVE',
+            openInterventionCount: 0,
+            laneStates: [
+              {
+                lane: 'dev',
+                readyCount: 2,
+                inProgressCount: 0,
+                activeLeaseCount: 0,
+                limit: 1,
+              },
+            ],
+          },
+        ],
+      }),
+      requestWork: vi.fn().mockResolvedValue({
+        lease: {
+          id: 'lease-2',
+          projectId: 'project-1',
+          workItemId: 'work-init',
+          workItemTitle: 'Initialize repository structure',
+          lane: 'dev',
+          leaseToken: 'lease-token-2',
+          leasedAt: new Date().toISOString(),
+          expiresAt: new Date(Date.now() + 60_000).toISOString(),
+        },
+        recoveredCount: 0,
+        project: {
+          id: 'project-1',
+          name: 'Evolvo Suite',
+          slug: 'evolvo-suite',
+          repository: {
+            provider: 'github',
+            owner: 'evolvo-org',
+            name: 'evolvo-suite',
+            url: 'https://github.com/evolvo-org/evolvo-suite',
+            defaultBranch: 'main',
+            baseBranch: 'main',
+          },
+          queueLimits: {
+            maxPlanning: 1,
+            maxReadyForDev: 2,
+            maxInDev: 1,
+            maxReadyForReview: 1,
+            maxInReview: 1,
+            maxReadyForRelease: 1,
+            maxReviewRetries: 1,
+            maxMergeConflictRetries: 1,
+            maxRuntimeRetries: 1,
+            maxAmbiguityRetries: 1,
+          },
+        },
+        workItem: {
+          id: 'work-init',
+          epicId: 'epic-1',
+          epicTitle: 'Operations',
+          title: 'Initialize repository structure',
+          description: 'Bootstrap the repo foundation.',
+          state: 'readyForDev',
+          priority: 'medium',
+          lane: 'dev',
+        },
+      }),
+      getBoard: vi.fn().mockResolvedValue({
+        projectId: 'project-1',
+        counts: {
+          planning: 0,
+          readyForDev: 2,
+          inDev: 0,
+          readyForReview: 0,
+          inReview: 0,
+          readyForRelease: 0,
+          requiresHumanIntervention: 0,
+          released: 0,
+        },
+        columns: [
+          {
+            state: 'readyForDev',
+            label: 'Ready for dev',
+            items: [
+              {
+                id: 'work-user-models',
+                epicId: 'epic-1',
+                epicTitle: 'Operations',
+                parentId: null,
+                kind: 'task',
+                title: 'Create user models',
+                description: 'Implement the initial data models.',
+                state: 'readyForDev',
+                priority: 'high',
+                dependencyIds: [],
+                acceptanceCriteriaCount: 0,
+                completedAcceptanceCriteriaCount: 0,
+                updatedAt: '2026-03-10T10:00:00.000Z',
+              },
+              {
+                id: 'work-init',
+                epicId: 'epic-1',
+                epicTitle: 'Operations',
+                parentId: null,
+                kind: 'task',
+                title: 'Initialize repository structure',
+                description: 'Bootstrap the repo foundation and scaffolding.',
+                state: 'readyForDev',
+                priority: 'medium',
+                dependencyIds: [],
+                acceptanceCriteriaCount: 0,
+                completedAcceptanceCriteriaCount: 0,
+                updatedAt: '2026-03-10T11:00:00.000Z',
+              },
+            ],
+          },
+        ],
+      }),
+      requestWorktreeCleanup: vi.fn(),
+      markWorktreeStale: vi.fn(),
+      upsertWorktree: vi.fn(),
+      executeDevTask: vi.fn(),
+      submitJobResult: vi.fn(),
+      listProjectWorktrees: vi.fn().mockResolvedValue({ projectId: 'p1', items: [] }),
+    };
+
+    const app = new RuntimeApp(
+      environment,
+      runtimeApiClient as never,
+      { load: vi.fn().mockResolvedValue(null), save: vi.fn().mockResolvedValue(undefined) } as never,
+      { ensureStorage: vi.fn().mockResolvedValue(undefined), getMetadataFilePath: vi.fn().mockReturnValue('/tmp/registry.json'), upsertProject: vi.fn().mockResolvedValue(undefined) } as never,
+      { createBranchName: vi.fn().mockReturnValue('dev/work-init-initialize-repository-structure'), getBaseBranch: vi.fn().mockReturnValue('main'), ensureWorkItemBranch: vi.fn().mockResolvedValue(undefined), getCleanupCandidates: vi.fn().mockResolvedValue([]) } as never,
+      { ensureProjectRepository: vi.fn().mockResolvedValue({ localPath: '/tmp/evolvo-runtime-tests/repos/evolvo-suite', repository: { provider: 'github', owner: 'evolvo-org', name: 'evolvo-suite', url: 'https://github.com/evolvo-org/evolvo-suite', defaultBranch: 'main', baseBranch: 'main' } }) } as never,
+      { ensureWorktree: vi.fn().mockResolvedValue({ path: '/tmp/evolvo-runtime-tests/evolvo-suite/dev-work-init', branchName: 'dev/work-init-initialize-repository-structure', baseBranch: 'main', headSha: 'abc123init', isDirty: false }) } as never,
+      { reconcileOnStartup: vi.fn().mockResolvedValue(undefined) } as never,
+      undefined,
+      { chooseNextTask: vi.fn().mockResolvedValue({ projectId: 'project-1', workItemId: 'work-init', rationale: 'Initialize the repository foundation first.' }) } as never,
+    );
+
+    const dispatch = await (app as unknown as {
+      chooseNextDevDispatch(): Promise<unknown>;
+    }).chooseNextDevDispatch();
+
+    expect(dispatch).toEqual(
+      expect.objectContaining({
+        lease: expect.objectContaining({
+          workItemId: 'work-init',
+        }),
+      }),
+    );
+    expect(runtimeApiClient.requestWork).toHaveBeenCalledWith(environment.runtimeId, {
+      lanes: ['dev'],
+      projectId: 'project-1',
+      workItemId: 'work-init',
+    });
+    expect(runtimeApiClient.submitJobResult).not.toHaveBeenCalled();
+  });
+
   it('executes leased review work and submits the resulting state transition', async () => {
     const runtimeApiClient = {
       registerRuntime: vi.fn(),

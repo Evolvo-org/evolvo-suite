@@ -10,6 +10,8 @@ import {
   executeDevTask,
   executeRelease,
   executeReview,
+  getBoard,
+  getSchedulerState,
   getProjectWorktrees,
   markProjectWorktreeStale,
   recordReleaseResult,
@@ -37,6 +39,8 @@ import type {
   ReleaseRunRecord,
   RegisterRuntimeRequest,
   CreateUsageEventRequest,
+  KanbanBoardResponse,
+  SchedulerStateResponse,
   RuntimeArtifactType,
   RuntimeArtifactUploadMetadataResponse,
   RuntimeDetailResponse,
@@ -101,12 +105,27 @@ export class RuntimeApiClient {
     );
   }
 
-  public async requestWork(runtimeId: string): Promise<RuntimeWorkDispatchResponse> {
+  public async requestWork(
+    runtimeId: string,
+    payload: { lanes?: Array<'planning' | 'dev' | 'review' | 'release'>; projectId?: string; workItemId?: string; leaseDurationSeconds?: number } = {},
+  ): Promise<RuntimeWorkDispatchResponse> {
     return this.withRequestContext(() =>
       this.executeWithRetry('requestRuntimeWork', async () => {
-        const response = await requestRuntimeWork(runtimeId);
+        const response = await requestRuntimeWork(runtimeId, payload);
         return response.data;
       }),
+    );
+  }
+
+  public async getBoard(projectId: string): Promise<KanbanBoardResponse> {
+    return this.withRequestContext(() =>
+      this.executeWithRetry('getBoard', async () => getBoard(projectId)),
+    );
+  }
+
+  public async getSchedulerState(): Promise<SchedulerStateResponse> {
+    return this.withRequestContext(() =>
+      this.executeWithRetry('getSchedulerState', async () => getSchedulerState()),
     );
   }
 

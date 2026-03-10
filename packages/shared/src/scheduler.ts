@@ -42,6 +42,7 @@ export interface AcquireSchedulerLeaseRequest {
   runtimeId: string;
   lanes?: SchedulerLeaseLane[];
   projectId?: string;
+  workItemId?: string;
   leaseDurationSeconds?: number;
 }
 

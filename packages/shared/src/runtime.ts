@@ -69,6 +69,7 @@ export interface RuntimeDashboardResponse {
 export interface RequestRuntimeWorkRequest {
   lanes?: SchedulerLeaseLane[];
   projectId?: string;
+  workItemId?: string;
   leaseDurationSeconds?: number;
 }
 
