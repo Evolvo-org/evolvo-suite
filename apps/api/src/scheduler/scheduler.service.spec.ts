@@ -102,6 +102,7 @@ describe('SchedulerService', () => {
           maxAmbiguityRetries: 2,
         }),
       } as never,
+      { promoteAvailablePlanningWork: vi.fn().mockResolvedValue([]) } as never,
       { assertTransition: vi.fn() } as never,
     );
   });

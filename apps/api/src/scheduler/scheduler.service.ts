@@ -34,6 +34,7 @@ import { LogsService } from '../logs/logs.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { ProjectsService } from '../projects/projects.service.js';
 import { SettingsService } from '../settings/settings.service.js';
+import { ReadyForDevPromotionService } from '../workflow/ready-for-dev-promotion.service.js';
 import { WorkflowStateMachineService } from '../workflow/workflow-state-machine.service.js';
 
 import { mapSchedulerLease } from './scheduler.mapper.js';
@@ -124,6 +125,8 @@ export class SchedulerService {
     private readonly projectsService: ProjectsService,
     @Inject(SettingsService)
     private readonly settingsService: SettingsService,
+    @Inject(ReadyForDevPromotionService)
+    private readonly readyForDevPromotionService: ReadyForDevPromotionService,
     @Inject(WorkflowStateMachineService)
     private readonly workflowStateMachineService: WorkflowStateMachineService,
   ) {}
@@ -1272,6 +1275,31 @@ export class SchedulerService {
         isOperatorOverride: false,
       },
     });
+
+    if (workItem.state === 'READY_FOR_DEV') {
+      const promotedWorkItemIds = await this.readyForDevPromotionService.promoteAvailablePlanningWork(
+        workItem.projectId,
+        {
+          executor: transaction,
+          maxPromotions: 1,
+        },
+      );
+
+      if (promotedWorkItemIds.length > 0) {
+        await this.logsService.writeLog({
+          level: 'info',
+          source: 'scheduler',
+          projectId: workItem.projectId,
+          runtimeId,
+          eventType: 'scheduler.ready-for-dev.refilled',
+          message: `Scheduler refilled the ready-for-dev queue after leasing ${workItem.id}.`,
+          payload: {
+            consumedWorkItemId: workItem.id,
+            promotedWorkItemIds,
+          },
+        });
+      }
+    }
   }
 
   private async recoverLeasedWorkItem(

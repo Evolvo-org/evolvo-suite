@@ -18,6 +18,7 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { ProjectsService } from '../projects/projects.service.js';
 import { RealtimeService } from '../realtime/realtime.service.js';
 import { LogsService } from '../logs/logs.service.js';
+import { ReadyForDevPromotionService } from './ready-for-dev-promotion.service.js';
 
 import {
   createEmptyBoardCounts,
@@ -99,6 +100,8 @@ export class WorkflowService {
     private readonly logsService: LogsService,
     @Inject(RealtimeService)
     private readonly realtimeService: RealtimeService,
+    @Inject(ReadyForDevPromotionService)
+    private readonly readyForDevPromotionService: ReadyForDevPromotionService,
     @Inject(WorkflowStateMachineService)
     private readonly workflowStateMachineService: WorkflowStateMachineService,
   ) {}
@@ -374,6 +377,32 @@ export class WorkflowService {
         operatorOverride: payload.operatorOverride === true,
       },
     });
+
+    if (fromState === 'readyForDev' && payload.toState !== 'readyForDev') {
+      const promotedWorkItemIds = await this.readyForDevPromotionService.promoteAvailablePlanningWork(
+        projectId,
+        {
+          maxPromotions: 1,
+          eventType: 'workflow.ready-for-dev.refilled',
+          message: `Refilled the ready-for-dev queue after moving ${workItem.id} out of ready for dev.`,
+        },
+      );
+
+      if (promotedWorkItemIds.length > 0) {
+        await this.logsService.writeLog({
+          level: 'info',
+          source: 'workflow',
+          projectId,
+          workItemId: workItem.id,
+          eventType: 'workflow.ready-for-dev.refill.result',
+          message: `Promoted ${promotedWorkItemIds.length} planning work item(s) after ${workItem.id} left ready for dev.`,
+          payload: {
+            consumedWorkItemId: workItem.id,
+            promotedWorkItemIds,
+          },
+        });
+      }
+    }
 
     return this.getBoard(projectId);
   }

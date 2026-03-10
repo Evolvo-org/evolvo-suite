@@ -140,6 +140,7 @@ describe('WorkflowService', () => {
       { ensureProjectExists: vi.fn() } as never,
       { writeLog: vi.fn() } as never,
       { emitWorkflowTransitioned: vi.fn() } as never,
+      { promoteAvailablePlanningWork: vi.fn().mockResolvedValue([]) } as never,
       { assertTransition: vi.fn() } as never,
     );
   });
