@@ -12,7 +12,8 @@
   "dependencies": {
     "@repo/api-client": "workspace:*",
     "@repo/shared": "workspace:*",
-    "@repo/validation": "workspace:*"
+    "@repo/validation": "workspace:*",
+    "dotenv": "^16.4.7"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

@@ -4,6 +4,8 @@ Local worker shell for Evolvo v2.
 
 ## Environment
 
+The runtime loads environment variables from the workspace root `.env` file by default. If that file is not present, it falls back to `apps/runtime/.env`.
+
 - `RUNTIME_ID` - stable runtime identifier
 - `RUNTIME_DISPLAY_NAME` - human-readable runtime label
 - `RUNTIME_CAPABILITIES` - comma-separated capability list reported to the API

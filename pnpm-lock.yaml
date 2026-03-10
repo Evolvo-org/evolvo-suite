@@ -129,6 +129,9 @@ importers:
       '@repo/validation':
         specifier: workspace:*
         version: link:../../packages/validation
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.6.1
     devDependencies:
       '@repo/typescript-config':
         specifier: workspace:*

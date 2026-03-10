@@ -1,6 +1,19 @@
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { config as loadEnvFile } from 'dotenv';
+
 import { loadRuntimeEnvironment } from './config';
 import { log } from './logger';
 import { RuntimeApp } from './runtime-app';
+
+const rootEnvironmentFilePath = resolve(__dirname, '../../../.env');
+const localEnvironmentFilePath = resolve(__dirname, '../.env');
+
+loadEnvFile({
+  path: existsSync(rootEnvironmentFilePath)
+    ? rootEnvironmentFilePath
+    : localEnvironmentFilePath,
+});
 
 async function bootstrap(): Promise<void> {
   const environment = loadRuntimeEnvironment();
