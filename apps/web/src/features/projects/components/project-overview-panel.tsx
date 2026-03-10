@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  expandPlanningHierarchy,
   getDevelopmentPlan,
   getProjectDetail,
   getReleaseHistory,
@@ -13,13 +14,17 @@ import { Badge } from '@repo/ui/components/badge/badge';
 import { Button } from '@repo/ui/components/button/button';
 import { Card } from '@repo/ui/components/card/card';
 import { EmptyState } from '@repo/ui/components/empty-state/empty-state';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 
 import {
   QueryLoadingCard,
   QueryStateCard,
 } from '../../feedback/components/query-state-card';
+import {
+  getErrorToastMessage,
+  useToast,
+} from '../../feedback/components/toast-provider';
 import { ProjectStatusBadge } from './project-status-badge';
 import { ProductSpecEditor } from './product-spec-editor';
 
@@ -79,6 +84,8 @@ const formatPlanningApprovalTimestamp = (timestamp: string | null): string | nul
 };
 
 export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
+  const queryClient = useQueryClient();
+  const { pushToast } = useToast();
   const projectQuery = useQuery({
     queryKey: projectQueryKeys.detail(projectId),
     queryFn: () => getProjectDetail(projectId),
@@ -107,6 +114,36 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
   const interventionsQuery = useQuery({
     queryKey: projectQueryKeys.interventions(projectId),
     queryFn: () => listHumanInterventions(projectId),
+  });
+
+  const expandPlanMutation = useMutation({
+    mutationFn: () => expandPlanningHierarchy(projectId),
+    onSuccess: async (response) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: projectQueryKeys.detail(projectId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: projectQueryKeys.planningHierarchy(projectId),
+        }),
+      ]);
+      pushToast({
+        title: 'Plan expansion queued',
+        description: response.data.summary,
+        variant: 'success',
+      });
+    },
+    onError: (error) => {
+      const message = getErrorToastMessage(
+        error,
+        'Unable to queue planning expansion.',
+      );
+      pushToast({
+        title: 'Planning expansion failed',
+        description: message,
+        variant: 'error',
+      });
+    },
   });
 
   if (projectQuery.isLoading) {
@@ -153,6 +190,9 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
     : hasApprovalDrift
       ? 'Approval no longer matches the active plan'
       : 'Approval required';
+  const canExpandPlan =
+    project.productSpecVersion !== null &&
+    planQuery.data?.activeVersionNumber !== null;
 
   return (
     <div className="space-y-6">
@@ -600,6 +640,23 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
                 {planningApproval.summary}
               </p>
             ) : null}
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <Button
+                disabled={!canExpandPlan || expandPlanMutation.isPending}
+                onClick={() => {
+                  void expandPlanMutation.mutateAsync();
+                }}
+              >
+                {expandPlanMutation.isPending
+                  ? 'Queueing plan expansion...'
+                  : 'Start planning from active plan'}
+              </Button>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                {canExpandPlan
+                  ? 'Queue planning work items from the active product specification and development plan.'
+                  : 'Add both a product specification and an active development plan version before starting planning.'}
+              </p>
+            </div>
           </div>
           <div className="rounded-xl border border-zinc-800/10 p-4 dark:border-white/10">
             <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
