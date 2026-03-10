@@ -16,6 +16,9 @@ describe('DevelopmentPlansService', () => {
     };
     $transaction: ReturnType<typeof vi.fn>;
   };
+  let logsService: {
+    writeLog: ReturnType<typeof vi.fn>;
+  };
   let service: DevelopmentPlansService;
 
   beforeEach(() => {
@@ -90,9 +93,13 @@ describe('DevelopmentPlansService', () => {
         }),
       ),
     };
+    logsService = {
+      writeLog: vi.fn().mockResolvedValue(undefined),
+    };
 
     service = new DevelopmentPlansService(
       prisma as never,
+      logsService as never,
       { ensureProjectExists: vi.fn().mockResolvedValue(undefined) } as never,
     );
   });
@@ -119,6 +126,16 @@ describe('DevelopmentPlansService', () => {
           planVersionId: 'version-2',
           actorName: 'Operator',
         }),
+      }),
+    );
+    expect(logsService.writeLog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventType: 'development-plan.approval.attempt',
+      }),
+    );
+    expect(logsService.writeLog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventType: 'development-plan.approved',
       }),
     );
     expect(result.planningApproval.isApproved).toBe(true);
@@ -158,6 +175,11 @@ describe('DevelopmentPlansService', () => {
           actorName: 'System',
           summary: 'Planning hierarchy changed after approval.',
         }),
+      }),
+    );
+    expect(logsService.writeLog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventType: 'development-plan.approval.reset',
       }),
     );
   });
