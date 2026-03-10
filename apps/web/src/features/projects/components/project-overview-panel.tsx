@@ -152,6 +152,36 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
           </Link>
           <Link
             className="inline-flex items-center text-sm font-medium text-zinc-950 underline-offset-4 hover:underline dark:text-zinc-50"
+            href={`/projects/${projectId}/runtime`}
+          >
+            Open runtime monitor
+          </Link>
+          <Link
+            className="inline-flex items-center text-sm font-medium text-zinc-950 underline-offset-4 hover:underline dark:text-zinc-50"
+            href={`/projects/${projectId}/worktrees`}
+          >
+            Open worktrees
+          </Link>
+          <Link
+            className="inline-flex items-center text-sm font-medium text-zinc-950 underline-offset-4 hover:underline dark:text-zinc-50"
+            href={`/projects/${projectId}/releases`}
+          >
+            Open releases
+          </Link>
+          <Link
+            className="inline-flex items-center text-sm font-medium text-zinc-950 underline-offset-4 hover:underline dark:text-zinc-50"
+            href={`/projects/${projectId}/interventions`}
+          >
+            Open interventions
+          </Link>
+          <Link
+            className="inline-flex items-center text-sm font-medium text-zinc-950 underline-offset-4 hover:underline dark:text-zinc-50"
+            href={`/projects/${projectId}/usage`}
+          >
+            Open usage analytics
+          </Link>
+          <Link
+            className="inline-flex items-center text-sm font-medium text-zinc-950 underline-offset-4 hover:underline dark:text-zinc-50"
             href={`/projects/${projectId}/settings`}
           >
             Open settings
@@ -453,6 +483,12 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
                   )}
                 </div>
               </div>
+              <Link
+                className="inline-flex items-center text-sm font-medium text-zinc-950 underline-offset-4 hover:underline dark:text-zinc-50"
+                href={`/projects/${projectId}/interventions`}
+              >
+                Open intervention queue
+              </Link>
             </div>
           ) : (
             <p className="text-sm text-zinc-600 dark:text-zinc-400">

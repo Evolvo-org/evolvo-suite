@@ -180,59 +180,59 @@ Tasks:
 - [x] Add retry/intervention summary
 
 ## WEB-016 - Build runtime monitor UI
-**Status:** todo  
+**Status:** done  
 **Outcome:** Operators can see runtime health and activity.
 
 Tasks:
-- [ ] Add runtime page
-- [ ] Add heartbeat display
-- [ ] Add active job display
-- [ ] Add last action display
-- [ ] Add runtime log stream view
-- [ ] Add offline warning state
+- [x] Add runtime page
+- [x] Add heartbeat display
+- [x] Add active job display
+- [x] Add last action display
+- [x] Add runtime log stream view
+- [x] Add offline warning state
 
 ## WEB-017 - Build worktree visibility UI
-**Status:** todo  
+**Status:** done  
 **Outcome:** Task worktree state is visible.
 
 Tasks:
-- [ ] Add worktree list
-- [ ] Add worktree status badges
-- [ ] Add branch and PR summary
-- [ ] Add cleanup actions where allowed
+- [x] Add worktree list
+- [x] Add worktree status badges
+- [x] Add branch and PR summary
+- [x] Add cleanup actions where allowed
 
 ## WEB-018 - Build release history UI
-**Status:** todo  
+**Status:** done  
 **Outcome:** Releases, versions, and notes are visible.
 
 Tasks:
-- [ ] Add release history page
-- [ ] Add version list
-- [ ] Add release detail panel
-- [ ] Add release notes rendering
+- [x] Add release history page
+- [x] Add version list
+- [x] Add release detail panel
+- [x] Add release notes rendering
 
 ## WEB-019 - Build human intervention queue UI
-**Status:** todo  
+**Status:** done  
 **Outcome:** Blocked work can be reviewed and resolved.
 
 Tasks:
-- [ ] Add intervention list page
-- [ ] Add intervention detail panel
-- [ ] Add resolve/retry actions
-- [ ] Add evidence display
-- [ ] Add suggested action display
+- [x] Add intervention list page
+- [x] Add intervention detail panel
+- [x] Add resolve/retry actions
+- [x] Add evidence display
+- [x] Add suggested action display
 
 ## WEB-020 - Build usage analytics UI
-**Status:** todo  
+**Status:** done  
 **Outcome:** Usage is visible per project, per user, and per agent.
 
 Tasks:
-- [ ] Add usage overview page
-- [ ] Add date range filters
-- [ ] Add project usage chart
-- [ ] Add user usage chart
-- [ ] Add model/provider breakdown
-- [ ] Add estimated cost widgets
+- [x] Add usage overview page
+- [x] Add date range filters
+- [x] Add project usage chart
+- [x] Add user usage chart
+- [x] Add model/provider breakdown
+- [x] Add estimated cost widgets
 
 ## WEB-021 - Build settings pages
 **Status:** done  
@@ -246,15 +246,15 @@ Tasks:
 - [x] Add billing settings page
 
 ## WEB-022 - Add websocket-driven query invalidation
-**Status:** todo  
+**Status:** done  
 **Outcome:** The UI updates in near real time.
 
 Tasks:
-- [ ] Add socket client
-- [ ] Add authenticated socket connection
-- [ ] Add event handlers
-- [ ] Add query invalidation map
-- [ ] Add reconnect behaviour
+- [x] Add socket client
+- [x] Add authenticated socket connection
+- [x] Add event handlers
+- [x] Add query invalidation map
+- [x] Add reconnect behaviour
 
 ## WEB-023 - Add loading, empty, and error polish
 **Status:** todo  

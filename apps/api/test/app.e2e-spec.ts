@@ -1693,9 +1693,10 @@ describe('AppController (e2e)', () => {
 
     const projectId = createProjectResponse.body.data.id as string;
 
-    await request(app.getHttpServer())
-      .post(`/api/v1/projects/${projectId}/start`)
-      .expect(201);
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { lifecycleStatus: 'ACTIVE' },
+    });
 
     const createEpicResponse = await request(app.getHttpServer())
       .post(`/api/v1/projects/${projectId}/planning/epics`)

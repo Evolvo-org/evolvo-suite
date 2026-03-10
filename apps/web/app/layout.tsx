@@ -23,12 +23,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const realtimeToken =
+    process.env.REALTIME_SOCKET_TOKEN ??
+    process.env.NEXT_PUBLIC_REALTIME_SOCKET_TOKEN ??
+    null;
+
   return (
     <html lang="en" className="h-full">
       <body
         className={`${geistSans.variable} ${geistMono.variable} h-full bg-white text-black antialiased dark:bg-zinc-950 dark:text-zinc-100`}
       >
-        <Providers>{children}</Providers>
+        <Providers realtimeToken={realtimeToken}>{children}</Providers>
       </body>
     </html>
   );

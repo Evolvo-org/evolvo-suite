@@ -285,6 +285,9 @@ export const projectQueryKeys = {
   board: (projectId: string) => ['projects', projectId, 'board'] as const,
   boardCounts: (projectId: string) =>
     ['projects', projectId, 'board-counts'] as const,
+  worktrees: (projectId: string) => ['projects', projectId, 'worktrees'] as const,
+  worktree: (projectId: string, worktreeId: string) =>
+    ['projects', projectId, 'worktrees', worktreeId] as const,
   workItemDetail: (projectId: string, workItemId: string) =>
     ['projects', projectId, 'work-item-detail', workItemId] as const,
   workItemComments: (projectId: string, workItemId: string) =>
@@ -299,9 +302,16 @@ export const projectQueryKeys = {
     ['projects', projectId, 'work-item-review-gate-summary', workItemId] as const,
   releases: (projectId: string) => ['projects', projectId, 'releases'] as const,
   interventions: (projectId: string) => ['projects', projectId, 'interventions'] as const,
-  usageSummary: (projectId: string) => ['projects', projectId, 'usage-summary'] as const,
-  userUsageSummary: (userId: string) => ['usage', 'users', userId, 'summary'] as const,
-  logs: (projectId: string) => ['projects', projectId, 'logs'] as const,
+  usageSummary: (
+    projectId: string,
+    filters?: { from?: string; to?: string },
+  ) => ['projects', projectId, 'usage-summary', filters ?? {}] as const,
+  userUsageSummary: (
+    userId: string,
+    filters?: { from?: string; to?: string },
+  ) => ['usage', 'users', userId, 'summary', filters ?? {}] as const,
+  logs: (projectId: string, filters?: StructuredLogQuery) =>
+    ['projects', projectId, 'logs', filters ?? {}] as const,
   systemLogs: (filters?: StructuredLogQuery) => ['logs', 'system', filters ?? {}] as const,
 };
 
