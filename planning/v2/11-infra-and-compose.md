@@ -16,10 +16,10 @@ Evolvo v2 has three major runtime surfaces:
 
 ## Public domains
 
-Using `domain.com` as the example:
+Using `paddysystems.com` as the example:
 
-- website: `https://domain.com`
-- api: `https://api.domain.com`
+- website: `https://paddysystems.com`
+- api: `https://api.paddysystems.com`
 
 ## Core principle
 
@@ -43,7 +43,7 @@ That means:
 
 - deploy with Docker
 - terminate TLS with Caddy
-- expose `domain.com` and `api.domain.com`
+- expose `paddysystems.com` and `api.paddysystems.com`
 - run PostgreSQL on the same server
 - isolate services with Docker networking
 - keep deployment reproducible
@@ -88,7 +88,7 @@ The following remain local to the operator machine:
 - local agent execution
 - release workspace execution
 
-Those components connect outbound to `https://api.domain.com`.
+Those components connect outbound to `https://api.paddysystems.com`.
 
 ---
 
@@ -119,13 +119,13 @@ This preserves the design principle that the API is the hosted control plane, wh
 
 Create the following DNS records:
 
-- `A domain.com -> <server-ip>`
-- `A api.domain.com -> <server-ip>`
+- `A paddysystems.com -> <server-ip>`
+- `A api.paddysystems.com -> <server-ip>`
 
 If using IPv6, also add:
 
-- `AAAA domain.com -> <server-ipv6>`
-- `AAAA api.domain.com -> <server-ipv6>`
+- `AAAA paddysystems.com -> <server-ipv6>`
+- `AAAA api.paddysystems.com -> <server-ipv6>`
 
 Caddy will use these to serve the correct hosts and obtain certificates automatically.
 
@@ -181,16 +181,16 @@ Caddy should handle:
 
 ## Routing
 
-### `domain.com`
+### `paddysystems.com`
 Route all traffic to the Next.js web container.
 
-### `api.domain.com`
+### `api.paddysystems.com`
 Route all traffic to the NestJS API container.
 
 ## Example routing intent
 
-- `https://domain.com/*` -> `web:3000`
-- `https://api.domain.com/*` -> `api:3001`
+- `https://paddysystems.com/*` -> `web:3000`
+- `https://api.paddysystems.com/*` -> `api:3001`
 
 ---
 
@@ -273,16 +273,16 @@ These should be injected at runtime, not baked into images.
 ### Web
 - `NODE_ENV=production`
 - `PORT=3000`
-- `NEXT_PUBLIC_APP_URL=https://domain.com`
-- `NEXT_PUBLIC_API_URL=https://api.domain.com`
+- `NEXT_PUBLIC_APP_URL=https://paddysystems.com`
+- `NEXT_PUBLIC_API_URL=https://api.paddysystems.com`
 
 ### API
 - `NODE_ENV=production`
 - `PORT=3001`
 - `DATABASE_URL=postgresql://evolvo:${POSTGRES_PASSWORD}@postgres:5432/evolvo`
-- `CORS_ORIGIN=https://domain.com`
-- `APP_URL=https://domain.com`
-- `API_URL=https://api.domain.com`
+- `CORS_ORIGIN=https://paddysystems.com`
+- `APP_URL=https://paddysystems.com`
+- `API_URL=https://api.paddysystems.com`
 - `JWT_SECRET=...`
 - `STRIPE_SECRET_KEY=...`
 - `STRIPE_WEBHOOK_SECRET=...`
@@ -459,8 +459,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      NEXT_PUBLIC_APP_URL: https://domain.com
-      NEXT_PUBLIC_API_URL: https://api.domain.com
+      NEXT_PUBLIC_APP_URL: https://paddysystems.com
+      NEXT_PUBLIC_API_URL: https://api.paddysystems.com
     expose:
       - "3000"
     healthcheck:
@@ -481,9 +481,9 @@ services:
       NODE_ENV: production
       PORT: 3001
       DATABASE_URL: postgresql://evolvo:${POSTGRES_PASSWORD}@postgres:5432/evolvo
-      CORS_ORIGIN: https://domain.com
-      APP_URL: https://domain.com
-      API_URL: https://api.domain.com
+      CORS_ORIGIN: https://paddysystems.com
+      APP_URL: https://paddysystems.com
+      API_URL: https://api.paddysystems.com
       JWT_SECRET: ${JWT_SECRET}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
@@ -557,12 +557,12 @@ If you are not using Redis yet, it can be removed from the initial compose setup
 # Example Caddyfile design
 
 ```caddy
-domain.com {
+paddysystems.com {
     encode zstd gzip
     reverse_proxy web:3000
 }
 
-api.domain.com {
+api.paddysystems.com {
     encode zstd gzip
     reverse_proxy api:3001
 }
@@ -658,7 +658,7 @@ Do not rely on schema drift or ad hoc manual database changes.
 
 ## App security expectations
 
-* API CORS restricted to `https://domain.com`
+* API CORS restricted to `https://paddysystems.com`
 * secure cookie/auth settings in production
 * HTTPS only
 * input validation at API boundary
@@ -673,7 +673,7 @@ Caddy handles websocket proxying automatically in standard reverse proxy setups.
 
 The web app should connect to:
 
-* `wss://api.domain.com/...`
+* `wss://api.paddysystems.com/...`
 
 The API remains the websocket authority.
 
@@ -683,7 +683,7 @@ The API remains the websocket authority.
 
 The local runtime must connect outbound to:
 
-* `https://api.domain.com`
+* `https://api.paddysystems.com`
 
 No inbound port needs to be opened on the operator machine.
 
@@ -734,15 +734,15 @@ Prefer storing important durable logs and events in Evolvo’s observability mod
 1. Provision Linux server
 2. Install Docker and Docker Compose plugin
 3. Configure firewall
-4. Point DNS for `domain.com` and `api.domain.com`
+4. Point DNS for `paddysystems.com` and `api.paddysystems.com`
 5. Copy infra files to server
 6. Create production `.env`
 7. Start the stack
 8. Run database migrations
 9. Verify:
 
-   * `https://domain.com`
-   * `https://api.domain.com/health`
+   * `https://paddysystems.com`
+   * `https://api.paddysystems.com/health`
    * valid TLS certificates
    * API can connect to Postgres
    * web can reach API
@@ -836,8 +836,8 @@ Later, you may add:
 
 * use Docker
 * use Caddy
-* website on `domain.com`
-* API on `api.domain.com`
+* website on `paddysystems.com`
+* API on `api.paddysystems.com`
 * PostgreSQL on the same self-hosted server
 * self-hosted control plane
 * runtime remains local
@@ -858,8 +858,8 @@ Later, you may add:
 
 The infrastructure setup is successful when:
 
-* `domain.com` serves the web app over HTTPS
-* `api.domain.com` serves the API over HTTPS
+* `paddysystems.com` serves the web app over HTTPS
+* `api.paddysystems.com` serves the API over HTTPS
 * Caddy manages certificates automatically
 * web and api run in Docker containers
 * PostgreSQL runs on the same server in Docker with persistent storage
