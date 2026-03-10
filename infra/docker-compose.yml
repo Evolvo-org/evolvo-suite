@@ -50,6 +50,8 @@ services:
     build:
       context: ..
       dockerfile: apps/api/Dockerfile
+      args:
+        DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
     restart: unless-stopped
     depends_on:
       postgres:
