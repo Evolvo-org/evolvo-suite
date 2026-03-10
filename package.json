@@ -1,31 +1,31 @@
 {
-  "name": "my-turborepo",
-  "version": "0.0.0",
-  "private": true,
-  "description": "",
-  "author": "",
-  "license": "UNLICENSED",
-  "scripts": {
-    "prepare": "node ./scripts/setup-git-hooks.mjs",
-    "dev": "turbo run dev",
-    "build": "turbo run build",
-    "test": "turbo run test",
-    "test:e2e": "turbo run test:e2e",
-    "test:e2e:web": "pnpm --filter web test:e2e",
-    "test:e2e:web:open": "pnpm --filter web test:e2e:open",
-    "bump:app-versions": "node ./scripts/bump-app-versions.mjs",
-    "lint": "turbo run lint",
-    "format": "biome format --config-path ./packages/biome-config/monorepo.json --write .",
-    "format:check": "biome format --config-path ./packages/biome-config/monorepo.json ."
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "@repo/biome-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "turbo": "^2.8.14"
-  },
-  "packageManager": "pnpm@8.15.5",
-  "engines": {
-    "node": ">=18"
-  }
+	"name": "my-turborepo",
+	"version": "0.0.0",
+	"private": true,
+	"description": "",
+	"author": "",
+	"license": "UNLICENSED",
+	"scripts": {
+		"prepare": "node -e \"const { existsSync } = require('node:fs'); const { resolve } = require('node:path'); const { pathToFileURL } = require('node:url'); const scriptPath = resolve(process.cwd(), 'scripts/setup-git-hooks.mjs'); const gitPath = resolve(process.cwd(), '.git'); if (existsSync(scriptPath) && existsSync(gitPath)) { import(pathToFileURL(scriptPath).href); }\"",
+		"dev": "turbo run dev",
+		"build": "turbo run build",
+		"test": "turbo run test",
+		"test:e2e": "turbo run test:e2e",
+		"test:e2e:web": "pnpm --filter web test:e2e",
+		"test:e2e:web:open": "pnpm --filter web test:e2e:open",
+		"bump:app-versions": "node ./scripts/bump-app-versions.mjs",
+		"lint": "turbo run lint",
+		"format": "biome format --config-path ./packages/biome-config/monorepo.json --write .",
+		"format:check": "biome format --config-path ./packages/biome-config/monorepo.json ."
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@repo/biome-config": "workspace:*",
+		"@repo/typescript-config": "workspace:*",
+		"turbo": "^2.8.14"
+	},
+	"packageManager": "pnpm@8.15.5",
+	"engines": {
+		"node": ">=18"
+	}
 }

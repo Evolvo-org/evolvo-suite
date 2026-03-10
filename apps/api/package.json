@@ -1,6 +1,6 @@
 {
   "name": "api",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,7 +12,7 @@
     "start": "nest start",
     "prestart:debug": "pnpm --filter @repo/db build",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node dist/src/main",
     "pretest": "pnpm --filter @repo/db build",
     "test": "vitest run --config ./vitest.config.ts",
     "test:watch": "vitest --config ./vitest.config.ts",

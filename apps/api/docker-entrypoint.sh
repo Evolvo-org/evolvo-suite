@@ -3,4 +3,4 @@ set -eu
 
 pnpm --filter @repo/db migrate:deploy
 
-exec node apps/api/dist/main.js
+exec node apps/api/dist/src/main.js
