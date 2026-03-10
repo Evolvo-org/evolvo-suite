@@ -5,7 +5,6 @@ import {
   Inject,
   Param,
   Put,
-  UsePipes,
 } from '@nestjs/common';
 import type { UpsertProductSpecRequest } from '@repo/shared';
 import { upsertProductSpecSchema } from '@repo/validation';
@@ -27,10 +26,10 @@ export class ProductSpecsController {
   }
 
   @Put()
-  @UsePipes(new ZodValidationPipe(upsertProductSpecSchema))
   public async upsertProductSpec(
     @Param('projectId') projectId: string,
-    @Body() body: UpsertProductSpecRequest,
+    @Body(new ZodValidationPipe(upsertProductSpecSchema))
+    body: UpsertProductSpecRequest,
   ) {
     const productSpec = await this.productSpecsService.upsertProductSpec(
       projectId,

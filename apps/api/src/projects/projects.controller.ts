@@ -9,7 +9,6 @@ import {
   Post,
   Put,
   Query,
-  UsePipes,
 } from '@nestjs/common';
 import type {
   AgentRoutingConfig,
@@ -44,8 +43,9 @@ export class ProjectsController {
   ) {}
 
   @Post()
-  @UsePipes(new ZodValidationPipe(createProjectSchema))
-  public async createProject(@Body() body: CreateProjectRequest) {
+  public async createProject(
+    @Body(new ZodValidationPipe(createProjectSchema)) body: CreateProjectRequest,
+  ) {
     const project = await this.projectsService.createProject(body);
 
     return {
@@ -64,8 +64,10 @@ export class ProjectsController {
   }
 
   @Post('repository/validate')
-  @UsePipes(new ZodValidationPipe(validateProjectRepositorySchema))
-  public validateRepository(@Body() body: ProjectRepositoryInput) {
+  public validateRepository(
+    @Body(new ZodValidationPipe(validateProjectRepositorySchema))
+    body: ProjectRepositoryInput,
+  ) {
     return this.projectsService.validateRepositoryConfig(body);
   }
 
@@ -90,10 +92,10 @@ export class ProjectsController {
   }
 
   @Put(':projectId/repository')
-  @UsePipes(new ZodValidationPipe(updateProjectRepositorySchema))
   public async updateRepository(
     @Param('projectId') projectId: string,
-    @Body() body: ProjectRepositoryInput,
+    @Body(new ZodValidationPipe(updateProjectRepositorySchema))
+    body: ProjectRepositoryInput,
   ) {
     const repository = await this.projectsService.upsertRepositoryConfig(
       projectId,
@@ -186,10 +188,9 @@ export class ProjectsController {
   }
 
   @Patch(':projectId')
-  @UsePipes(new ZodValidationPipe(updateProjectSchema))
   public async updateProject(
     @Param('projectId') projectId: string,
-    @Body() body: UpdateProjectRequest,
+    @Body(new ZodValidationPipe(updateProjectSchema)) body: UpdateProjectRequest,
   ) {
     const project = await this.projectsService.updateProject(projectId, body);
 

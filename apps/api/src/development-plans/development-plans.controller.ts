@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  UsePipes,
 } from '@nestjs/common';
 import type {
   ActivateDevelopmentPlanVersionRequest,
@@ -38,10 +37,10 @@ export class DevelopmentPlansController {
   }
 
   @Post()
-  @UsePipes(new ZodValidationPipe(createDevelopmentPlanSchema))
   public async createDevelopmentPlan(
     @Param('projectId') projectId: string,
-    @Body() body: CreateDevelopmentPlanRequest,
+    @Body(new ZodValidationPipe(createDevelopmentPlanSchema))
+    body: CreateDevelopmentPlanRequest,
   ) {
     const plan = await this.developmentPlansService.createDevelopmentPlan(
       projectId,
@@ -56,10 +55,10 @@ export class DevelopmentPlansController {
   }
 
   @Patch()
-  @UsePipes(new ZodValidationPipe(updateDevelopmentPlanSchema))
   public async updateDevelopmentPlan(
     @Param('projectId') projectId: string,
-    @Body() body: UpdateDevelopmentPlanRequest,
+    @Body(new ZodValidationPipe(updateDevelopmentPlanSchema))
+    body: UpdateDevelopmentPlanRequest,
   ) {
     const plan = await this.developmentPlansService.updateDevelopmentPlan(
       projectId,
@@ -84,10 +83,10 @@ export class DevelopmentPlansController {
   }
 
   @Post('versions/activate')
-  @UsePipes(new ZodValidationPipe(activateDevelopmentPlanVersionSchema))
   public async activateVersion(
     @Param('projectId') projectId: string,
-    @Body() body: ActivateDevelopmentPlanVersionRequest,
+    @Body(new ZodValidationPipe(activateDevelopmentPlanVersionSchema))
+    body: ActivateDevelopmentPlanVersionRequest,
   ) {
     const plan = await this.developmentPlansService.activateVersion(
       projectId,
@@ -102,10 +101,10 @@ export class DevelopmentPlansController {
   }
 
   @Post('approve')
-  @UsePipes(new ZodValidationPipe(approveDevelopmentPlanSchema))
   public async approveDevelopmentPlan(
     @Param('projectId') projectId: string,
-    @Body() body: ApproveDevelopmentPlanRequest,
+    @Body(new ZodValidationPipe(approveDevelopmentPlanSchema))
+    body: ApproveDevelopmentPlanRequest,
   ) {
     const plan = await this.developmentPlansService.approveDevelopmentPlan(
       projectId,
