@@ -61,7 +61,7 @@ describe('provider-registry', () => {
     ).toThrow('OpenAI provider is configured for role planning but OPENAI_API_KEY is missing.');
   });
 
-  it('fails when an enabled codex route is missing its runtime secret', () => {
+  it('allows codex routes without a dedicated API key', () => {
     expect(() =>
       assertRuntimeProviderConfiguration({
         environment: createEnvironment({ codexApiKey: null }),
@@ -73,7 +73,7 @@ describe('provider-registry', () => {
           },
         },
       }),
-    ).toThrow('Codex provider is configured for role dev but CODEX_API_KEY is missing.');
+    ).not.toThrow();
   });
 
   it('reports credential status per enabled runtime role', () => {
@@ -82,7 +82,7 @@ describe('provider-registry', () => {
     });
 
     expect(summary.planning?.configured).toBe(true);
-    expect(summary.dev?.configured).toBe(false);
-    expect(summary.dev?.missingEnvironmentVariables).toEqual(['CODEX_API_KEY']);
+    expect(summary.dev?.configured).toBe(true);
+    expect(summary.dev?.missingEnvironmentVariables).toEqual([]);
   });
 });

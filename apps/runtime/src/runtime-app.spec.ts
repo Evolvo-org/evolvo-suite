@@ -215,10 +215,34 @@ describe('RuntimeApp', () => {
     expect(runtimeApiClient.registerRuntime).not.toHaveBeenCalled();
   });
 
-  it('fails fast when an enabled provider is missing runtime credentials', async () => {
+  it('starts when codex is configured without a dedicated API key', async () => {
     const runtimeApiClient = {
-      registerRuntime: vi.fn(),
-      sendHeartbeat: vi.fn(),
+      registerRuntime: vi.fn().mockResolvedValue({
+        runtimeId: environment.runtimeId,
+        displayName: environment.runtimeDisplayName,
+        connectionStatus: 'online',
+        reportedStatus: 'idle',
+        capabilities: environment.runtimeCapabilities,
+        activeJobSummary: null,
+        lastAction: null,
+        lastError: null,
+        lastSeenAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }),
+      sendHeartbeat: vi.fn().mockResolvedValue({
+        runtimeId: environment.runtimeId,
+        displayName: environment.runtimeDisplayName,
+        connectionStatus: 'online',
+        reportedStatus: 'idle',
+        capabilities: environment.runtimeCapabilities,
+        activeJobSummary: null,
+        lastAction: null,
+        lastError: null,
+        lastSeenAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }),
       requestWork: vi.fn(),
       requestWorktreeCleanup: vi.fn(),
       markWorktreeStale: vi.fn(),
@@ -240,10 +264,9 @@ describe('RuntimeApp', () => {
       { reconcileOnStartup: vi.fn().mockResolvedValue(undefined) } as never,
     );
 
-    await expect(app.start()).rejects.toThrow(
-      'Codex provider is configured for role dev but CODEX_API_KEY is missing.',
-    );
-    expect(runtimeApiClient.registerRuntime).not.toHaveBeenCalled();
+    await expect(app.start()).resolves.toBeUndefined();
+    expect(runtimeApiClient.registerRuntime).toHaveBeenCalledOnce();
+    await app.stop('SIGTERM');
   });
 
   it('executes leased dev work and submits the resulting state transition', async () => {
@@ -576,15 +599,18 @@ describe('RuntimeApp', () => {
       },
     });
     expect(runtimeApiClient.createUsageEvent).toHaveBeenCalledWith({
-      workItemId: 'work-0',
-      agentRunId: 'run-0',
-      runtimeId: environment.runtimeId,
-      agentType: 'planning',
-      provider: 'openai',
-      model: 'gpt-5.3',
-      inputTokens: 120,
-      outputTokens: 80,
-      totalTokens: 200,
+      projectId: 'project-1',
+      payload: {
+        workItemId: 'work-0',
+        agentRunId: 'run-0',
+        runtimeId: environment.runtimeId,
+        agentType: 'planning',
+        provider: 'openai',
+        model: 'gpt-5.3',
+        inputTokens: 120,
+        outputTokens: 80,
+        totalTokens: 200,
+      },
     });
     expect(runtimeApiClient.submitJobResult).toHaveBeenCalledWith(
       environment.runtimeId,

@@ -1,5 +1,4 @@
 import OpenAI from 'openai';
-import { Codex } from '@openai/codex-sdk';
 import { z } from 'zod';
 import type {
   CreateUsageEventRequest,
@@ -88,10 +87,41 @@ type ProviderExecutionResult = {
   usage: ProviderUsagePayload | null;
 };
 
+type CodexSdkModule = {
+  Codex: new (options: { apiKey?: string }) => {
+    startThread(options: {
+      model: string;
+      sandboxMode: 'read-only';
+      approvalPolicy: 'never';
+      skipGitRepoCheck: boolean;
+      workingDirectory: string;
+    }): {
+      run(
+        prompt: string,
+        options: {
+          outputSchema: typeof planningOutputJsonSchema;
+        },
+      ): Promise<{
+        finalResponse: string;
+        usage: {
+          input_tokens: number;
+          cached_input_tokens: number;
+          output_tokens: number;
+        } | null;
+      }>;
+    };
+  };
+};
+
 type ProviderRunner = (input: {
   systemPrompt: string;
   userPrompt: string;
 }) => Promise<ProviderExecutionResult>;
+
+const importEsmModule = new Function(
+  'specifier',
+  'return import(specifier);',
+) as <TModule>(specifier: string) => Promise<TModule>;
 
 export class PlanningExecutionService {
   public constructor(
@@ -242,6 +272,7 @@ export class PlanningExecutionService {
     userPrompt: string;
   }): Promise<ProviderExecutionResult> {
     const route = getAgentModelRoute('planning');
+    const { Codex } = await importEsmModule<CodexSdkModule>('@openai/codex-sdk');
     const client = new Codex({
       apiKey: this.environment.codexApiKey ?? undefined,
     });

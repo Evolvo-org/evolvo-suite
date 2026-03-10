@@ -12,28 +12,18 @@ export class CodexProviderAdapter implements RuntimeProviderAdapter {
   public readonly provider = 'codex' as const;
 
   public getCredentialStatus(
-    environment: RuntimeEnvironment,
+    _environment: RuntimeEnvironment,
   ): ProviderCredentialStatus {
     return {
-      configured: Boolean(environment.codexApiKey),
-      missingEnvironmentVariables: environment.codexApiKey
-        ? []
-        : ['CODEX_API_KEY'],
+      configured: true,
+      missingEnvironmentVariables: [],
     };
   }
 
   public assertConfigured(
-    environment: RuntimeEnvironment,
-    role: ActiveAiAgentType,
-  ): void {
-    const status = this.getCredentialStatus(environment);
-
-    if (!status.configured) {
-      throw new Error(
-        `Codex provider is configured for role ${role} but CODEX_API_KEY is missing.`,
-      );
-    }
-  }
+    _environment: RuntimeEnvironment,
+    _role: ActiveAiAgentType,
+  ): void {}
 
   public assertSupportedRoute(
     route: RuntimeAgentModelRoute,
