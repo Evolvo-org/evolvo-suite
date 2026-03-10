@@ -1,5 +1,6 @@
 import { Controller, Get, Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import packageJson from '../../package.json' with { type: 'json' };
 
 import type { ApplicationEnvironment } from '../config/environment.js';
 
@@ -15,7 +16,7 @@ export class HealthController {
     return {
       status: 'ok',
       environment: this.configService.get('nodeEnv', { infer: true }),
-      version: '0.1.1',
+      version: packageJson.version,
       timestamp: new Date().toISOString(),
     };
   }
