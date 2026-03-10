@@ -9,7 +9,7 @@ Evolvo v2 is a DB-orchestrated autonomous software factory with:
 - a cloud database
 - strict workflow governance
 - task-scoped git worktrees
-- SaaS-ready auth, usage, and billing foundations
+- internal admin access and usage visibility foundations
 
 ## Core rules
 
@@ -54,7 +54,7 @@ Evolvo v2 is a DB-orchestrated autonomous software factory with:
 10. Review agent lane
 11. Release agent lane
 12. Inbox and planning automation
-13. Usage, auth, billing, and observability polish
+13. Admin access, usage, and observability polish
 
 ## Delivery tracking format
 

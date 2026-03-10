@@ -17,12 +17,12 @@ Next.js application.
 Hosted online.
 
 Responsibilities:
-- authentication UI
+- admin session UI
 - project dashboard
 - planning hierarchy UI
 - kanban board UI
 - logs and runtime visibility UI
-- usage and billing UI
+- usage visibility UI
 - websocket client
 - TanStack Query integration
 
@@ -41,8 +41,7 @@ Responsibilities:
 - business logic
 - workflow state machine
 - scheduler and lease engine
-- auth and permission enforcement
-- billing integration
+- admin session enforcement
 - runtime coordination
 - event broadcasting
 - audit logging

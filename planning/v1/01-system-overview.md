@@ -43,14 +43,14 @@ The hosted operator interface for:
 - live runtime status
 - usage analytics
 - intervention handling
-- settings and billing
+- settings
 
 ### API
 The hosted NestJS control plane for:
 - all database interaction
 - all business logic
 - all scheduling and workflow rules
-- auth and billing
+- admin session enforcement
 - runtime job leasing
 - event broadcasting
 
@@ -126,14 +126,14 @@ The API validates all transitions.
 
 Evolvo v2 is being built as:
 - an internal autonomous software factory first
-- with architecture designed to grow into a multi-user SaaS later
+- with a single admin operator for v1
 
 That means:
-- real auth now
+- admin-only access now
 - real usage tracking now
-- real billing scaffolding now
-- admin bypass allowed initially
-- no shortcuts that would block future subscriptions
+- no external billing scope in v1
+- no multi-role surface required in v1
+- future external account or billing work can be reconsidered later
 
 ## Non-goals for the first major release
 
@@ -153,4 +153,4 @@ Evolvo v2 is successful when:
 - dev, review, and release can execute in isolated worktrees
 - the hosted web UI shows live project and runtime state
 - all state is durable and recoverable after runtime restarts
-- usage is tracked from day one
+- usage and cost visibility exist for internal operation

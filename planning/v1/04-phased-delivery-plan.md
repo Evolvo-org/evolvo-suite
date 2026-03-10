@@ -199,14 +199,13 @@ Deliverables:
 Exit criteria:
 - projects can generate and process work autonomously within limits
 
-## Phase 12 - Usage, auth, billing, observability polish
-**Goal:** Make the system SaaS-ready and operable.
+## Phase 12 - Admin access, usage, and observability polish
+**Goal:** Make the system safe to operate internally.
 
 Deliverables:
 - usage analytics
 - token and model reporting
-- auth roles
-- Stripe sandbox
+- admin session hardening
 - intervention workflows
 - runtime dashboards
 - release dashboards
@@ -214,5 +213,5 @@ Deliverables:
 
 Exit criteria:
 - usage is fully visible
-- billing scaffolding exists
+- admin-only access is safe and predictable
 - the platform is operator-safe

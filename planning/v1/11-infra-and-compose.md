@@ -104,7 +104,6 @@ Those components connect outbound to `https://api.domain.com`.
 
 ## Hosted elsewhere
 
-- Stripe
 - external email provider if introduced later
 - optional external object storage later if needed
 

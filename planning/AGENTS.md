@@ -132,7 +132,7 @@ When implementing:
 11. Review agent
 12. Release agent
 13. Inbox/planning automation
-14. Usage, auth, billing, observability polish
+14. Admin access, usage, observability polish
 
 ## Definition of done
 
