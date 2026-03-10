@@ -1,8 +1,12 @@
 import { Card } from '@repo/ui/components/card/card';
 
+import { projectWriteCapabilities } from '../../../../src/features/auth/lib/access-control';
+import { requireCurrentUser } from '../../../../src/features/auth/lib/server-auth';
 import { ProjectCreateForm } from '../../../../src/features/projects/components/project-create-form';
 
-export default function NewProjectPage() {
+export default async function NewProjectPage() {
+  await requireCurrentUser(projectWriteCapabilities);
+
   return (
     <div className="space-y-6">
       <div className="space-y-2">

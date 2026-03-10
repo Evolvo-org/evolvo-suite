@@ -9,6 +9,7 @@ import type {
 } from '@tanstack/react-query';
 import { notFound } from 'next/navigation';
 
+import { requireCurrentUser } from '../features/auth/lib/server-auth';
 import { prefetchQuerySafely } from './prefetch-query-safely';
 
 export const isNotFoundProjectError = (error: unknown): boolean => {
@@ -19,7 +20,10 @@ export const prefetchProjectPage = async (
   queryClient: QueryClient,
   projectId: string,
   additionalQueries: FetchQueryOptions[] = [],
+  requiredCapabilities: readonly string[] = [],
 ): Promise<void> => {
+  await requireCurrentUser(requiredCapabilities);
+
   try {
     await queryClient.fetchQuery({
       queryKey: projectQueryKeys.detail(projectId),

@@ -1,6 +1,7 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { listProjects, projectQueryKeys } from '@repo/api-client';
 
+import { requireCurrentUser } from '../../../src/features/auth/lib/server-auth';
 import { ProjectListPanel } from '../../../src/features/projects/components/project-list-panel';
 import { prefetchQuerySafely } from '../../../src/lib/prefetch-query-safely';
 import { getQueryClient } from '../../../src/lib/query-client';
@@ -10,6 +11,8 @@ export default async function ProjectsPage({
 }: {
   searchParams: Promise<{ query?: string }>;
 }) {
+  await requireCurrentUser();
+
   const resolvedSearchParams = await searchParams;
   const query = resolvedSearchParams.query?.trim() ?? '';
   const queryClient = getQueryClient();

@@ -65,26 +65,26 @@ Tasks:
 - [x] Add query key helpers
 
 ## WEB-006 - Implement auth UI
-**Status:** todo  
+**Status:** done  
 **Outcome:** Users can sign in and the app respects session state.
 
 Tasks:
-- [ ] Add sign-in page
-- [ ] Add session-aware layout
-- [ ] Add current-user bootstrap
-- [ ] Add role-aware route protection
+- [x] Add sign-in page
+- [x] Add session-aware layout
+- [x] Add current-user bootstrap
+- [x] Add role-aware route protection
 
 ## WEB-007 - Build dashboard page
-**Status:** todo  
+**Status:** done  
 **Outcome:** Operators can see system-wide status at a glance.
 
 Tasks:
-- [ ] Add dashboard route
-- [ ] Preload summary data
-- [ ] Add projects summary cards
-- [ ] Add runtime health widgets
-- [ ] Add intervention summary
-- [ ] Add usage snapshot
+- [x] Add dashboard route
+- [x] Preload summary data
+- [x] Add projects summary cards
+- [x] Add runtime health widgets
+- [x] Add intervention summary
+- [x] Add usage snapshot
 
 ## WEB-008 - Build projects list page
 **Status:** done  

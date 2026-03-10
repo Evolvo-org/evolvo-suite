@@ -6,6 +6,7 @@ import {
   projectQueryKeys,
 } from '@repo/api-client';
 
+import { projectWriteCapabilities } from '../../../../../src/features/auth/lib/access-control';
 import { DevelopmentPlanEditorPanel } from '../../../../../src/features/projects/components/development-plan-editor-panel';
 import { prefetchProjectPage } from '../../../../../src/lib/project-page';
 import { getQueryClient } from '../../../../../src/lib/query-client';
@@ -31,7 +32,7 @@ export default async function DevelopmentPlanEditorPage({
       queryKey: projectQueryKeys.developmentPlanVersions(projectId),
       queryFn: () => listDevelopmentPlanVersions(projectId),
     },
-  ]);
+  ], projectWriteCapabilities);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
