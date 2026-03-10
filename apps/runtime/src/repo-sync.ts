@@ -4,10 +4,10 @@ import { dirname } from 'node:path';
 import { promisify } from 'node:util';
 
 import { log } from './logger';
-import {
+import type {
   LocalRepoRegistry,
-  type LocalRepoRegistration,
-  type RepoRegistryProject,
+  LocalRepoRegistration,
+  RepoRegistryProject,
 } from './repo-registry';
 
 const execFileAsync = promisify(execFile);
@@ -17,41 +17,36 @@ type GitCommandResult = {
   stderr: string;
 };
 
+type RemoteRepositoryInspection = {
+  project: RepoRegistryProject;
+  remoteBranches: string[];
+  isEmpty: boolean;
+};
+
 export class RepoSyncService {
   public constructor(private readonly localRepoRegistry: LocalRepoRegistry) {}
 
   public async ensureProjectRepository(
     project: RepoRegistryProject,
   ): Promise<LocalRepoRegistration> {
-    const registration = await this.localRepoRegistry.upsertProject(project);
-
-    await this.validateRemote(project);
+    const inspection = await this.resolveRemoteRepository(project);
+    const registration = await this.localRepoRegistry.upsertProject(inspection.project);
 
     if (!registration.existsOnDisk) {
-      await this.cloneProject(project, registration.localPath);
+      await this.cloneProject(
+        inspection.project,
+        registration.localPath,
+        inspection.isEmpty,
+      );
     } else {
-      await this.syncProject(project, registration.localPath);
-    }
-
-    return this.localRepoRegistry.upsertProject(project);
-  }
-
-  public async validateRemote(project: RepoRegistryProject): Promise<void> {
-    const branchToValidate =
-      project.repository.baseBranch || project.repository.defaultBranch;
-    const result = await this.runGit(
-      ['ls-remote', '--heads', project.repository.url, branchToValidate],
-      undefined,
-      {
-        allowEmptyStdout: true,
-      },
-    );
-
-    if (!result.stdout.trim()) {
-      throw new Error(
-        `Remote branch ${branchToValidate} was not found for ${project.repository.url}.`,
+      await this.syncProject(
+        inspection.project,
+        registration.localPath,
+        inspection.isEmpty,
       );
     }
+
+    return this.localRepoRegistry.upsertProject(inspection.project);
   }
 
   public async syncBranch(
@@ -76,20 +71,29 @@ export class RepoSyncService {
   private async cloneProject(
     project: RepoRegistryProject,
     localPath: string,
+    isEmptyRemote: boolean,
   ): Promise<void> {
     await mkdir(dirname(localPath), { recursive: true });
-    await this.runGit(
-      [
-        'clone',
-        '--origin',
-        'origin',
-        '--branch',
-        project.repository.defaultBranch,
-        project.repository.url,
-        localPath,
-      ],
-      undefined,
-    );
+    if (isEmptyRemote) {
+      await this.runGit(
+        ['clone', '--origin', 'origin', project.repository.url, localPath],
+        undefined,
+      );
+      await this.bootstrapEmptyRemote(project, localPath);
+    } else {
+      await this.runGit(
+        [
+          'clone',
+          '--origin',
+          'origin',
+          '--branch',
+          project.repository.defaultBranch,
+          project.repository.url,
+          localPath,
+        ],
+        undefined,
+      );
+    }
 
     await this.ensureRemote(localPath, project.repository.url);
     await this.runGit(['fetch', '--prune', 'origin'], localPath);
@@ -105,8 +109,12 @@ export class RepoSyncService {
   private async syncProject(
     project: RepoRegistryProject,
     localPath: string,
+    isEmptyRemote: boolean,
   ): Promise<void> {
     await this.ensureRemote(localPath, project.repository.url);
+    if (isEmptyRemote) {
+      await this.bootstrapEmptyRemote(project, localPath);
+    }
     await this.runGit(['fetch', '--prune', 'origin'], localPath);
     await this.syncBranch(localPath, project.repository.baseBranch);
 
@@ -160,5 +168,195 @@ export class RepoSyncService {
       stdout: result.stdout,
       stderr: result.stderr,
     };
+  }
+
+  private async resolveRemoteRepository(
+    project: RepoRegistryProject,
+  ): Promise<RemoteRepositoryInspection> {
+    const configuredDefaultBranch = project.repository.defaultBranch.trim();
+    const configuredBaseBranch =
+      project.repository.baseBranch.trim() || configuredDefaultBranch;
+    const remoteBranches = await this.listRemoteBranches(project.repository.url);
+    const isEmpty = remoteBranches.length === 0;
+
+    if (isEmpty) {
+      const bootstrapBranch = configuredBaseBranch || configuredDefaultBranch || 'main';
+
+      log('warn', 'Runtime detected an empty remote repository and will bootstrap it.', {
+        projectId: project.id,
+        repositoryUrl: project.repository.url,
+        bootstrapBranch,
+      });
+
+      return {
+        project: {
+          ...project,
+          repository: {
+            ...project.repository,
+            defaultBranch: bootstrapBranch,
+            baseBranch: bootstrapBranch,
+          },
+        },
+        remoteBranches,
+        isEmpty: true,
+      };
+    }
+
+    const remoteDefaultBranch = await this.getRemoteDefaultBranch(project.repository.url);
+    const inferredFallbackBranch =
+      remoteDefaultBranch ??
+      (remoteBranches.length === 1 ? (remoteBranches[0] ?? null) : null);
+
+    const defaultBranch = await this.resolveRemoteBranch({
+      repositoryUrl: project.repository.url,
+      preferredBranch: configuredDefaultBranch,
+      fallbackBranch: inferredFallbackBranch,
+    });
+    const baseBranch = await this.resolveRemoteBranch({
+      repositoryUrl: project.repository.url,
+      preferredBranch: configuredBaseBranch,
+      fallbackBranch: defaultBranch,
+    });
+
+    if (
+      defaultBranch !== configuredDefaultBranch ||
+      baseBranch !== configuredBaseBranch
+    ) {
+      log('warn', 'Runtime resolved repository branches from remote metadata.', {
+        projectId: project.id,
+        repositoryUrl: project.repository.url,
+        configuredDefaultBranch,
+        configuredBaseBranch,
+        resolvedDefaultBranch: defaultBranch,
+        resolvedBaseBranch: baseBranch,
+      });
+    }
+
+    return {
+      project: {
+        ...project,
+        repository: {
+          ...project.repository,
+          defaultBranch,
+          baseBranch,
+        },
+      },
+      remoteBranches,
+      isEmpty: false,
+    };
+  }
+
+  private async bootstrapEmptyRemote(
+    project: RepoRegistryProject,
+    repositoryPath: string,
+  ): Promise<void> {
+    const bootstrapBranch = project.repository.baseBranch;
+
+    try {
+      await this.runGit(['ls-remote', '--heads', 'origin', bootstrapBranch], repositoryPath, {
+        allowEmptyStdout: true,
+      });
+      const branchExists = await this.remoteBranchExists('origin', bootstrapBranch, repositoryPath);
+
+      if (branchExists) {
+        return;
+      }
+    } catch {
+      // Continue with bootstrap when the repository has no refs yet.
+    }
+
+    await this.runGit(['checkout', '--orphan', bootstrapBranch], repositoryPath);
+    await this.runGit(
+      [
+        '-c',
+        'user.name=Evolvo Runtime',
+        '-c',
+        'user.email=runtime@evolvo.local',
+        'commit',
+        '--allow-empty',
+        '-m',
+        'Initialize repository for runtime automation',
+      ],
+      repositoryPath,
+    );
+    await this.runGit(['push', '-u', 'origin', bootstrapBranch], repositoryPath);
+
+    log('info', 'Runtime bootstrapped an empty remote repository.', {
+      projectId: project.id,
+      repositoryPath,
+      branch: bootstrapBranch,
+    });
+  }
+
+  private async resolveRemoteBranch(input: {
+    repositoryUrl: string;
+    preferredBranch: string;
+    fallbackBranch: string | null;
+  }): Promise<string> {
+    if (
+      input.preferredBranch &&
+      (await this.remoteBranchExists(input.repositoryUrl, input.preferredBranch))
+    ) {
+      return input.preferredBranch;
+    }
+
+    if (
+      input.fallbackBranch &&
+      (await this.remoteBranchExists(input.repositoryUrl, input.fallbackBranch))
+    ) {
+      return input.fallbackBranch;
+    }
+
+    throw new Error(
+      `Remote branch ${input.preferredBranch} was not found for ${input.repositoryUrl}.`,
+    );
+  }
+
+  private async remoteBranchExists(
+    repositoryUrl: string,
+    branchName: string,
+    cwd?: string,
+  ): Promise<boolean> {
+    const result = await this.runGit(
+      ['ls-remote', '--heads', repositoryUrl, branchName],
+      cwd,
+      {
+        allowEmptyStdout: true,
+      },
+    );
+
+    return Boolean(result.stdout.trim());
+  }
+
+  private async getRemoteDefaultBranch(
+    repositoryUrl: string,
+  ): Promise<string | null> {
+    const result = await this.runGit(
+      ['ls-remote', '--symref', repositoryUrl, 'HEAD'],
+      undefined,
+      {
+        allowEmptyStdout: true,
+      },
+    );
+    const match = result.stdout.match(/^ref:\s+refs\/heads\/(.+)\s+HEAD$/m);
+
+    return match?.[1]?.trim() || null;
+  }
+
+  private async listRemoteBranches(repositoryUrl: string): Promise<string[]> {
+    const result = await this.runGit(
+      ['ls-remote', '--heads', repositoryUrl],
+      undefined,
+      {
+        allowEmptyStdout: true,
+      },
+    );
+
+    return result.stdout
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => line.match(/refs\/heads\/(.+)$/)?.[1]?.trim() ?? null)
+      .filter((branchName): branchName is string => Boolean(branchName));
   }
 }

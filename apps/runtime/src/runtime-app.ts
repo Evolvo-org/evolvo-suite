@@ -410,16 +410,13 @@ export class RuntimeApp {
         return;
       }
 
-      await this.localRepoRegistry.upsertProject({
-        id: dispatch.project.id,
-        slug: dispatch.project.slug,
-        repository: dispatch.project.repository,
-      });
       const repoRegistration = await this.repoSyncService.ensureProjectRepository({
         id: dispatch.project.id,
         slug: dispatch.project.slug,
         repository: dispatch.project.repository,
       });
+      const resolvedRepository =
+        repoRegistration.repository ?? dispatch.project.repository;
       const branchName = this.branchManager.createBranchName({
         projectSlug: dispatch.project.slug,
         workItemId: dispatch.workItem.id,
@@ -427,8 +424,8 @@ export class RuntimeApp {
         lane: dispatch.lease.lane,
       });
       const baseBranch = this.branchManager.getBaseBranch({
-        baseBranch: dispatch.project.repository.baseBranch,
-        defaultBranch: dispatch.project.repository.defaultBranch,
+        baseBranch: resolvedRepository.baseBranch,
+        defaultBranch: resolvedRepository.defaultBranch,
       });
 
       await this.branchManager.ensureWorkItemBranch({

@@ -326,20 +326,28 @@ describe('RuntimeApp', () => {
     };
     const branchManager = {
       createBranchName: vi.fn().mockReturnValue('dev/work-1-queue-dashboard'),
-      getBaseBranch: vi.fn().mockReturnValue('main'),
+      getBaseBranch: vi.fn().mockReturnValue('master'),
       ensureWorkItemBranch: vi.fn().mockResolvedValue(undefined),
       getCleanupCandidates: vi.fn().mockResolvedValue([]),
     };
     const repoSyncService = {
       ensureProjectRepository: vi.fn().mockResolvedValue({
         localPath: '/tmp/evolvo-runtime-tests/repos/evolvo-suite',
+        repository: {
+          provider: 'github',
+          owner: 'evolvo-org',
+          name: 'evolvo-suite',
+          url: 'https://github.com/evolvo-org/evolvo-suite',
+          defaultBranch: 'master',
+          baseBranch: 'master',
+        },
       }),
     };
     const worktreeManager = {
       ensureWorktree: vi.fn().mockResolvedValue({
         path: '/tmp/evolvo-runtime-tests/evolvo-suite/dev-work-1',
         branchName: 'dev/work-1-queue-dashboard',
-        baseBranch: 'main',
+        baseBranch: 'master',
         headSha: 'abc123runtime',
         isDirty: false,
       }),
@@ -413,9 +421,13 @@ describe('RuntimeApp', () => {
         leaseId: 'lease-1',
         worktreePath: '/tmp/evolvo-runtime-tests/evolvo-suite/dev-work-1',
         branchName: 'dev/work-1-queue-dashboard',
-        baseBranch: 'main',
+        baseBranch: 'master',
         headSha: 'abc123runtime',
       },
+    });
+    expect(branchManager.getBaseBranch).toHaveBeenCalledWith({
+      baseBranch: 'master',
+      defaultBranch: 'master',
     });
     expect(runtimeApiClient.submitJobResult).toHaveBeenCalledWith(
       environment.runtimeId,
