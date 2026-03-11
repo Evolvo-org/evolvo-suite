@@ -1,6 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import {
   ApiClientError,
+  claimRuntimeManagementCommand,
+  completeRuntimeManagementCommand,
   createReleaseVersion,
   createReviewGateResult,
   createRuntimeArtifactUploadMetadata,
@@ -18,6 +20,8 @@ import {
   registerRuntime,
   requestProjectWorktreeCleanup,
   requestRuntimeWork,
+  failRuntimeManagementCommand,
+  sendRuntimeManagementCommandProgress,
   sendRuntimeProgress,
   sendRuntimeHeartbeat,
   submitRuntimeJobResult,
@@ -35,6 +39,10 @@ import type {
   ExecuteReleaseResponse,
   ExecuteReviewRequest,
   ExecuteReviewResponse,
+  ManagementCommandCompleteRequest,
+  ManagementCommandFailRequest,
+  ManagementCommandProgressRequest,
+  ManagementCommandRecord,
   RecordReleaseResultRequest,
   ReleaseRunRecord,
   RegisterRuntimeRequest,
@@ -112,6 +120,68 @@ export class RuntimeApiClient {
     return this.withRequestContext(() =>
       this.executeWithRetry('requestRuntimeWork', async () => {
         const response = await requestRuntimeWork(runtimeId, payload);
+        return response.data;
+      }),
+    );
+  }
+
+  public async claimManagementCommand(
+    runtimeId: string,
+  ): Promise<ManagementCommandRecord | null> {
+    return this.withRequestContext(() =>
+      this.executeWithRetry('claimRuntimeManagementCommand', async () => {
+        const response = await claimRuntimeManagementCommand(runtimeId);
+        return response.data;
+      }),
+    );
+  }
+
+  public async sendManagementCommandProgress(
+    runtimeId: string,
+    commandId: string,
+    payload: ManagementCommandProgressRequest,
+  ): Promise<ManagementCommandRecord> {
+    return this.withRequestContext(() =>
+      this.executeWithRetry('sendRuntimeManagementCommandProgress', async () => {
+        const response = await sendRuntimeManagementCommandProgress(
+          runtimeId,
+          commandId,
+          payload,
+        );
+        return response.data;
+      }),
+    );
+  }
+
+  public async completeManagementCommand(
+    runtimeId: string,
+    commandId: string,
+    payload: ManagementCommandCompleteRequest,
+  ): Promise<ManagementCommandRecord> {
+    return this.withRequestContext(() =>
+      this.executeWithRetry('completeRuntimeManagementCommand', async () => {
+        const response = await completeRuntimeManagementCommand(
+          runtimeId,
+          commandId,
+          payload,
+        );
+        return response.data;
+      }),
+    );
+  }
+
+  public async failManagementCommand(
+    runtimeId: string,
+    commandId: string,
+    payload: ManagementCommandFailRequest,
+  ): Promise<ManagementCommandRecord> {
+    return this.withRequestContext(() =>
+      this.executeWithRetry('failRuntimeManagementCommand', async () => {
+        const response = await failRuntimeManagementCommand(
+          runtimeId,
+          commandId,
+          payload,
+        );
         return response.data;
       }),
     );

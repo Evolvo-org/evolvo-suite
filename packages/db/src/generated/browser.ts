@@ -68,6 +68,11 @@ export type HumanInterventionCase = Prisma.HumanInterventionCaseModel
  */
 export type StructuredLogEntry = Prisma.StructuredLogEntryModel
 /**
+ * Model ManagementCommand
+ * 
+ */
+export type ManagementCommand = Prisma.ManagementCommandModel
+/**
  * Model Epic
  * 
  */

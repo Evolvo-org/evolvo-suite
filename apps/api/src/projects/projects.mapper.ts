@@ -74,6 +74,19 @@ const mapLifecycleStatus = (value: Project['lifecycleStatus']) => {
   return 'draft' as const;
 };
 
+const mapRepositorySetupStatus = (value: Project['repositorySetupStatus']) => {
+  switch (value) {
+    case 'IN_PROGRESS':
+      return 'inProgress' as const;
+    case 'READY':
+      return 'ready' as const;
+    case 'FAILED':
+      return 'failed' as const;
+    default:
+      return 'pending' as const;
+  }
+};
+
 const mapActivePlanVersionNumber = (
   developmentPlan:
     | (DevelopmentPlan & { activeVersion: PlanVersion | null })
@@ -133,6 +146,12 @@ export const mapProjectDetail = (
     slug: project.slug,
     lifecycleStatus: mapLifecycleStatus(project.lifecycleStatus),
     repository: mapRepository(project.repository),
+    repositorySetup: {
+      status: mapRepositorySetupStatus(project.repositorySetupStatus),
+      message: project.repositorySetupMessage ?? null,
+      errorMessage: project.repositorySetupError ?? null,
+      updatedAt: project.repositorySetupUpdatedAt.toISOString(),
+    },
     queueLimits: effectiveQueueLimits,
     productSpecVersion: project.productSpec?.version ?? null,
     activePlanVersionNumber: mapActivePlanVersionNumber(

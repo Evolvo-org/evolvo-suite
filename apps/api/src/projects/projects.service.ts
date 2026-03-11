@@ -27,6 +27,7 @@ import { runtimeOfflineThresholdMs } from '@repo/shared';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { SettingsService } from '../settings/settings.service.js';
 import { LogsService } from '../logs/logs.service.js';
+import { ManagementService } from '../management/management.service.js';
 
 import {
   mapPersistedAgentRouting,
@@ -73,6 +74,10 @@ const parseGithubRepositoryUrl = (
       normalizedUrl: value,
     };
   }
+};
+
+const normalizeRepositoryIdentifier = (value: string | null): string | null => {
+  return value?.trim().toLowerCase() ?? null;
 };
 
 const mapProjectLifecycleStatus = (
@@ -139,11 +144,21 @@ export class ProjectsService {
     private readonly settingsService: SettingsService,
     @Inject(LogsService)
     private readonly logsService: LogsService,
+    @Inject(ManagementService)
+    private readonly managementService: ManagementService,
   ) {}
 
   public async createProject(
     payload: CreateProjectRequest,
   ): Promise<ProjectDetail> {
+    const repositoryValidation = await this.validateRepositoryConfig(
+      payload.repository,
+    );
+    this.assertValidRepositoryConfig(repositoryValidation);
+    const normalizedRepository = this.normalizeRepositoryInput(
+      payload.repository,
+      repositoryValidation,
+    );
     const slug = await this.createUniqueSlug(payload.name);
     const systemQueueLimits =
       await this.settingsService.getResolvedSystemQueueLimits();
@@ -153,9 +168,13 @@ export class ProjectsService {
         data: {
           name: payload.name.trim(),
           slug,
+          repositorySetupStatus: 'PENDING',
+          repositorySetupMessage: 'Repository setup queued.',
+          repositorySetupError: null,
+          repositorySetupUpdatedAt: new Date(),
           repository: {
             create: {
-              ...createRepositoryWriteData(payload.repository),
+              ...createRepositoryWriteData(normalizedRepository),
             },
           },
           queueLimits: payload.queueLimits
@@ -236,6 +255,8 @@ export class ProjectsService {
       payload.queueLimits ?? systemQueueLimits,
       createEmptyKanbanCounts(),
     );
+
+    await this.managementService.enqueueRepoCloneOrSync(project.id, 'project.create');
 
     await this.logsService.writeLog({
       level: 'info',
@@ -605,6 +626,17 @@ export class ProjectsService {
     await this.ensureProjectExists(projectId);
     const systemQueueLimits =
       await this.settingsService.getResolvedSystemQueueLimits();
+    const repositoryValidation = payload.repository
+      ? await this.validateRepositoryConfig(payload.repository)
+      : null;
+    const normalizedRepository =
+      payload.repository && repositoryValidation
+        ? this.normalizeRepositoryInput(payload.repository, repositoryValidation)
+        : null;
+
+    if (repositoryValidation) {
+      this.assertValidRepositoryConfig(repositoryValidation);
+    }
 
     const project = await this.prisma.project.update({
       where: { id: projectId },
@@ -613,11 +645,17 @@ export class ProjectsService {
         repository: payload.repository
           ? {
               upsert: {
-                create: createRepositoryWriteData(payload.repository),
-                update: createRepositoryWriteData(payload.repository),
+                create: createRepositoryWriteData(normalizedRepository ?? payload.repository),
+                update: createRepositoryWriteData(normalizedRepository ?? payload.repository),
               },
             }
           : undefined,
+        repositorySetupStatus: payload.repository ? 'PENDING' : undefined,
+        repositorySetupMessage: payload.repository
+          ? 'Repository setup queued after project update.'
+          : undefined,
+        repositorySetupError: payload.repository ? null : undefined,
+        repositorySetupUpdatedAt: payload.repository ? new Date() : undefined,
         queueLimits: payload.queueLimits
           ? {
               upsert: {
@@ -638,6 +676,10 @@ export class ProjectsService {
         },
       },
     });
+
+    if (payload.repository) {
+      await this.managementService.enqueueRepoCloneOrSync(projectId, 'project.update');
+    }
 
     return mapProjectDetail(
       project,
@@ -800,7 +842,23 @@ export class ProjectsService {
   }
 
   public async startProject(projectId: string): Promise<ProjectStatusResponse> {
-    await this.ensureProjectExists(projectId);
+    const existingProject = await this.prisma.project.findUnique({
+      where: { id: projectId },
+      select: {
+        id: true,
+        repositorySetupStatus: true,
+      },
+    });
+
+    if (!existingProject) {
+      throw new NotFoundException('Project not found.');
+    }
+
+    if (existingProject.repositorySetupStatus !== 'READY') {
+      throw new ConflictException(
+        'Repository setup must complete successfully before the project can be activated.',
+      );
+    }
 
     const project = await this.prisma.project.update({
       where: { id: projectId },
@@ -898,24 +956,48 @@ export class ProjectsService {
   ): Promise<ProjectRepositoryConfigResponse> {
     await this.ensureProjectExists(projectId);
 
+    const repositoryValidation = await this.validateRepositoryConfig(payload);
+    this.assertValidRepositoryConfig(repositoryValidation);
+    const normalizedRepository = this.normalizeRepositoryInput(
+      payload,
+      repositoryValidation,
+    );
+
     const repository = await this.prisma.projectRepository.upsert({
       where: { projectId },
       create: {
         projectId,
-        ...createRepositoryWriteData(payload),
+        ...createRepositoryWriteData(normalizedRepository),
       },
-      update: createRepositoryWriteData(payload),
+      update: createRepositoryWriteData(normalizedRepository),
     });
+
+    await this.prisma.project.update({
+      where: { id: projectId },
+      data: {
+        repositorySetupStatus: 'PENDING',
+        repositorySetupMessage: 'Repository setup queued after repository update.',
+        repositorySetupError: null,
+        repositorySetupUpdatedAt: new Date(),
+      },
+    });
+
+    await this.managementService.enqueueRepoCloneOrSync(
+      projectId,
+      'project.repository.update',
+    );
 
     return mapProjectRepositoryConfig(projectId, repository);
   }
 
-  public validateRepositoryConfig(
+  public async validateRepositoryConfig(
     payload: ProjectRepositoryInput,
-  ): ProjectRepositoryValidationResponse {
+  ): Promise<ProjectRepositoryValidationResponse> {
     const issues: string[] = [];
     const warnings: string[] = [];
     const parsedUrl = parseGithubRepositoryUrl(payload.url.trim());
+    const normalizedOwner = normalizeRepositoryIdentifier(payload.owner);
+    const normalizedName = normalizeRepositoryIdentifier(payload.name);
 
     try {
       const url = new URL(payload.url.trim());
@@ -933,11 +1015,17 @@ export class ProjectsService {
       );
     }
 
-    if (parsedUrl.owner && parsedUrl.owner !== payload.owner.trim()) {
+    if (
+      parsedUrl.owner &&
+      normalizeRepositoryIdentifier(parsedUrl.owner) !== normalizedOwner
+    ) {
       issues.push('Repository URL owner does not match the provided owner.');
     }
 
-    if (parsedUrl.name && parsedUrl.name !== payload.name.trim()) {
+    if (
+      parsedUrl.name &&
+      normalizeRepositoryIdentifier(parsedUrl.name) !== normalizedName
+    ) {
       issues.push(
         'Repository URL name does not match the provided repository name.',
       );
@@ -955,6 +1043,12 @@ export class ProjectsService {
       );
     }
 
+    if (issues.length === 0) {
+      warnings.push(
+        'Repository setup runs asynchronously after project creation or repository updates.',
+      );
+    }
+
     return {
       provider: 'github',
       isValid: issues.length === 0,
@@ -964,6 +1058,33 @@ export class ProjectsService {
       inferredOwner: parsedUrl.owner,
       inferredName: parsedUrl.name,
     };
+  }
+
+  private normalizeRepositoryInput(
+    payload: ProjectRepositoryInput,
+    validation: ProjectRepositoryValidationResponse,
+  ): ProjectRepositoryInput {
+    return {
+      ...payload,
+      owner: payload.owner.trim(),
+      name: payload.name.trim(),
+      url: validation.normalizedUrl,
+      defaultBranch: payload.defaultBranch.trim(),
+      baseBranch: payload.baseBranch.trim(),
+    };
+  }
+
+  private assertValidRepositoryConfig(
+    validation: ProjectRepositoryValidationResponse,
+  ): void {
+    if (validation.isValid) {
+      return;
+    }
+
+    throw new ConflictException({
+      message: 'Project repository validation failed.',
+      errors: validation.issues,
+    });
   }
 
   public async ensureProjectExists(projectId: string): Promise<void> {

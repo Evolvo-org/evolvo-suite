@@ -64,7 +64,7 @@ export class ProjectsController {
   }
 
   @Post('repository/validate')
-  public validateRepository(
+  public async validateRepository(
     @Body(new ZodValidationPipe(validateProjectRepositorySchema))
     body: ProjectRepositoryInput,
   ) {

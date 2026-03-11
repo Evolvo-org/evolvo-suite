@@ -5,6 +5,13 @@ enum ProjectLifecycleStatus {
   PAUSED
 }
 
+enum RepositorySetupStatus {
+  PENDING
+  IN_PROGRESS
+  READY
+  FAILED
+}
+
 enum ProjectRepositoryProvider {
   GITHUB
 }
@@ -19,6 +26,10 @@ model Project {
   name                String
   slug                String                 @unique
   lifecycleStatus     ProjectLifecycleStatus @default(DRAFT)
+  repositorySetupStatus RepositorySetupStatus @default(PENDING)
+  repositorySetupMessage String?             @db.Text
+  repositorySetupError String?               @db.Text
+  repositorySetupUpdatedAt DateTime          @default(now())
   createdAt           DateTime               @default(now())
   updatedAt           DateTime               @updatedAt
   repository          ProjectRepository?
@@ -26,6 +37,7 @@ model Project {
   productSpec         ProductSpec?
   developmentPlan     DevelopmentPlan?
   queueLimits         ProjectQueueLimits?
+  managementCommands  ManagementCommand[]
   epics               Epic[]
   workItems           WorkItem[]
 }

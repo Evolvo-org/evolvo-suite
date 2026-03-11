@@ -59,6 +59,23 @@ export const StructuredLogLevel = {
 export type StructuredLogLevel = (typeof StructuredLogLevel)[keyof typeof StructuredLogLevel]
 
 
+export const ManagementCommandType = {
+  REPO_CLONE_OR_SYNC: 'REPO_CLONE_OR_SYNC'
+} as const
+
+export type ManagementCommandType = (typeof ManagementCommandType)[keyof typeof ManagementCommandType]
+
+
+export const ManagementCommandStatus = {
+  PENDING: 'PENDING',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED'
+} as const
+
+export type ManagementCommandStatus = (typeof ManagementCommandStatus)[keyof typeof ManagementCommandStatus]
+
+
 export const WorkItemState = {
   PLANNING: 'PLANNING',
   READY_FOR_DEV: 'READY_FOR_DEV',
@@ -107,6 +124,16 @@ export const ProjectLifecycleStatus = {
 } as const
 
 export type ProjectLifecycleStatus = (typeof ProjectLifecycleStatus)[keyof typeof ProjectLifecycleStatus]
+
+
+export const RepositorySetupStatus = {
+  PENDING: 'PENDING',
+  IN_PROGRESS: 'IN_PROGRESS',
+  READY: 'READY',
+  FAILED: 'FAILED'
+} as const
+
+export type RepositorySetupStatus = (typeof RepositorySetupStatus)[keyof typeof RepositorySetupStatus]
 
 
 export const ProjectRepositoryProvider = {

@@ -1,5 +1,5 @@
 import { execFile } from 'node:child_process';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, rm } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { promisify } from 'node:util';
 
@@ -31,8 +31,20 @@ export class RepoSyncService {
   ): Promise<LocalRepoRegistration> {
     const inspection = await this.resolveRemoteRepository(project);
     const registration = await this.localRepoRegistry.upsertProject(inspection.project);
+    const hasUsableRepository =
+      registration.existsOnDisk &&
+      (await this.isGitRepository(registration.localPath));
 
-    if (!registration.existsOnDisk) {
+    if (registration.existsOnDisk && !hasUsableRepository) {
+      log('warn', 'Runtime found a stale local repository path and will reclone it.', {
+        projectId: project.id,
+        localPath: registration.localPath,
+      });
+
+      await rm(registration.localPath, { recursive: true, force: true });
+    }
+
+    if (!hasUsableRepository) {
       await this.cloneProject(
         inspection.project,
         registration.localPath,
@@ -47,6 +59,20 @@ export class RepoSyncService {
     }
 
     return this.localRepoRegistry.upsertProject(inspection.project);
+  }
+
+  private async isGitRepository(repositoryPath: string): Promise<boolean> {
+    try {
+      const result = await this.runGit(
+        ['rev-parse', '--is-inside-work-tree'],
+        repositoryPath,
+        { allowEmptyStdout: true },
+      );
+
+      return result.stdout.trim() === 'true';
+    } catch {
+      return false;
+    }
   }
 
   public async syncBranch(

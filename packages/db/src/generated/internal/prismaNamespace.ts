@@ -394,6 +394,7 @@ export const ModelName = {
   BillingWebhookEvent: 'BillingWebhookEvent',
   HumanInterventionCase: 'HumanInterventionCase',
   StructuredLogEntry: 'StructuredLogEntry',
+  ManagementCommand: 'ManagementCommand',
   Epic: 'Epic',
   WorkItem: 'WorkItem',
   WorkItemComment: 'WorkItemComment',
@@ -438,7 +439,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "agentRun" | "agentDecision" | "agentFailure" | "promptSnapshot" | "agentRunArtifact" | "stripeCustomer" | "subscription" | "billingWebhookEvent" | "humanInterventionCase" | "structuredLogEntry" | "epic" | "workItem" | "workItemComment" | "acceptanceCriterion" | "workItemDependency" | "workItemStateTransition" | "project" | "projectAgentRouting" | "projectRepository" | "projectQueueLimits" | "systemQueueLimits" | "systemAgentRouting" | "productSpec" | "developmentPlan" | "planVersion" | "developmentPlanApprovalAudit" | "releaseRun" | "releaseVersion" | "releaseNote" | "reviewGateResult" | "reviewGateCheck" | "reviewCriterionEvaluation" | "runtimeInstance" | "runtimeArtifact" | "schedulerLaneCursor" | "workItemRetryState" | "workItemLease" | "usageEvent" | "worktree"
+    modelProps: "agentRun" | "agentDecision" | "agentFailure" | "promptSnapshot" | "agentRunArtifact" | "stripeCustomer" | "subscription" | "billingWebhookEvent" | "humanInterventionCase" | "structuredLogEntry" | "managementCommand" | "epic" | "workItem" | "workItemComment" | "acceptanceCriterion" | "workItemDependency" | "workItemStateTransition" | "project" | "projectAgentRouting" | "projectRepository" | "projectQueueLimits" | "systemQueueLimits" | "systemAgentRouting" | "productSpec" | "developmentPlan" | "planVersion" | "developmentPlanApprovalAudit" | "releaseRun" | "releaseVersion" | "releaseNote" | "reviewGateResult" | "reviewGateCheck" | "reviewCriterionEvaluation" | "runtimeInstance" | "runtimeArtifact" | "schedulerLaneCursor" | "workItemRetryState" | "workItemLease" | "usageEvent" | "worktree"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1179,6 +1180,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.StructuredLogEntryCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.StructuredLogEntryCountAggregateOutputType> | number
+        }
+      }
+    }
+    ManagementCommand: {
+      payload: Prisma.$ManagementCommandPayload<ExtArgs>
+      fields: Prisma.ManagementCommandFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ManagementCommandFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagementCommandPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ManagementCommandFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagementCommandPayload>
+        }
+        findFirst: {
+          args: Prisma.ManagementCommandFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagementCommandPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ManagementCommandFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagementCommandPayload>
+        }
+        findMany: {
+          args: Prisma.ManagementCommandFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagementCommandPayload>[]
+        }
+        create: {
+          args: Prisma.ManagementCommandCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagementCommandPayload>
+        }
+        createMany: {
+          args: Prisma.ManagementCommandCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ManagementCommandCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagementCommandPayload>[]
+        }
+        delete: {
+          args: Prisma.ManagementCommandDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagementCommandPayload>
+        }
+        update: {
+          args: Prisma.ManagementCommandUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagementCommandPayload>
+        }
+        deleteMany: {
+          args: Prisma.ManagementCommandDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ManagementCommandUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ManagementCommandUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagementCommandPayload>[]
+        }
+        upsert: {
+          args: Prisma.ManagementCommandUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagementCommandPayload>
+        }
+        aggregate: {
+          args: Prisma.ManagementCommandAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateManagementCommand>
+        }
+        groupBy: {
+          args: Prisma.ManagementCommandGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ManagementCommandGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ManagementCommandCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ManagementCommandCountAggregateOutputType> | number
         }
       }
     }
@@ -3518,6 +3593,27 @@ export const StructuredLogEntryScalarFieldEnum = {
 export type StructuredLogEntryScalarFieldEnum = (typeof StructuredLogEntryScalarFieldEnum)[keyof typeof StructuredLogEntryScalarFieldEnum]
 
 
+export const ManagementCommandScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  commandType: 'commandType',
+  status: 'status',
+  requestedBy: 'requestedBy',
+  runtimeId: 'runtimeId',
+  argsJson: 'argsJson',
+  activeStage: 'activeStage',
+  statusSummary: 'statusSummary',
+  resultJson: 'resultJson',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt'
+} as const
+
+export type ManagementCommandScalarFieldEnum = (typeof ManagementCommandScalarFieldEnum)[keyof typeof ManagementCommandScalarFieldEnum]
+
+
 export const EpicScalarFieldEnum = {
   id: 'id',
   projectId: 'projectId',
@@ -3607,6 +3703,10 @@ export const ProjectScalarFieldEnum = {
   name: 'name',
   slug: 'slug',
   lifecycleStatus: 'lifecycleStatus',
+  repositorySetupStatus: 'repositorySetupStatus',
+  repositorySetupMessage: 'repositorySetupMessage',
+  repositorySetupError: 'repositorySetupError',
+  repositorySetupUpdatedAt: 'repositorySetupUpdatedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -3981,6 +4081,13 @@ export const NullableJsonNullValueInput = {
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -4146,6 +4253,34 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
+ * Reference to a field of type 'ManagementCommandType'
+ */
+export type EnumManagementCommandTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ManagementCommandType'>
+    
+
+
+/**
+ * Reference to a field of type 'ManagementCommandType[]'
+ */
+export type ListEnumManagementCommandTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ManagementCommandType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ManagementCommandStatus'
+ */
+export type EnumManagementCommandStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ManagementCommandStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ManagementCommandStatus[]'
+ */
+export type ListEnumManagementCommandStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ManagementCommandStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'WorkItemKind'
  */
 export type EnumWorkItemKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'WorkItemKind'>
@@ -4212,6 +4347,20 @@ export type EnumProjectLifecycleStatusFieldRefInput<$PrismaModel> = FieldRefInpu
  * Reference to a field of type 'ProjectLifecycleStatus[]'
  */
 export type ListEnumProjectLifecycleStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectLifecycleStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'RepositorySetupStatus'
+ */
+export type EnumRepositorySetupStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RepositorySetupStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'RepositorySetupStatus[]'
+ */
+export type ListEnumRepositorySetupStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RepositorySetupStatus[]'>
     
 
 
@@ -4529,6 +4678,7 @@ export type GlobalOmitConfig = {
   billingWebhookEvent?: Prisma.BillingWebhookEventOmit
   humanInterventionCase?: Prisma.HumanInterventionCaseOmit
   structuredLogEntry?: Prisma.StructuredLogEntryOmit
+  managementCommand?: Prisma.ManagementCommandOmit
   epic?: Prisma.EpicOmit
   workItem?: Prisma.WorkItemOmit
   workItemComment?: Prisma.WorkItemCommentOmit

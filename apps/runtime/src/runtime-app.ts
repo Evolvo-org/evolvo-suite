@@ -1,6 +1,7 @@
 import { mkdir } from 'node:fs/promises';
 import { ApiClientError } from '@repo/api-client';
 import type {
+  ManagementCommandRecord,
   RuntimeDetailResponse,
   RuntimeHealthStatus,
   RuntimeWorkDispatchResponse,
@@ -283,6 +284,16 @@ export class RuntimeApp {
 
     try {
       this.lastAction = 'Polling API for available leased work.';
+      const command = await this.runtimeApiClient.claimManagementCommand(
+        this.environment.runtimeId,
+      );
+
+      if (command) {
+        await this.handleManagementCommand(command);
+        this.scheduleNextWorkPoll(this.environment.workPollIntervalMs);
+        return;
+      }
+
       const dispatch =
         (await this.chooseNextDevDispatch()) ??
         (await this.runtimeApiClient.requestWork(this.environment.runtimeId));
@@ -307,6 +318,99 @@ export class RuntimeApp {
       this.scheduleNextWorkPoll(this.nextIdleBackoffMs());
     } finally {
       this.workPollInFlight = false;
+    }
+  }
+
+  private async handleManagementCommand(
+    command: ManagementCommandRecord,
+  ): Promise<void> {
+    this.idleBackoffMs = 0;
+    this.currentStatus = 'busy';
+    this.lastError = null;
+    this.activeJobSummary = `Executing ${command.commandType}`;
+    this.lastAction = `Executing management command ${command.commandType}.`;
+    await this.flushHeartbeat(this.lastAction, true);
+
+    try {
+      switch (command.commandType) {
+        case 'repo.clone_or_sync': {
+          await this.runtimeApiClient.sendManagementCommandProgress(
+            this.environment.runtimeId,
+            command.id,
+            {
+              activeStage: 'repo.sync.starting',
+              statusSummary: `Preparing repository for project ${command.args.projectSlug}.`,
+            },
+          );
+
+          const registration = await this.repoSyncService.ensureProjectRepository({
+            id: command.args.projectId,
+            slug: command.args.projectSlug,
+            repository: command.args.repository,
+          });
+
+          await this.runtimeApiClient.completeManagementCommand(
+            this.environment.runtimeId,
+            command.id,
+            {
+              statusSummary: `Repository prepared at ${registration.localPath}.`,
+              result: {
+                localPath: registration.localPath,
+                resolvedDefaultBranch: registration.repository.defaultBranch,
+                resolvedBaseBranch: registration.repository.baseBranch,
+              },
+            },
+          );
+
+          this.currentStatus = 'idle';
+          this.activeJobSummary = null;
+          this.lastAction = `Completed management command ${command.commandType}.`;
+          log('info', 'Runtime executed management command.', {
+            runtimeId: this.environment.runtimeId,
+            commandId: command.id,
+            commandType: command.commandType,
+            projectId: command.projectId,
+            localPath: registration.localPath,
+          });
+          return;
+        }
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown management command failure';
+
+      this.currentStatus = 'degraded';
+      this.lastError = errorMessage;
+      this.lastAction = `Management command ${command.commandType} failed.`;
+
+      try {
+        await this.runtimeApiClient.failManagementCommand(
+          this.environment.runtimeId,
+          command.id,
+          {
+            errorMessage,
+            statusSummary: `Management command ${command.commandType} failed.`,
+          },
+        );
+      } catch (reportError) {
+        log('error', 'Runtime failed to report management command failure.', {
+          runtimeId: this.environment.runtimeId,
+          commandId: command.id,
+          error:
+            reportError instanceof Error
+              ? reportError.message
+              : 'Unknown management command failure reporting error',
+        });
+      }
+
+      log('error', 'Runtime management command failed.', {
+        runtimeId: this.environment.runtimeId,
+        commandId: command.id,
+        commandType: command.commandType,
+        error: errorMessage,
+      });
+
+      throw error;
     }
   }
 

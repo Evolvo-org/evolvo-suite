@@ -1,6 +1,7 @@
 import type { ProjectQueueLimits } from './project-queue-limits';
 import type {
   ProjectLifecycleStatus,
+  ProjectRepositorySetupStatus,
   RuntimeConnectionStatus,
 } from './project-status';
 
@@ -76,12 +77,20 @@ export interface ProjectOverviewMetrics {
   latestActivity: string[];
 }
 
+export interface ProjectRepositorySetupState {
+  status: ProjectRepositorySetupStatus;
+  message: string | null;
+  errorMessage: string | null;
+  updatedAt: string;
+}
+
 export interface ProjectDetail {
   id: string;
   name: string;
   slug: string;
   lifecycleStatus: ProjectLifecycleStatus;
   repository: ProjectRepositoryInput;
+  repositorySetup?: ProjectRepositorySetupState;
   queueLimits: ProjectQueueLimits;
   productSpecVersion: number | null;
   activePlanVersionNumber: number | null;

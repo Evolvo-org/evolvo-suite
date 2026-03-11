@@ -61,6 +61,7 @@ export const ModelName = {
   BillingWebhookEvent: 'BillingWebhookEvent',
   HumanInterventionCase: 'HumanInterventionCase',
   StructuredLogEntry: 'StructuredLogEntry',
+  ManagementCommand: 'ManagementCommand',
   Epic: 'Epic',
   WorkItem: 'WorkItem',
   WorkItemComment: 'WorkItemComment',
@@ -259,6 +260,27 @@ export const StructuredLogEntryScalarFieldEnum = {
 export type StructuredLogEntryScalarFieldEnum = (typeof StructuredLogEntryScalarFieldEnum)[keyof typeof StructuredLogEntryScalarFieldEnum]
 
 
+export const ManagementCommandScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  commandType: 'commandType',
+  status: 'status',
+  requestedBy: 'requestedBy',
+  runtimeId: 'runtimeId',
+  argsJson: 'argsJson',
+  activeStage: 'activeStage',
+  statusSummary: 'statusSummary',
+  resultJson: 'resultJson',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt'
+} as const
+
+export type ManagementCommandScalarFieldEnum = (typeof ManagementCommandScalarFieldEnum)[keyof typeof ManagementCommandScalarFieldEnum]
+
+
 export const EpicScalarFieldEnum = {
   id: 'id',
   projectId: 'projectId',
@@ -348,6 +370,10 @@ export const ProjectScalarFieldEnum = {
   name: 'name',
   slug: 'slug',
   lifecycleStatus: 'lifecycleStatus',
+  repositorySetupStatus: 'repositorySetupStatus',
+  repositorySetupMessage: 'repositorySetupMessage',
+  repositorySetupError: 'repositorySetupError',
+  repositorySetupUpdatedAt: 'repositorySetupUpdatedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -720,6 +746,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

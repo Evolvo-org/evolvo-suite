@@ -47,6 +47,10 @@ import type {
   KanbanBoardCounts,
   KanbanBoardResponse,
   MutationResponse,
+  ManagementCommandCompleteRequest,
+  ManagementCommandFailRequest,
+  ManagementCommandProgressRequest,
+  ManagementCommandRecord,
   ProjectObservabilityMetricsResponse,
   PaginatedResponse,
   PlanningHierarchyResponse,
@@ -616,6 +620,59 @@ export const requestRuntimeWork = async (
 ): Promise<MutationResponse<RuntimeWorkDispatchResponse>> => {
   return fetchJson<MutationResponse<RuntimeWorkDispatchResponse>>(
     `/runtimes/${runtimeId}/request-work`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const claimRuntimeManagementCommand = async (
+  runtimeId: string,
+): Promise<MutationResponse<ManagementCommandRecord | null>> => {
+  return fetchJson<MutationResponse<ManagementCommandRecord | null>>(
+    `/runtimes/${runtimeId}/management-commands/claim`,
+    {
+      method: 'POST',
+    },
+  );
+};
+
+export const sendRuntimeManagementCommandProgress = async (
+  runtimeId: string,
+  commandId: string,
+  payload: ManagementCommandProgressRequest,
+): Promise<MutationResponse<ManagementCommandRecord>> => {
+  return fetchJson<MutationResponse<ManagementCommandRecord>>(
+    `/runtimes/${runtimeId}/management-commands/${commandId}/progress`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const completeRuntimeManagementCommand = async (
+  runtimeId: string,
+  commandId: string,
+  payload: ManagementCommandCompleteRequest,
+): Promise<MutationResponse<ManagementCommandRecord>> => {
+  return fetchJson<MutationResponse<ManagementCommandRecord>>(
+    `/runtimes/${runtimeId}/management-commands/${commandId}/complete`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
+};
+
+export const failRuntimeManagementCommand = async (
+  runtimeId: string,
+  commandId: string,
+  payload: ManagementCommandFailRequest,
+): Promise<MutationResponse<ManagementCommandRecord>> => {
+  return fetchJson<MutationResponse<ManagementCommandRecord>>(
+    `/runtimes/${runtimeId}/management-commands/${commandId}/fail`,
     {
       method: 'POST',
       body: JSON.stringify(payload),

@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFile } from 'node:child_process';
@@ -126,6 +126,53 @@ describe('RepoSyncService', () => {
 
     const remoteHeads = await execFileAsync('git', ['ls-remote', '--heads', originPath, 'main']);
     expect(remoteHeads.stdout).toContain('refs/heads/main');
+    const localHead = await execFileAsync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], {
+      cwd: registration.localPath,
+    });
+    expect(localHead.stdout.trim()).toBe('main');
+  });
+
+  it('reclones when the local repository path exists but is not a git repository', async () => {
+    const workspace = await mkdtemp(join(tmpdir(), 'evolvo-runtime-repo-sync-'));
+    const originPath = join(workspace, 'origin.git');
+    const seedPath = join(workspace, 'seed');
+    const runtimeRoot = join(workspace, 'runtime');
+
+    await execFileAsync('git', ['init', '--bare', originPath]);
+    await execFileAsync('git', ['init', '-b', 'main', seedPath]);
+    await execFileAsync('git', ['config', 'user.email', 'test@example.com'], { cwd: seedPath });
+    await execFileAsync('git', ['config', 'user.name', 'Runtime Test'], { cwd: seedPath });
+    await writeFile(join(seedPath, 'README.md'), 'initial\n', 'utf8');
+    await execFileAsync('git', ['add', '.'], { cwd: seedPath });
+    await execFileAsync('git', ['commit', '-m', 'initial'], { cwd: seedPath });
+    await execFileAsync('git', ['remote', 'add', 'origin', originPath], { cwd: seedPath });
+    await execFileAsync('git', ['push', '-u', 'origin', 'main'], { cwd: seedPath });
+
+    const registry = new LocalRepoRegistry(runtimeRoot);
+    await registry.ensureStorage();
+    const localPath = registry.resolveProjectPath({
+      id: 'project-3',
+      slug: 'project-three',
+    });
+    await mkdir(localPath, { recursive: true });
+    await writeFile(join(localPath, 'stale.txt'), 'not-a-git-repo\n', 'utf8');
+
+    const service = new RepoSyncService(registry);
+
+    const registration = await service.ensureProjectRepository({
+      id: 'project-3',
+      slug: 'project-three',
+      repository: {
+        owner: 'local',
+        name: 'origin',
+        url: originPath,
+        defaultBranch: 'main',
+        baseBranch: 'main',
+      },
+    });
+
+    const clonedReadme = await readFile(join(registration.localPath, 'README.md'), 'utf8');
+    expect(clonedReadme).toContain('initial');
     const localHead = await execFileAsync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], {
       cwd: registration.localPath,
     });

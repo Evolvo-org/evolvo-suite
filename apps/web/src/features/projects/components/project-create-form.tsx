@@ -5,6 +5,7 @@ import {
   getSystemQueueLimits,
   projectQueryKeys,
   settingsQueryKeys,
+  validateProjectRepository,
 } from '@repo/api-client';
 import { defaultProjectQueueLimits } from '@repo/shared';
 import type { ProjectQueueLimits } from '@repo/shared';
@@ -96,11 +97,15 @@ export const ProjectCreateForm = () => {
     },
   });
 
+  const validateRepositoryMutation = useMutation({
+    mutationFn: validateProjectRepository,
+  });
+
   return (
     <Card className="p-6" title="Create project">
       <form
         className="space-y-8"
-        onSubmit={(event) => {
+        onSubmit={async (event) => {
           event.preventDefault();
           setErrorMessage(null);
 
@@ -111,29 +116,75 @@ export const ProjectCreateForm = () => {
             formData.get('repositoryUrl') ?? '',
           ).trim();
           const queueLimits = readQueueLimits(formData, defaultQueueState);
-
-          createProjectMutation.mutate({
-            name: String(formData.get('name') ?? '').trim(),
-            productDescription: String(
-              formData.get('productDescription') ?? '',
+          const repository = {
+            provider: 'github' as const,
+            owner,
+            name: repoName,
+            url:
+              repositoryUrlValue || `https://github.com/${owner}/${repoName}`,
+            defaultBranch: String(
+              formData.get('defaultBranch') ?? 'main',
             ).trim(),
-            developmentPlan:
-              String(formData.get('developmentPlan') ?? '').trim() || undefined,
-            repository: {
-              provider: 'github',
-              owner,
-              name: repoName,
-              url:
-                repositoryUrlValue || `https://github.com/${owner}/${repoName}`,
-              defaultBranch: String(
-                formData.get('defaultBranch') ?? 'main',
+            baseBranch: String(formData.get('baseBranch') ?? 'main').trim(),
+          };
+
+          try {
+            const validation = await validateRepositoryMutation.mutateAsync(
+              repository,
+            );
+
+            if (!validation.isValid) {
+              const message =
+                validation.issues[0] ?? 'Repository validation failed.';
+              setErrorMessage(validation.issues.join(' '));
+              pushToast({
+                description: validation.issues.join(' '),
+                title: message,
+                variant: 'error',
+              });
+              return;
+            }
+
+            if (validation.warnings.length > 0) {
+              pushToast({
+                description: validation.warnings.join(' '),
+                title: 'Repository checks passed with warnings',
+                variant: 'info',
+              });
+            }
+
+            await createProjectMutation.mutateAsync({
+              name: String(formData.get('name') ?? '').trim(),
+              productDescription: String(
+                formData.get('productDescription') ?? '',
               ).trim(),
-              baseBranch: String(formData.get('baseBranch') ?? 'main').trim(),
-            },
-            queueLimits: areQueueLimitsEqual(queueLimits, defaultQueueState)
-              ? undefined
-              : queueLimits,
-          });
+              developmentPlan:
+                String(formData.get('developmentPlan') ?? '').trim() || undefined,
+              repository: {
+                ...repository,
+                url: validation.normalizedUrl,
+              },
+              queueLimits: areQueueLimitsEqual(queueLimits, defaultQueueState)
+                ? undefined
+                : queueLimits,
+            });
+          } catch (error) {
+            if (error instanceof Error) {
+              const message = getErrorToastMessage(
+                error,
+                'Unable to validate repository.',
+              );
+              setErrorMessage(message);
+              pushToast({
+                description: message,
+                title: 'Repository validation failed',
+                variant: 'error',
+              });
+              return;
+            }
+
+            throw error;
+          }
         }}
       >
         <div className="grid gap-4 md:grid-cols-2">
@@ -282,10 +333,14 @@ export const ProjectCreateForm = () => {
         <div className="flex items-center gap-3">
           <button
             type="submit"
-            disabled={createProjectMutation.isPending}
+            disabled={
+              createProjectMutation.isPending || validateRepositoryMutation.isPending
+            }
             className="rounded-xl bg-zinc-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200"
           >
-            {createProjectMutation.isPending
+            {validateRepositoryMutation.isPending
+              ? 'Validating repository…'
+              : createProjectMutation.isPending
               ? 'Creating project…'
               : 'Create project'}
           </button>

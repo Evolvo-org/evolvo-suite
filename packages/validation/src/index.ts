@@ -352,6 +352,27 @@ export const requestRuntimeWorkSchema = z.object({
   leaseDurationSeconds: z.number().int().min(30).max(3600).optional(),
 });
 
+export const managementCommandProgressSchema = z.object({
+  activeStage: z.string().trim().min(1).max(200).optional(),
+  statusSummary: z.string().trim().min(1).max(5000).optional(),
+});
+
+const repoCloneOrSyncResultSchema = z.object({
+  localPath: z.string().trim().min(1).max(1000),
+  resolvedDefaultBranch: z.string().trim().min(1).max(120),
+  resolvedBaseBranch: z.string().trim().min(1).max(120),
+});
+
+export const managementCommandCompleteSchema = z.object({
+  statusSummary: z.string().trim().min(1).max(5000).optional(),
+  result: repoCloneOrSyncResultSchema.optional(),
+});
+
+export const managementCommandFailSchema = z.object({
+  errorMessage: z.string().trim().min(1).max(5000),
+  statusSummary: z.string().trim().min(1).max(5000).optional(),
+});
+
 export const runtimeProgressUpdateSchema = z.object({
   leaseToken: z.string().trim().min(1).max(200),
   activeJobSummary: z.string().trim().min(1).max(5000).optional(),

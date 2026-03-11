@@ -89,6 +89,34 @@ const formatPlanningApprovalTimestamp = (timestamp: string | null): string | nul
 
 const runtimeRefreshIntervalMs = 5_000;
 
+const formatRepositorySetupStatus = (
+  status: 'pending' | 'inProgress' | 'ready' | 'failed',
+): string => {
+  switch (status) {
+    case 'inProgress':
+      return 'Repository setup in progress';
+    case 'ready':
+      return 'Repository ready';
+    case 'failed':
+      return 'Repository setup failed';
+    default:
+      return 'Repository setup queued';
+  }
+};
+
+const getRepositorySetupTone = (status: 'pending' | 'inProgress' | 'ready' | 'failed') => {
+  switch (status) {
+    case 'ready':
+      return 'success' as const;
+    case 'failed':
+      return 'warning' as const;
+    case 'inProgress':
+      return 'warning' as const;
+    default:
+      return 'neutral' as const;
+  }
+};
+
 export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -96,6 +124,12 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
   const projectQuery = useQuery({
     queryKey: projectQueryKeys.detail(projectId),
     queryFn: () => getProjectDetail(projectId),
+    refetchInterval: (query) => {
+      const status = query.state.data?.repositorySetup?.status;
+      return status === 'pending' || status === 'inProgress'
+        ? runtimeRefreshIntervalMs
+        : false;
+    },
   });
 
   const planQuery = useQuery({
@@ -262,6 +296,17 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
   const canExpandPlan =
     project.productSpecVersion !== null &&
     planQuery.data?.activeVersionNumber !== null;
+  const repositorySetup = project.repositorySetup;
+  const repositoryReady = repositorySetup?.status === 'ready';
+  const lifecycleAction = project.lifecycleStatus === 'active' ? 'stop' : 'start';
+  const activationBlocked = lifecycleAction === 'start' && !repositoryReady;
+  const activationLabel = activationBlocked
+    ? repositorySetup?.status === 'failed'
+      ? 'Resolve repository setup'
+      : 'Waiting for repository setup'
+    : project.lifecycleStatus === 'active'
+      ? 'Pause project'
+      : 'Activate project';
 
   return (
     <div className="space-y-6">
@@ -271,11 +316,20 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
         </h1>
         <div className="flex flex-wrap items-center gap-3">
           <ProjectStatusBadge status={project.lifecycleStatus} />
+          {repositorySetup ? (
+            <Badge tone={getRepositorySetupTone(repositorySetup.status)}>
+              {formatRepositorySetupStatus(repositorySetup.status)}
+            </Badge>
+          ) : null}
           <Button
-            disabled={projectLifecycleMutation.isPending || deleteProjectMutation.isPending}
+            disabled={
+              projectLifecycleMutation.isPending ||
+              deleteProjectMutation.isPending ||
+              activationBlocked
+            }
             onClick={() => {
               void projectLifecycleMutation.mutateAsync(
-                project.lifecycleStatus === 'active' ? 'stop' : 'start',
+                lifecycleAction,
               );
             }}
             type="button"
@@ -284,9 +338,7 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
               ? project.lifecycleStatus === 'active'
                 ? 'Pausing project...'
                 : 'Activating project...'
-              : project.lifecycleStatus === 'active'
-                ? 'Pause project'
-                : 'Activate project'}
+              : activationLabel}
           </Button>
           <Button
             className="bg-red-600 hover:bg-red-500 dark:bg-red-500 dark:text-white dark:hover:bg-red-400"
@@ -315,12 +367,26 @@ export const ProjectOverviewPanel = ({ projectId }: { projectId: string }) => {
             ? 'This project is eligible for runtime leasing.'
             : 'Draft and paused projects will not lease new work until they are activated.'}
         </p>
+        {repositorySetup ? (
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            {repositorySetup.message ?? formatRepositorySetupStatus(repositorySetup.status)}
+            {repositorySetup.errorMessage
+              ? ` Error: ${repositorySetup.errorMessage}`
+              : ` Updated ${formatRelativeAge(repositorySetup.updatedAt)}.`}
+          </p>
+        ) : null}
       </div>
 
       <div className="grid gap-4 xl:grid-cols-3">
         <Card className="space-y-3 p-6" title="Status summary">
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Runtime status: {project.metrics.runtimeStatus}
+          </p>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            Repository setup:{' '}
+            {repositorySetup
+              ? formatRepositorySetupStatus(repositorySetup.status)
+              : 'not tracked'}
           </p>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Product spec version:{' '}

@@ -30,6 +30,7 @@ model RuntimeInstance {
   reviewGateResults ReviewGateResult[]
   usageEvents      UsageEvent[]
   worktrees        Worktree[]
+  managementCommands ManagementCommand[]
 }
 
 model RuntimeArtifact {

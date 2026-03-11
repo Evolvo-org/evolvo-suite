@@ -1,5 +1,8 @@
 import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
 import type {
+  ManagementCommandCompleteRequest,
+  ManagementCommandFailRequest,
+  ManagementCommandProgressRequest,
   RegisterRuntimeRequest,
   RequestRuntimeWorkRequest,
   RuntimeArtifactUploadMetadataRequest,
@@ -8,6 +11,9 @@ import type {
   RuntimeProgressUpdateRequest,
 } from '@repo/shared';
 import {
+  managementCommandCompleteSchema,
+  managementCommandFailSchema,
+  managementCommandProgressSchema,
   registerRuntimeSchema,
   requestRuntimeWorkSchema,
   runtimeArtifactUploadMetadataSchema,
@@ -17,6 +23,7 @@ import {
 } from '@repo/validation';
 
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe.js';
+import { ManagementService } from '../management/management.service.js';
 
 import { RuntimeService } from './runtime.service.js';
 
@@ -25,6 +32,8 @@ export class RuntimeController {
   public constructor(
     @Inject(RuntimeService)
     private readonly runtimeService: RuntimeService,
+    @Inject(ManagementService)
+    private readonly managementService: ManagementService,
   ) {}
 
   @Post('register')
@@ -70,6 +79,79 @@ export class RuntimeController {
         ? 'Runtime work dispatched successfully.'
         : 'No leased work is currently available.',
       data: dispatch,
+    };
+  }
+
+  @Post(':runtimeId/management-commands/claim')
+  public async claimManagementCommand(@Param('runtimeId') runtimeId: string) {
+    const command = await this.managementService.claimNextCommand(runtimeId);
+
+    return {
+      success: true as const,
+      message: command
+        ? 'Management command claimed successfully.'
+        : 'No management command is currently available.',
+      data: command,
+    };
+  }
+
+  @Post(':runtimeId/management-commands/:commandId/progress')
+  public async reportManagementCommandProgress(
+    @Param('runtimeId') runtimeId: string,
+    @Param('commandId') commandId: string,
+    @Body(new ZodValidationPipe(managementCommandProgressSchema))
+    body: ManagementCommandProgressRequest,
+  ) {
+    const command = await this.managementService.reportProgress(
+      runtimeId,
+      commandId,
+      body,
+    );
+
+    return {
+      success: true as const,
+      message: 'Management command progress recorded successfully.',
+      data: command,
+    };
+  }
+
+  @Post(':runtimeId/management-commands/:commandId/complete')
+  public async completeManagementCommand(
+    @Param('runtimeId') runtimeId: string,
+    @Param('commandId') commandId: string,
+    @Body(new ZodValidationPipe(managementCommandCompleteSchema))
+    body: ManagementCommandCompleteRequest,
+  ) {
+    const command = await this.managementService.completeCommand(
+      runtimeId,
+      commandId,
+      body,
+    );
+
+    return {
+      success: true as const,
+      message: 'Management command completed successfully.',
+      data: command,
+    };
+  }
+
+  @Post(':runtimeId/management-commands/:commandId/fail')
+  public async failManagementCommand(
+    @Param('runtimeId') runtimeId: string,
+    @Param('commandId') commandId: string,
+    @Body(new ZodValidationPipe(managementCommandFailSchema))
+    body: ManagementCommandFailRequest,
+  ) {
+    const command = await this.managementService.failCommand(
+      runtimeId,
+      commandId,
+      body,
+    );
+
+    return {
+      success: true as const,
+      message: 'Management command failure recorded successfully.',
+      data: command,
     };
   }
 

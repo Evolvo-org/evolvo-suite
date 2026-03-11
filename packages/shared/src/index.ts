@@ -1,5 +1,6 @@
 export * from './project-queue-limits';
 export * from './project-status';
+export * from './management';
 export * from './responses';
 export * from './auth';
 export * from './automation';

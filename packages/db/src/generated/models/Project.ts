@@ -29,6 +29,10 @@ export type ProjectMinAggregateOutputType = {
   name: string | null
   slug: string | null
   lifecycleStatus: $Enums.ProjectLifecycleStatus | null
+  repositorySetupStatus: $Enums.RepositorySetupStatus | null
+  repositorySetupMessage: string | null
+  repositorySetupError: string | null
+  repositorySetupUpdatedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -38,6 +42,10 @@ export type ProjectMaxAggregateOutputType = {
   name: string | null
   slug: string | null
   lifecycleStatus: $Enums.ProjectLifecycleStatus | null
+  repositorySetupStatus: $Enums.RepositorySetupStatus | null
+  repositorySetupMessage: string | null
+  repositorySetupError: string | null
+  repositorySetupUpdatedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -47,6 +55,10 @@ export type ProjectCountAggregateOutputType = {
   name: number
   slug: number
   lifecycleStatus: number
+  repositorySetupStatus: number
+  repositorySetupMessage: number
+  repositorySetupError: number
+  repositorySetupUpdatedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -58,6 +70,10 @@ export type ProjectMinAggregateInputType = {
   name?: true
   slug?: true
   lifecycleStatus?: true
+  repositorySetupStatus?: true
+  repositorySetupMessage?: true
+  repositorySetupError?: true
+  repositorySetupUpdatedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -67,6 +83,10 @@ export type ProjectMaxAggregateInputType = {
   name?: true
   slug?: true
   lifecycleStatus?: true
+  repositorySetupStatus?: true
+  repositorySetupMessage?: true
+  repositorySetupError?: true
+  repositorySetupUpdatedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -76,6 +96,10 @@ export type ProjectCountAggregateInputType = {
   name?: true
   slug?: true
   lifecycleStatus?: true
+  repositorySetupStatus?: true
+  repositorySetupMessage?: true
+  repositorySetupError?: true
+  repositorySetupUpdatedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -158,6 +182,10 @@ export type ProjectGroupByOutputType = {
   name: string
   slug: string
   lifecycleStatus: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus: $Enums.RepositorySetupStatus
+  repositorySetupMessage: string | null
+  repositorySetupError: string | null
+  repositorySetupUpdatedAt: Date
   createdAt: Date
   updatedAt: Date
   _count: ProjectCountAggregateOutputType | null
@@ -188,6 +216,10 @@ export type ProjectWhereInput = {
   name?: Prisma.StringFilter<"Project"> | string
   slug?: Prisma.StringFilter<"Project"> | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFilter<"Project"> | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFilter<"Project"> | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.StringNullableFilter<"Project"> | string | null
+  repositorySetupError?: Prisma.StringNullableFilter<"Project"> | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   repository?: Prisma.XOR<Prisma.ProjectRepositoryNullableScalarRelationFilter, Prisma.ProjectRepositoryWhereInput> | null
@@ -195,6 +227,7 @@ export type ProjectWhereInput = {
   productSpec?: Prisma.XOR<Prisma.ProductSpecNullableScalarRelationFilter, Prisma.ProductSpecWhereInput> | null
   developmentPlan?: Prisma.XOR<Prisma.DevelopmentPlanNullableScalarRelationFilter, Prisma.DevelopmentPlanWhereInput> | null
   queueLimits?: Prisma.XOR<Prisma.ProjectQueueLimitsNullableScalarRelationFilter, Prisma.ProjectQueueLimitsWhereInput> | null
+  managementCommands?: Prisma.ManagementCommandListRelationFilter
   epics?: Prisma.EpicListRelationFilter
   workItems?: Prisma.WorkItemListRelationFilter
 }
@@ -204,6 +237,10 @@ export type ProjectOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   lifecycleStatus?: Prisma.SortOrder
+  repositorySetupStatus?: Prisma.SortOrder
+  repositorySetupMessage?: Prisma.SortOrderInput | Prisma.SortOrder
+  repositorySetupError?: Prisma.SortOrderInput | Prisma.SortOrder
+  repositorySetupUpdatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   repository?: Prisma.ProjectRepositoryOrderByWithRelationInput
@@ -211,6 +248,7 @@ export type ProjectOrderByWithRelationInput = {
   productSpec?: Prisma.ProductSpecOrderByWithRelationInput
   developmentPlan?: Prisma.DevelopmentPlanOrderByWithRelationInput
   queueLimits?: Prisma.ProjectQueueLimitsOrderByWithRelationInput
+  managementCommands?: Prisma.ManagementCommandOrderByRelationAggregateInput
   epics?: Prisma.EpicOrderByRelationAggregateInput
   workItems?: Prisma.WorkItemOrderByRelationAggregateInput
 }
@@ -223,6 +261,10 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ProjectWhereInput | Prisma.ProjectWhereInput[]
   name?: Prisma.StringFilter<"Project"> | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFilter<"Project"> | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFilter<"Project"> | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.StringNullableFilter<"Project"> | string | null
+  repositorySetupError?: Prisma.StringNullableFilter<"Project"> | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   repository?: Prisma.XOR<Prisma.ProjectRepositoryNullableScalarRelationFilter, Prisma.ProjectRepositoryWhereInput> | null
@@ -230,6 +272,7 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   productSpec?: Prisma.XOR<Prisma.ProductSpecNullableScalarRelationFilter, Prisma.ProductSpecWhereInput> | null
   developmentPlan?: Prisma.XOR<Prisma.DevelopmentPlanNullableScalarRelationFilter, Prisma.DevelopmentPlanWhereInput> | null
   queueLimits?: Prisma.XOR<Prisma.ProjectQueueLimitsNullableScalarRelationFilter, Prisma.ProjectQueueLimitsWhereInput> | null
+  managementCommands?: Prisma.ManagementCommandListRelationFilter
   epics?: Prisma.EpicListRelationFilter
   workItems?: Prisma.WorkItemListRelationFilter
 }, "id" | "slug">
@@ -239,6 +282,10 @@ export type ProjectOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   lifecycleStatus?: Prisma.SortOrder
+  repositorySetupStatus?: Prisma.SortOrder
+  repositorySetupMessage?: Prisma.SortOrderInput | Prisma.SortOrder
+  repositorySetupError?: Prisma.SortOrderInput | Prisma.SortOrder
+  repositorySetupUpdatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ProjectCountOrderByAggregateInput
@@ -254,6 +301,10 @@ export type ProjectScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Project"> | string
   slug?: Prisma.StringWithAggregatesFilter<"Project"> | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusWithAggregatesFilter<"Project"> | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusWithAggregatesFilter<"Project"> | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
+  repositorySetupError?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string
 }
@@ -263,6 +314,10 @@ export type ProjectCreateInput = {
   name: string
   slug: string
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
@@ -270,6 +325,7 @@ export type ProjectCreateInput = {
   productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
+  managementCommands?: Prisma.ManagementCommandCreateNestedManyWithoutProjectInput
   epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
   workItems?: Prisma.WorkItemCreateNestedManyWithoutProjectInput
 }
@@ -279,6 +335,10 @@ export type ProjectUncheckedCreateInput = {
   name: string
   slug: string
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
@@ -286,6 +346,7 @@ export type ProjectUncheckedCreateInput = {
   productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
+  managementCommands?: Prisma.ManagementCommandUncheckedCreateNestedManyWithoutProjectInput
   epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput
   workItems?: Prisma.WorkItemUncheckedCreateNestedManyWithoutProjectInput
 }
@@ -295,6 +356,10 @@ export type ProjectUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
@@ -302,6 +367,7 @@ export type ProjectUpdateInput = {
   productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
+  managementCommands?: Prisma.ManagementCommandUpdateManyWithoutProjectNestedInput
   epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
   workItems?: Prisma.WorkItemUpdateManyWithoutProjectNestedInput
 }
@@ -311,6 +377,10 @@ export type ProjectUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
@@ -318,6 +388,7 @@ export type ProjectUncheckedUpdateInput = {
   productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
+  managementCommands?: Prisma.ManagementCommandUncheckedUpdateManyWithoutProjectNestedInput
   epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
   workItems?: Prisma.WorkItemUncheckedUpdateManyWithoutProjectNestedInput
 }
@@ -327,6 +398,10 @@ export type ProjectCreateManyInput = {
   name: string
   slug: string
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -336,6 +411,10 @@ export type ProjectUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -345,6 +424,10 @@ export type ProjectUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -359,6 +442,10 @@ export type ProjectCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   lifecycleStatus?: Prisma.SortOrder
+  repositorySetupStatus?: Prisma.SortOrder
+  repositorySetupMessage?: Prisma.SortOrder
+  repositorySetupError?: Prisma.SortOrder
+  repositorySetupUpdatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -368,6 +455,10 @@ export type ProjectMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   lifecycleStatus?: Prisma.SortOrder
+  repositorySetupStatus?: Prisma.SortOrder
+  repositorySetupMessage?: Prisma.SortOrder
+  repositorySetupError?: Prisma.SortOrder
+  repositorySetupUpdatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -377,8 +468,26 @@ export type ProjectMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   lifecycleStatus?: Prisma.SortOrder
+  repositorySetupStatus?: Prisma.SortOrder
+  repositorySetupMessage?: Prisma.SortOrder
+  repositorySetupError?: Prisma.SortOrder
+  repositorySetupUpdatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type ProjectCreateNestedOneWithoutManagementCommandsInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutManagementCommandsInput, Prisma.ProjectUncheckedCreateWithoutManagementCommandsInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutManagementCommandsInput
+  connect?: Prisma.ProjectWhereUniqueInput
+}
+
+export type ProjectUpdateOneRequiredWithoutManagementCommandsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutManagementCommandsInput, Prisma.ProjectUncheckedCreateWithoutManagementCommandsInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutManagementCommandsInput
+  upsert?: Prisma.ProjectUpsertWithoutManagementCommandsInput
+  connect?: Prisma.ProjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutManagementCommandsInput, Prisma.ProjectUpdateWithoutManagementCommandsInput>, Prisma.ProjectUncheckedUpdateWithoutManagementCommandsInput>
 }
 
 export type ProjectCreateNestedOneWithoutEpicsInput = {
@@ -411,6 +520,10 @@ export type ProjectUpdateOneRequiredWithoutWorkItemsNestedInput = {
 
 export type EnumProjectLifecycleStatusFieldUpdateOperationsInput = {
   set?: $Enums.ProjectLifecycleStatus
+}
+
+export type EnumRepositorySetupStatusFieldUpdateOperationsInput = {
+  set?: $Enums.RepositorySetupStatus
 }
 
 export type ProjectCreateNestedOneWithoutAgentRoutingInput = {
@@ -483,11 +596,15 @@ export type ProjectUpdateOneRequiredWithoutDevelopmentPlanNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutDevelopmentPlanInput, Prisma.ProjectUpdateWithoutDevelopmentPlanInput>, Prisma.ProjectUncheckedUpdateWithoutDevelopmentPlanInput>
 }
 
-export type ProjectCreateWithoutEpicsInput = {
+export type ProjectCreateWithoutManagementCommandsInput = {
   id?: string
   name: string
   slug: string
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
@@ -495,6 +612,103 @@ export type ProjectCreateWithoutEpicsInput = {
   productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
+  epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
+  workItems?: Prisma.WorkItemCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectUncheckedCreateWithoutManagementCommandsInput = {
+  id?: string
+  name: string
+  slug: string
+  lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
+  agentRouting?: Prisma.ProjectAgentRoutingUncheckedCreateNestedOneWithoutProjectInput
+  productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
+  developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
+  queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
+  epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput
+  workItems?: Prisma.WorkItemUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectCreateOrConnectWithoutManagementCommandsInput = {
+  where: Prisma.ProjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutManagementCommandsInput, Prisma.ProjectUncheckedCreateWithoutManagementCommandsInput>
+}
+
+export type ProjectUpsertWithoutManagementCommandsInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutManagementCommandsInput, Prisma.ProjectUncheckedUpdateWithoutManagementCommandsInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutManagementCommandsInput, Prisma.ProjectUncheckedCreateWithoutManagementCommandsInput>
+  where?: Prisma.ProjectWhereInput
+}
+
+export type ProjectUpdateToOneWithWhereWithoutManagementCommandsInput = {
+  where?: Prisma.ProjectWhereInput
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutManagementCommandsInput, Prisma.ProjectUncheckedUpdateWithoutManagementCommandsInput>
+}
+
+export type ProjectUpdateWithoutManagementCommandsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
+  agentRouting?: Prisma.ProjectAgentRoutingUpdateOneWithoutProjectNestedInput
+  productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
+  developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
+  queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
+  epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
+  workItems?: Prisma.WorkItemUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectUncheckedUpdateWithoutManagementCommandsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
+  agentRouting?: Prisma.ProjectAgentRoutingUncheckedUpdateOneWithoutProjectNestedInput
+  productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
+  developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
+  queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
+  epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
+  workItems?: Prisma.WorkItemUncheckedUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectCreateWithoutEpicsInput = {
+  id?: string
+  name: string
+  slug: string
+  lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
+  agentRouting?: Prisma.ProjectAgentRoutingCreateNestedOneWithoutProjectInput
+  productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
+  developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
+  queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
+  managementCommands?: Prisma.ManagementCommandCreateNestedManyWithoutProjectInput
   workItems?: Prisma.WorkItemCreateNestedManyWithoutProjectInput
 }
 
@@ -503,6 +717,10 @@ export type ProjectUncheckedCreateWithoutEpicsInput = {
   name: string
   slug: string
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
@@ -510,6 +728,7 @@ export type ProjectUncheckedCreateWithoutEpicsInput = {
   productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
+  managementCommands?: Prisma.ManagementCommandUncheckedCreateNestedManyWithoutProjectInput
   workItems?: Prisma.WorkItemUncheckedCreateNestedManyWithoutProjectInput
 }
 
@@ -534,6 +753,10 @@ export type ProjectUpdateWithoutEpicsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
@@ -541,6 +764,7 @@ export type ProjectUpdateWithoutEpicsInput = {
   productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
+  managementCommands?: Prisma.ManagementCommandUpdateManyWithoutProjectNestedInput
   workItems?: Prisma.WorkItemUpdateManyWithoutProjectNestedInput
 }
 
@@ -549,6 +773,10 @@ export type ProjectUncheckedUpdateWithoutEpicsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
@@ -556,6 +784,7 @@ export type ProjectUncheckedUpdateWithoutEpicsInput = {
   productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
+  managementCommands?: Prisma.ManagementCommandUncheckedUpdateManyWithoutProjectNestedInput
   workItems?: Prisma.WorkItemUncheckedUpdateManyWithoutProjectNestedInput
 }
 
@@ -564,6 +793,10 @@ export type ProjectCreateWithoutWorkItemsInput = {
   name: string
   slug: string
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
@@ -571,6 +804,7 @@ export type ProjectCreateWithoutWorkItemsInput = {
   productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
+  managementCommands?: Prisma.ManagementCommandCreateNestedManyWithoutProjectInput
   epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
 }
 
@@ -579,6 +813,10 @@ export type ProjectUncheckedCreateWithoutWorkItemsInput = {
   name: string
   slug: string
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
@@ -586,6 +824,7 @@ export type ProjectUncheckedCreateWithoutWorkItemsInput = {
   productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
+  managementCommands?: Prisma.ManagementCommandUncheckedCreateNestedManyWithoutProjectInput
   epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput
 }
 
@@ -610,6 +849,10 @@ export type ProjectUpdateWithoutWorkItemsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
@@ -617,6 +860,7 @@ export type ProjectUpdateWithoutWorkItemsInput = {
   productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
+  managementCommands?: Prisma.ManagementCommandUpdateManyWithoutProjectNestedInput
   epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
 }
 
@@ -625,6 +869,10 @@ export type ProjectUncheckedUpdateWithoutWorkItemsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
@@ -632,6 +880,7 @@ export type ProjectUncheckedUpdateWithoutWorkItemsInput = {
   productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
+  managementCommands?: Prisma.ManagementCommandUncheckedUpdateManyWithoutProjectNestedInput
   epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
 }
 
@@ -640,12 +889,17 @@ export type ProjectCreateWithoutAgentRoutingInput = {
   name: string
   slug: string
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
+  managementCommands?: Prisma.ManagementCommandCreateNestedManyWithoutProjectInput
   epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
   workItems?: Prisma.WorkItemCreateNestedManyWithoutProjectInput
 }
@@ -655,12 +909,17 @@ export type ProjectUncheckedCreateWithoutAgentRoutingInput = {
   name: string
   slug: string
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
+  managementCommands?: Prisma.ManagementCommandUncheckedCreateNestedManyWithoutProjectInput
   epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput
   workItems?: Prisma.WorkItemUncheckedCreateNestedManyWithoutProjectInput
 }
@@ -686,12 +945,17 @@ export type ProjectUpdateWithoutAgentRoutingInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
+  managementCommands?: Prisma.ManagementCommandUpdateManyWithoutProjectNestedInput
   epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
   workItems?: Prisma.WorkItemUpdateManyWithoutProjectNestedInput
 }
@@ -701,12 +965,17 @@ export type ProjectUncheckedUpdateWithoutAgentRoutingInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
+  managementCommands?: Prisma.ManagementCommandUncheckedUpdateManyWithoutProjectNestedInput
   epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
   workItems?: Prisma.WorkItemUncheckedUpdateManyWithoutProjectNestedInput
 }
@@ -716,12 +985,17 @@ export type ProjectCreateWithoutRepositoryInput = {
   name: string
   slug: string
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   agentRouting?: Prisma.ProjectAgentRoutingCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
+  managementCommands?: Prisma.ManagementCommandCreateNestedManyWithoutProjectInput
   epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
   workItems?: Prisma.WorkItemCreateNestedManyWithoutProjectInput
 }
@@ -731,12 +1005,17 @@ export type ProjectUncheckedCreateWithoutRepositoryInput = {
   name: string
   slug: string
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   agentRouting?: Prisma.ProjectAgentRoutingUncheckedCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
+  managementCommands?: Prisma.ManagementCommandUncheckedCreateNestedManyWithoutProjectInput
   epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput
   workItems?: Prisma.WorkItemUncheckedCreateNestedManyWithoutProjectInput
 }
@@ -762,12 +1041,17 @@ export type ProjectUpdateWithoutRepositoryInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   agentRouting?: Prisma.ProjectAgentRoutingUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
+  managementCommands?: Prisma.ManagementCommandUpdateManyWithoutProjectNestedInput
   epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
   workItems?: Prisma.WorkItemUpdateManyWithoutProjectNestedInput
 }
@@ -777,12 +1061,17 @@ export type ProjectUncheckedUpdateWithoutRepositoryInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   agentRouting?: Prisma.ProjectAgentRoutingUncheckedUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
+  managementCommands?: Prisma.ManagementCommandUncheckedUpdateManyWithoutProjectNestedInput
   epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
   workItems?: Prisma.WorkItemUncheckedUpdateManyWithoutProjectNestedInput
 }
@@ -792,12 +1081,17 @@ export type ProjectCreateWithoutQueueLimitsInput = {
   name: string
   slug: string
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
   agentRouting?: Prisma.ProjectAgentRoutingCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
+  managementCommands?: Prisma.ManagementCommandCreateNestedManyWithoutProjectInput
   epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
   workItems?: Prisma.WorkItemCreateNestedManyWithoutProjectInput
 }
@@ -807,12 +1101,17 @@ export type ProjectUncheckedCreateWithoutQueueLimitsInput = {
   name: string
   slug: string
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
   agentRouting?: Prisma.ProjectAgentRoutingUncheckedCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
+  managementCommands?: Prisma.ManagementCommandUncheckedCreateNestedManyWithoutProjectInput
   epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput
   workItems?: Prisma.WorkItemUncheckedCreateNestedManyWithoutProjectInput
 }
@@ -838,12 +1137,17 @@ export type ProjectUpdateWithoutQueueLimitsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
   agentRouting?: Prisma.ProjectAgentRoutingUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
+  managementCommands?: Prisma.ManagementCommandUpdateManyWithoutProjectNestedInput
   epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
   workItems?: Prisma.WorkItemUpdateManyWithoutProjectNestedInput
 }
@@ -853,12 +1157,17 @@ export type ProjectUncheckedUpdateWithoutQueueLimitsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
   agentRouting?: Prisma.ProjectAgentRoutingUncheckedUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
+  managementCommands?: Prisma.ManagementCommandUncheckedUpdateManyWithoutProjectNestedInput
   epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
   workItems?: Prisma.WorkItemUncheckedUpdateManyWithoutProjectNestedInput
 }
@@ -868,12 +1177,17 @@ export type ProjectCreateWithoutProductSpecInput = {
   name: string
   slug: string
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
   agentRouting?: Prisma.ProjectAgentRoutingCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
+  managementCommands?: Prisma.ManagementCommandCreateNestedManyWithoutProjectInput
   epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
   workItems?: Prisma.WorkItemCreateNestedManyWithoutProjectInput
 }
@@ -883,12 +1197,17 @@ export type ProjectUncheckedCreateWithoutProductSpecInput = {
   name: string
   slug: string
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
   agentRouting?: Prisma.ProjectAgentRoutingUncheckedCreateNestedOneWithoutProjectInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
+  managementCommands?: Prisma.ManagementCommandUncheckedCreateNestedManyWithoutProjectInput
   epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput
   workItems?: Prisma.WorkItemUncheckedCreateNestedManyWithoutProjectInput
 }
@@ -914,12 +1233,17 @@ export type ProjectUpdateWithoutProductSpecInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
   agentRouting?: Prisma.ProjectAgentRoutingUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
+  managementCommands?: Prisma.ManagementCommandUpdateManyWithoutProjectNestedInput
   epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
   workItems?: Prisma.WorkItemUpdateManyWithoutProjectNestedInput
 }
@@ -929,12 +1253,17 @@ export type ProjectUncheckedUpdateWithoutProductSpecInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
   agentRouting?: Prisma.ProjectAgentRoutingUncheckedUpdateOneWithoutProjectNestedInput
   developmentPlan?: Prisma.DevelopmentPlanUncheckedUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
+  managementCommands?: Prisma.ManagementCommandUncheckedUpdateManyWithoutProjectNestedInput
   epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
   workItems?: Prisma.WorkItemUncheckedUpdateManyWithoutProjectNestedInput
 }
@@ -944,12 +1273,17 @@ export type ProjectCreateWithoutDevelopmentPlanInput = {
   name: string
   slug: string
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryCreateNestedOneWithoutProjectInput
   agentRouting?: Prisma.ProjectAgentRoutingCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsCreateNestedOneWithoutProjectInput
+  managementCommands?: Prisma.ManagementCommandCreateNestedManyWithoutProjectInput
   epics?: Prisma.EpicCreateNestedManyWithoutProjectInput
   workItems?: Prisma.WorkItemCreateNestedManyWithoutProjectInput
 }
@@ -959,12 +1293,17 @@ export type ProjectUncheckedCreateWithoutDevelopmentPlanInput = {
   name: string
   slug: string
   lifecycleStatus?: $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: $Enums.RepositorySetupStatus
+  repositorySetupMessage?: string | null
+  repositorySetupError?: string | null
+  repositorySetupUpdatedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   repository?: Prisma.ProjectRepositoryUncheckedCreateNestedOneWithoutProjectInput
   agentRouting?: Prisma.ProjectAgentRoutingUncheckedCreateNestedOneWithoutProjectInput
   productSpec?: Prisma.ProductSpecUncheckedCreateNestedOneWithoutProjectInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedCreateNestedOneWithoutProjectInput
+  managementCommands?: Prisma.ManagementCommandUncheckedCreateNestedManyWithoutProjectInput
   epics?: Prisma.EpicUncheckedCreateNestedManyWithoutProjectInput
   workItems?: Prisma.WorkItemUncheckedCreateNestedManyWithoutProjectInput
 }
@@ -990,12 +1329,17 @@ export type ProjectUpdateWithoutDevelopmentPlanInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUpdateOneWithoutProjectNestedInput
   agentRouting?: Prisma.ProjectAgentRoutingUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUpdateOneWithoutProjectNestedInput
+  managementCommands?: Prisma.ManagementCommandUpdateManyWithoutProjectNestedInput
   epics?: Prisma.EpicUpdateManyWithoutProjectNestedInput
   workItems?: Prisma.WorkItemUpdateManyWithoutProjectNestedInput
 }
@@ -1005,12 +1349,17 @@ export type ProjectUncheckedUpdateWithoutDevelopmentPlanInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   lifecycleStatus?: Prisma.EnumProjectLifecycleStatusFieldUpdateOperationsInput | $Enums.ProjectLifecycleStatus
+  repositorySetupStatus?: Prisma.EnumRepositorySetupStatusFieldUpdateOperationsInput | $Enums.RepositorySetupStatus
+  repositorySetupMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repositorySetupUpdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repository?: Prisma.ProjectRepositoryUncheckedUpdateOneWithoutProjectNestedInput
   agentRouting?: Prisma.ProjectAgentRoutingUncheckedUpdateOneWithoutProjectNestedInput
   productSpec?: Prisma.ProductSpecUncheckedUpdateOneWithoutProjectNestedInput
   queueLimits?: Prisma.ProjectQueueLimitsUncheckedUpdateOneWithoutProjectNestedInput
+  managementCommands?: Prisma.ManagementCommandUncheckedUpdateManyWithoutProjectNestedInput
   epics?: Prisma.EpicUncheckedUpdateManyWithoutProjectNestedInput
   workItems?: Prisma.WorkItemUncheckedUpdateManyWithoutProjectNestedInput
 }
@@ -1021,11 +1370,13 @@ export type ProjectUncheckedUpdateWithoutDevelopmentPlanInput = {
  */
 
 export type ProjectCountOutputType = {
+  managementCommands: number
   epics: number
   workItems: number
 }
 
 export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  managementCommands?: boolean | ProjectCountOutputTypeCountManagementCommandsArgs
   epics?: boolean | ProjectCountOutputTypeCountEpicsArgs
   workItems?: boolean | ProjectCountOutputTypeCountWorkItemsArgs
 }
@@ -1038,6 +1389,13 @@ export type ProjectCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exte
    * Select specific fields to fetch from the ProjectCountOutputType
    */
   select?: Prisma.ProjectCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ProjectCountOutputType without action
+ */
+export type ProjectCountOutputTypeCountManagementCommandsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ManagementCommandWhereInput
 }
 
 /**
@@ -1060,6 +1418,10 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   name?: boolean
   slug?: boolean
   lifecycleStatus?: boolean
+  repositorySetupStatus?: boolean
+  repositorySetupMessage?: boolean
+  repositorySetupError?: boolean
+  repositorySetupUpdatedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   repository?: boolean | Prisma.Project$repositoryArgs<ExtArgs>
@@ -1067,6 +1429,7 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   productSpec?: boolean | Prisma.Project$productSpecArgs<ExtArgs>
   developmentPlan?: boolean | Prisma.Project$developmentPlanArgs<ExtArgs>
   queueLimits?: boolean | Prisma.Project$queueLimitsArgs<ExtArgs>
+  managementCommands?: boolean | Prisma.Project$managementCommandsArgs<ExtArgs>
   epics?: boolean | Prisma.Project$epicsArgs<ExtArgs>
   workItems?: boolean | Prisma.Project$workItemsArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
@@ -1077,6 +1440,10 @@ export type ProjectSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   name?: boolean
   slug?: boolean
   lifecycleStatus?: boolean
+  repositorySetupStatus?: boolean
+  repositorySetupMessage?: boolean
+  repositorySetupError?: boolean
+  repositorySetupUpdatedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["project"]>
@@ -1086,6 +1453,10 @@ export type ProjectSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   name?: boolean
   slug?: boolean
   lifecycleStatus?: boolean
+  repositorySetupStatus?: boolean
+  repositorySetupMessage?: boolean
+  repositorySetupError?: boolean
+  repositorySetupUpdatedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["project"]>
@@ -1095,17 +1466,22 @@ export type ProjectSelectScalar = {
   name?: boolean
   slug?: boolean
   lifecycleStatus?: boolean
+  repositorySetupStatus?: boolean
+  repositorySetupMessage?: boolean
+  repositorySetupError?: boolean
+  repositorySetupUpdatedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "lifecycleStatus" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
+export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "lifecycleStatus" | "repositorySetupStatus" | "repositorySetupMessage" | "repositorySetupError" | "repositorySetupUpdatedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
 export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   repository?: boolean | Prisma.Project$repositoryArgs<ExtArgs>
   agentRouting?: boolean | Prisma.Project$agentRoutingArgs<ExtArgs>
   productSpec?: boolean | Prisma.Project$productSpecArgs<ExtArgs>
   developmentPlan?: boolean | Prisma.Project$developmentPlanArgs<ExtArgs>
   queueLimits?: boolean | Prisma.Project$queueLimitsArgs<ExtArgs>
+  managementCommands?: boolean | Prisma.Project$managementCommandsArgs<ExtArgs>
   epics?: boolean | Prisma.Project$epicsArgs<ExtArgs>
   workItems?: boolean | Prisma.Project$workItemsArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
@@ -1121,6 +1497,7 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     productSpec: Prisma.$ProductSpecPayload<ExtArgs> | null
     developmentPlan: Prisma.$DevelopmentPlanPayload<ExtArgs> | null
     queueLimits: Prisma.$ProjectQueueLimitsPayload<ExtArgs> | null
+    managementCommands: Prisma.$ManagementCommandPayload<ExtArgs>[]
     epics: Prisma.$EpicPayload<ExtArgs>[]
     workItems: Prisma.$WorkItemPayload<ExtArgs>[]
   }
@@ -1129,6 +1506,10 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     name: string
     slug: string
     lifecycleStatus: $Enums.ProjectLifecycleStatus
+    repositorySetupStatus: $Enums.RepositorySetupStatus
+    repositorySetupMessage: string | null
+    repositorySetupError: string | null
+    repositorySetupUpdatedAt: Date
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["project"]>
@@ -1530,6 +1911,7 @@ export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.
   productSpec<T extends Prisma.Project$productSpecArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$productSpecArgs<ExtArgs>>): Prisma.Prisma__ProductSpecClient<runtime.Types.Result.GetResult<Prisma.$ProductSpecPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   developmentPlan<T extends Prisma.Project$developmentPlanArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$developmentPlanArgs<ExtArgs>>): Prisma.Prisma__DevelopmentPlanClient<runtime.Types.Result.GetResult<Prisma.$DevelopmentPlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   queueLimits<T extends Prisma.Project$queueLimitsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$queueLimitsArgs<ExtArgs>>): Prisma.Prisma__ProjectQueueLimitsClient<runtime.Types.Result.GetResult<Prisma.$ProjectQueueLimitsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  managementCommands<T extends Prisma.Project$managementCommandsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$managementCommandsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ManagementCommandPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   epics<T extends Prisma.Project$epicsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$epicsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EpicPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   workItems<T extends Prisma.Project$workItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$workItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1565,6 +1947,10 @@ export interface ProjectFieldRefs {
   readonly name: Prisma.FieldRef<"Project", 'String'>
   readonly slug: Prisma.FieldRef<"Project", 'String'>
   readonly lifecycleStatus: Prisma.FieldRef<"Project", 'ProjectLifecycleStatus'>
+  readonly repositorySetupStatus: Prisma.FieldRef<"Project", 'RepositorySetupStatus'>
+  readonly repositorySetupMessage: Prisma.FieldRef<"Project", 'String'>
+  readonly repositorySetupError: Prisma.FieldRef<"Project", 'String'>
+  readonly repositorySetupUpdatedAt: Prisma.FieldRef<"Project", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Project", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Project", 'DateTime'>
 }
@@ -2047,6 +2433,30 @@ export type Project$queueLimitsArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   include?: Prisma.ProjectQueueLimitsInclude<ExtArgs> | null
   where?: Prisma.ProjectQueueLimitsWhereInput
+}
+
+/**
+ * Project.managementCommands
+ */
+export type Project$managementCommandsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ManagementCommand
+   */
+  select?: Prisma.ManagementCommandSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ManagementCommand
+   */
+  omit?: Prisma.ManagementCommandOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ManagementCommandInclude<ExtArgs> | null
+  where?: Prisma.ManagementCommandWhereInput
+  orderBy?: Prisma.ManagementCommandOrderByWithRelationInput | Prisma.ManagementCommandOrderByWithRelationInput[]
+  cursor?: Prisma.ManagementCommandWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ManagementCommandScalarFieldEnum | Prisma.ManagementCommandScalarFieldEnum[]
 }
 
 /**
